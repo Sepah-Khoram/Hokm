@@ -16,7 +16,7 @@ public class Client {
     }
 
 
-    public static void creategame(){
+    public static void createGame(){
         try{
             Socket socket1=new Socket("localhost",3737);
             // It is the responsibility of the server to check the matters related to making the game
