@@ -1,29 +1,41 @@
 package Client;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class Client {
-    public static void joinGame() throws IOException {
+    private Socket connection; // connection to server
+    private ObjectOutputStream output; // output to server
+    private ObjectInputStream input; // input from server
+
+    public void joinGame(String host, int numberOfPlayers) {
         try {
-            Socket socket1 = new Socket("localhost", 3737);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket1.getOutputStream());
-            objectOutputStream.writeObject("player join the game");
-            objectOutputStream.flush();
+            getConnection(host);
+            output.writeObject("join" + numberOfPlayers);
+            output.flush();
         } catch (IOException e) {
+            System.out.println("Connection to server failed!");
         }
     }
 
 
-    public static void createGame() {
+    public void createGame(String host, int numberOfPlayers) {
         try {
-            Socket socket1 = new Socket("localhost", 3737);
-            // It is the responsibility of the server to check the matters related to making the game
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket1.getOutputStream());
-            objectOutputStream.writeObject("player join the game");
-            objectOutputStream.flush();
+            getConnection(host);
+            output.writeObject("create" + numberOfPlayers);
+            output.flush();
         } catch (IOException e) {
+            System.out.println("Connection to server failed!");
         }
+    }
+
+    private void getConnection(String host) throws IOException {
+        connection = new Socket(host, 5482);
+        output = new ObjectOutputStream(connection.getOutputStream());
+        input = new ObjectInputStream(connection.getInputStream());
+
+        input.readUTF(); // for shake hands
     }
 }
