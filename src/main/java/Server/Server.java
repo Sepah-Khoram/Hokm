@@ -44,7 +44,7 @@ public class Server {
 
         clients = new CopyOnWriteArrayList<>();
         executorService = Executors.newCachedThreadPool(); // create thread pool
-        games = new CopyOnWriteArrayList<>();;
+        games = new CopyOnWriteArrayList<>();
     } // end constructor
 
     public void execute() {
