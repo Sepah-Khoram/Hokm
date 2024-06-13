@@ -10,6 +10,15 @@ public class Client {
     private ObjectOutputStream output; // output to server
     private ObjectInputStream input; // input from server
 
+    public ObjectOutputStream getOutput() {
+        return output;
+    }
+
+    public ObjectInputStream getInput() {
+        return input;
+    }
+
+
     public void joinGame(String host, int numberOfPlayers) {
         try {
             getConnection(host);
