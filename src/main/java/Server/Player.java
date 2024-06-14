@@ -1,12 +1,16 @@
 package Server;
 
+import Utilities.Card;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Player implements Runnable {
+    private ArrayList<Card> card = new ArrayList<>() ;
     private UUID playerId;
     private Socket connection;
     private ObjectOutputStream output;
@@ -58,6 +62,9 @@ public class Player implements Runnable {
         } catch (IOException e) {
             System.err.println("Error closing connection: " + e.getMessage());
         }
+    }
+    public void setCard(ArrayList card) {
+        this.card = card;
     }
 
     public void setPlayerNumber(int playerNumber) {
