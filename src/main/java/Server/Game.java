@@ -3,6 +3,7 @@ package Server;
 import Utilities.GameService;
 import Utilities.Card;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +52,11 @@ public class Game implements Runnable {
 
         Card[][] cards = GameService.divideCards(players.length); // devide cards btw players
         for (int i = 0; i < players.length; i++) {
-            players[i].setCards(new ArrayList<>(Arrays.asList(cards[i]))); // set cards of every player
+            try {
+                players[i].setCards(new ArrayList<>(Arrays.asList(cards[i]))); // set cards of every player
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         System.out.println("Game started with " + players.length + " players.");

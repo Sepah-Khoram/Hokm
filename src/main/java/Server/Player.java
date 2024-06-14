@@ -29,6 +29,9 @@ public class Player implements Runnable {
     @Override
     public void run() {
         try {
+            output.writeObject(playerId+"\n");
+            output.writeInt(playerNumber);
+            output.flush();
             while (connected) {
                 Object data = input.readObject();
                 // پردازش داده‌ها
@@ -63,8 +66,10 @@ public class Player implements Runnable {
             System.err.println("Error closing connection: " + e.getMessage());
         }
     }
-    public void setCards(ArrayList<Card> cards) {
+    public void setCards(ArrayList<Card> cards) throws IOException {
         this.cards = cards;
+        output.writeObject(cards);
+        output.flush();
     }
 
     public void setPlayerNumber(int playerNumber) {
