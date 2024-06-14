@@ -41,6 +41,7 @@ public class Game implements Runnable {
             executorService.execute(player);
 
             if (connectedPlayers.size() == players.length) {
+                executorService.shutdown();
                 startGame();
             }
         }
@@ -60,7 +61,11 @@ public class Game implements Runnable {
     @Override
     public void run() {
         while (!gameStarted) {
-
+            try {
+                Thread.sleep(100); // Wait for a short period before checking again
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         // منطق بازی که باید در حین اجرای بازی انجام شود
@@ -73,9 +78,11 @@ public class Game implements Runnable {
     public boolean isStarted() {
         return gameStarted;
     }
+
     public UUID getGameId() {
         return gameId;
     }
+
     public String getToken() {
         return token;
     }

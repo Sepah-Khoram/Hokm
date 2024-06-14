@@ -23,7 +23,6 @@ public class ClientRunner {
                     System.out.print(">>> ");
                 }
 
-                input.nextLine();
                 switch (choice) {
                     case 1:
                         System.out.println("creating game...");
@@ -38,7 +37,7 @@ public class ClientRunner {
                         System.exit(0);
                         break;
                     default:
-                        System.out.println("Invalid choice. Try agaain.");
+                        System.out.println("Invalid choice. Try again.");
                         System.out.print(">>> ");
                         continue;
                 }
