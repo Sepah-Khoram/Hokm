@@ -1,7 +1,6 @@
 package Client;
 
 import Utilities.Card;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ public class Player extends Client {
 
     public Player(String name) {
         this.name = name;
-        this.cards = new ArrayList<>();
     }
 
     public Player() {
