@@ -21,7 +21,7 @@ public class Server {
     private ServerSocket serverSocket; // server socket to connect with clients
     private final List<Socket> clients; // clients that connected to server
     private final List<Game> games; // games that play in the server
-    private final ExecutorService executorService; // will run games in threads
+    private final ExecutorService gameExecutor; // will run games in threads
 
     // constructor
     public Server() {
@@ -38,20 +38,16 @@ public class Server {
         }
         catch (IOException ioException)
         {
-            System.out.println("Can't create server");
+            System.err.println("Can't create server");
             System.exit(1);
         }
 
         clients = new CopyOnWriteArrayList<>();
-        executorService = Executors.newCachedThreadPool(); // create thread pool
+        gameExecutor = Executors.newCachedThreadPool(); // create thread pool
         games = new CopyOnWriteArrayList<>();
     } // end constructor
 
     public void execute() {
-        // scanner and formatter for shake hands
-        ObjectInputStream input;
-        ObjectOutputStream output;
-
         while (true) {
             Socket connection = null;
             try {
@@ -62,19 +58,25 @@ public class Server {
                 clients.add(connection);
 
                 // send  a message for shake hands
-                output = new ObjectOutputStream(connection.getOutputStream());
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
                 output.writeObject("Accept");
                 output.flush();
 
                 // get a command of the client
-                input = new ObjectInputStream(connection.getInputStream());
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
                 String command = (String) input.readObject();
 
                 if (command.startsWith("create")) {
                     int number = Integer.parseInt(command.substring(6));
                     createNewGame(connection, number); // create new game
                 } else if (command.startsWith("join")) {
-                    // Implement join game logic
+                    int number = Integer.parseInt(command.substring(4));
+                    if (!joinGame(connection, number)) {
+                        System.out.println("Game for player " + connection + " Not Found!");
+                        output.writeObject("Not Found!");
+                        output.flush();
+                        closeConnection(connection);
+                    }
                 } else
                     closeConnection(connection);
             } catch (IOException e) {
@@ -103,7 +105,7 @@ public class Server {
             Player player = new Player(connection);
             Game game = new Game(player, numberOfPlayers); // create new game
             games.add(game); // add a game to arraylist
-            executorService.execute(game); // assign new thread to this game and execute it
+            gameExecutor.execute(game); // assign new thread to this game and execute it
 
             // information about logging
             logger.info("Created a new game with " + numberOfPlayers + " players."); //
@@ -121,14 +123,40 @@ public class Server {
         }
     }
 
-    private void closeConnection (Socket connection){
+    public boolean joinGame(Socket connection, int numberOfPlayers) {
+        try {
+            Player player = new Player(connection);
+
+            // find a game
+            for (Game game : games) {
+                if (numberOfPlayers == game.getNumberOfPlayers() && game.isStarted()) {
+                    game.addPlayer(player);
+                    return true;
+                }
+            }
+        } catch (SocketException e) {
+            logger.warning("SocketException in createNewGame: " + e.getMessage());
+            closeConnection(connection); // close connection
+        } catch (IOException e) {
+            logger.warning("IOException in createNewGame: " + e.getMessage());
+            closeConnection(connection); // close connection
+        } catch (Exception e) {
+            logger.severe("Unexpected error in createNewGame: " + e.getMessage());
+            if (connection != null) {
+                closeConnection(connection);
+            }
+        }
+        return false;
+    }
+
+    private void closeConnection (Socket connection) {
         clients.remove(connection); // remove connection from arraylist
         try {
             connection.close(); // close connection
             logger.info("Closed connection with client: " + connection);
         } catch (IOException e) {
             logger.warning("IOException when closing connection: " + e.getMessage());
-            System.out.println("Problem to close connection " + connection);
+            System.err.println("Problem to close connection " + connection);
         }
     }
 }
