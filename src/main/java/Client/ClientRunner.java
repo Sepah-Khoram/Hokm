@@ -1,53 +1,60 @@
 package Client;
-import jdk.dynalink.beans.StaticClass;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ClientRunner {
-    private static Player player;
+    public static final String HOST = "localhost";
+
     public static void main(String[] args) {
-        player = new Player();
-        Scanner scanner = new Scanner(System.in);
+        Player player = new Player();
+        Scanner input = new Scanner(System.in);
 
         while (true) {
+            showMenu();
+
             while (true) {
-                showMenu();
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+                int choice = 0; // for save choice of the user
+
+                try {
+                    choice = input.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid choice. Try agaain.");
+                    System.out.print(">>> ");
+                }
+
+                input.nextLine();
                 switch (choice) {
                     case 1:
-                        createGame();
+                        System.out.println("creating game...");
+                        player.createGame(HOST, 2);
                         break;
                     case 2:
-                        joinGame();
+                        System.out.println("joining game....");
+                        player.joinGame(HOST, 2);
                         break;
                     case 3:
-                        leaveGame();
+                        System.out.println("Bye!");
+                        System.exit(0);
                         break;
                     default:
-                    System.out.println("Invalid choice");
+                        System.out.println("Invalid choice. Try agaain.");
+                        System.out.print(">>> ");
+                        continue;
                 }
+
+                break;
             }
         }
     }
+
     private static void showMenu() {
-        System.out.println("Welcome to Client");
-        System.out.println("1. Create Game");
-        System.out.println("2. Join Game");
-        System.out.println("3. Leave Game");
+        System.out.println("Welcome to Hokm game!");
+        System.out.println("Enter your choice:");
+        System.out.println("1. Create a Game");
+        System.out.println("2. Join to a Game");
+        System.out.println("3. Exit");
+        System.out.println();
+        System.out.print(">>> ");
     }
-
-    private static void createGame() {
-        System.out.println("creating game....");
-        player.createGame("localhost", 2);
-    }
-    private static void joinGame() {
-        System.out.println("joining game....");
-        player.joinGame("localhost", 2);
-    }
-
-
-private static void leaveGame() {
-    System.out.println("leaving game....");
-}
 }
