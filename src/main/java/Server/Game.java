@@ -4,7 +4,7 @@ import Utilities.GameService;
 import Utilities.Card;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -51,7 +51,7 @@ public class Game implements Runnable {
 
         Card[][] cards = GameService.divideCards(players.length); // devide cards btw players
         for (int i = 0; i < players.length; i++) {
-            players[i].setCards((ArrayList<Card>) List.of(cards[i])); // set cards of every player
+            players[i].setCards(new ArrayList<>(Arrays.asList(cards[i]))); // set cards of every player
         }
 
         System.out.println("Game started with " + players.length + " players.");
