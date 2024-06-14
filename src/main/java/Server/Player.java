@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Player implements Runnable {
-    private ArrayList<Card> card = new ArrayList<>() ;
+    private ArrayList cards = new ArrayList<>() ;
     private UUID playerId;
     private Socket connection;
     private ObjectOutputStream output;
@@ -63,13 +63,14 @@ public class Player implements Runnable {
             System.err.println("Error closing connection: " + e.getMessage());
         }
     }
-    public void setCard(ArrayList card) {
-        this.card = card;
+    public void setCards(ArrayList<Card> cards) {
+        this.cards = cards;
     }
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
     }
+
     public UUID getPlayerId() {
         return playerId;
     }
