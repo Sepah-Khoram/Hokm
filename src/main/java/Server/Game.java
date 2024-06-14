@@ -11,7 +11,6 @@ public class Game implements Runnable {
     private final ExecutorService executorService;
     private final CopyOnWriteArrayList<Player> connectedPlayers;
     private boolean gameStarted;
-    private int joinedPlayers;
 
     public Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
@@ -19,20 +18,20 @@ public class Game implements Runnable {
         connectedPlayers = new CopyOnWriteArrayList<>();
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
         gameStarted = false;
-        joinedPlayers = 0;
 
         addPlayer(player); // add player 1
     }
+
     private String generateToken() {
         return UUID.randomUUID().toString();
     }
 
     public synchronized void addPlayer(Player player) {
         if (connectedPlayers.size() < players.length) {
-            players[joinedPlayers++] = player;
+            players[connectedPlayers.size()] = player;
             connectedPlayers.add(player);
 
-            player.setPlayerNumber(joinedPlayers); // set player number
+            player.setPlayerNumber(connectedPlayers.size()); // set player number
             executorService.execute(player);
 
             if (connectedPlayers.size() == players.length) {
