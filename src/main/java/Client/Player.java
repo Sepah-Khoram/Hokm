@@ -53,6 +53,7 @@ public class Player extends Client {
             }
         } else {
             System.out.println("You have not put a card");
+            return null;
         }
         public void showCards() {
             try {
