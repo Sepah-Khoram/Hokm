@@ -10,6 +10,7 @@ public class Player implements Runnable {
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private boolean connected;
+    private int playerNumber;
 
     public Player(Socket connection) throws IOException {
         this.connection = connection;
@@ -54,5 +55,9 @@ public class Player implements Runnable {
         } catch (IOException e) {
             System.err.println("Error closing connection: " + e.getMessage());
         }
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
     }
 }
