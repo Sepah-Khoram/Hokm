@@ -37,5 +37,7 @@ build/
 ### Mac OS ###
 .DS_Store
 
+### Project File ###
 *.log
 *.log.*
+.Hokm.txt
