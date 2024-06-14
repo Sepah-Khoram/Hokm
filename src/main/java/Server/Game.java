@@ -13,15 +13,14 @@ import java.util.UUID;
 
 public class Game implements Runnable {
     private final Player[] players;
-    private UUID gameId;
-    private String token;
+    private UUID token;
     private final ExecutorService executorService;
     private final CopyOnWriteArrayList<Player> connectedPlayers;
     private boolean gameStarted;
 
     public Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
-        gameId = UUID.randomUUID();
+        token = UUID.randomUUID();
         connectedPlayers = new CopyOnWriteArrayList<>();
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
         gameStarted = false;
@@ -84,11 +83,7 @@ public class Game implements Runnable {
         return gameStarted;
     }
 
-    public UUID getGameId() {
-        return gameId;
-    }
-
-    public String getToken() {
+    public UUID getToken() {
         return token;
     }
 }

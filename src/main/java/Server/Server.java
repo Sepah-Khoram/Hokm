@@ -70,10 +70,18 @@ public class Server {
                 if (command.startsWith("create")) {
                     int number = Integer.parseInt(command.substring(6));
                     createNewGame(connection, number); // create new game
-                } else if (command.startsWith("join")) {
+                } else if (command.startsWith("joinRandom")) {
                     int number = Integer.parseInt(command.substring(4));
                     if (!joinGame(connection, number)) {
                         System.out.println("Game for player " + connection + " Not Found!");
+                        output.writeObject("Not Found!");
+                        output.flush();
+                        closeConnection(connection);
+                    }
+                } else if (command.startsWith("joinToken")) {
+                    UUID token = UUID.fromString(command.substring(9));
+                    if (!joinGame(connection, token)) {
+                        System.out.println("Game " + token + " Not Found or has started!");
                         output.writeObject("Not Found!");
                         output.flush();
                         closeConnection(connection);
@@ -122,6 +130,30 @@ public class Server {
                 closeConnection(connection);
             }
         }
+    }
+
+    public boolean joinGame(Socket connection, UUID token) {
+        try {
+            Player player = new Player(connection);
+            for (Game game : games) {
+                if (game.getToken() == token) {
+                    game.addPlayer(player);
+                    return true;
+                }
+            }
+        } catch (SocketException e) {
+            logger.warning("SocketException in createNewGame: " + e.getMessage());
+            closeConnection(connection); // close connection
+        } catch (IOException e) {
+            logger.warning("IOException in createNewGame: " + e.getMessage());
+            closeConnection(connection); // close connection
+        } catch (Exception e) {
+            logger.severe("Unexpected error in createNewGame: " + e.getMessage());
+            if (connection != null) {
+                closeConnection(connection);
+            }
+        }
+        return false;
     }
 
     public boolean joinGame(Socket connection, int numberOfPlayers) {
