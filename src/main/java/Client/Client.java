@@ -9,6 +9,7 @@ public class Client {
     private Socket connection; // connection to server
     private ObjectOutputStream output; // output to server
     private ObjectInputStream input; // input from server
+    private String id;
 
     public ObjectOutputStream getOutput() {
         return output;
@@ -18,17 +19,15 @@ public class Client {
         return input;
     }
 
-
     public void joinGame(String host, int numberOfPlayers) {
         try {
             getConnection(host);
             output.writeObject("join" + numberOfPlayers);
             output.flush();
         } catch (IOException e) {
-            System.out.println("Connection to server failed!");
+            System.err.println("Connection to server failed!");
         }
     }
-
 
     public void createGame(String host, int numberOfPlayers) {
         try {
@@ -36,7 +35,7 @@ public class Client {
             output.writeObject("create" + numberOfPlayers);
             output.flush();
         } catch (IOException e) {
-            System.out.println("Connection to server failed!");
+            System.err.println("Connection to server failed!");
         }
     }
 
@@ -45,6 +44,11 @@ public class Client {
         output = new ObjectOutputStream(connection.getOutputStream());
         input = new ObjectInputStream(connection.getInputStream());
 
-        input.readUTF(); // for shake hands
+        try {
+            id = input.readObject().toString(); // for shake hands
+        } catch (ClassNotFoundException e) {
+            System.out.println("Unexpected error. Terminating...");
+            System.exit(1);
+        }
     }
 }
