@@ -19,7 +19,13 @@ public class Client {
         return input;
     }
 
-    public void joinGame(String host, int numberOfPlayers) {
+    public void joinGame(String host, int numberOfPlayers) throws IllegalArgumentException {
+        if (numberOfPlayers != 2 && numberOfPlayers != 4)
+            throw new IllegalArgumentException("Sorry. We support just game with 2 or 4 players. " +
+                    "Try again.");
+
+        System.out.println("joining game..."); // prompt
+
         try {
             getConnection(host);
             output.writeObject("join" + numberOfPlayers);
@@ -29,7 +35,13 @@ public class Client {
         }
     }
 
-    public void createGame(String host, int numberOfPlayers) {
+    public void createGame(String host, int numberOfPlayers) throws IllegalArgumentException {
+        if (numberOfPlayers != 2 && numberOfPlayers != 4)
+            throw new IllegalArgumentException("Sorry. We support just game with 2 or 4 players. " +
+                    "Try again.");
+
+        System.out.println("Creating game..."); // prompt
+
         try {
             getConnection(host);
             output.writeObject("create" + numberOfPlayers);
