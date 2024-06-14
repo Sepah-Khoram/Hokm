@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.UUID;
 
 public class Player implements Runnable {
+    private UUID playerId;
     private Socket connection;
     private ObjectOutputStream output;
     private ObjectInputStream input;
@@ -17,6 +19,7 @@ public class Player implements Runnable {
         this.output = new ObjectOutputStream(connection.getOutputStream());
         this.input = new ObjectInputStream(connection.getInputStream());
         this.connected = true;
+        this.playerId = UUID.randomUUID();
     }
 
     @Override
@@ -59,5 +62,8 @@ public class Player implements Runnable {
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
+    }
+    public UUID getPlayerId() {
+        return playerId;
     }
 }
