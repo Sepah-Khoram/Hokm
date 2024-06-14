@@ -1,12 +1,12 @@
 package Client;
 
 import Utilities.Card;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Client {
-
     private String name;
     private List<Card> cards;
 
@@ -55,30 +55,32 @@ public class Player extends Client {
             System.out.println("You have not put a card");
             return null;
         }
-        public void showCards() {
-            try {
-                getOutput().writeObject("showCards");
-                getOutput().flush();
+    }
 
-                List<Card> response = (List<Card>) getInput().readObject();
-                System.out.println("Cards in your hand:");
-                for (Card card : response) {
-                    System.out.println(card);
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+    public void showCards() {
+        try {
+            getOutput().writeObject("showCards");
+            getOutput().flush();
+
+            List<Card> response = (List<Card>) getInput().readObject();
+            System.out.println("Cards in your hand:");
+            for (Card card : response) {
+                System.out.println(card);
             }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        public void recommendCard() {
-            try {
-                getOutput().writeObject("recommendCard");
-                getOutput().flush();
+    }
 
-                Card response = (Card) getInput().readObject();
-                System.out.println("Recommended card: " + response);
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+    public void recommendCard() {
+        try {
+            getOutput().writeObject("recommendCard");
+            getOutput().flush();
+
+            Card response = (Card) getInput().readObject();
+            System.out.println("Recommended card: " + response);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
