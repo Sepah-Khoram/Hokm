@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +35,7 @@ public class Server {
         }
 
         try {
-            serverSocket = new ServerSocket(5482, 4);
+            serverSocket = new ServerSocket(5482);
         }
         catch (IOException ioException)
         {
@@ -59,7 +60,7 @@ public class Server {
 
                 // send  a message for shake hands
                 ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
-                output.writeObject("Accept");
+                output.writeObject(UUID.randomUUID());
                 output.flush();
 
                 // get a command of the client
