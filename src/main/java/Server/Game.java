@@ -9,22 +9,24 @@ public class Game implements Runnable {
     private final ExecutorService executorService;
     private final CopyOnWriteArrayList<Player> connectedPlayers;
     private boolean gameStarted;
+    private int joinedPlayers;
 
     public Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
-        players[0] = player;
         connectedPlayers = new CopyOnWriteArrayList<>();
-        connectedPlayers.add(player);
-
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
-        executorService.execute(player);
-
         gameStarted = false;
+        joinedPlayers = 0;
+
+        addPlayer(player); // add player 1
     }
 
     public synchronized void addPlayer(Player player) {
         if (connectedPlayers.size() < players.length) {
+            players[joinedPlayers++] = player;
             connectedPlayers.add(player);
+
+            player.setPlayerNumber(joinedPlayers); // set player number
             executorService.execute(player);
 
             if (connectedPlayers.size() == players.length) {
@@ -42,9 +44,17 @@ public class Game implements Runnable {
     @Override
     public void run() {
         while (!gameStarted) {
-            // انتظار برای شروع بازی
+
         }
 
         // منطق بازی که باید در حین اجرای بازی انجام شود
+    }
+
+    public int getNumberOfPlayers() {
+        return players.length;
+    }
+
+    public boolean isStarted() {
+        return gameStarted;
     }
 }
