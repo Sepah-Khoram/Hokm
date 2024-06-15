@@ -10,7 +10,7 @@ import java.util.UUID;
 public class Player extends Client implements Runnable {
     private List<Card> cards = new ArrayList<>();
     private String name;
-    private UUID playerId;
+    private final UUID playerId;
     private boolean connected;
     private int playerNumber;
 
@@ -24,7 +24,7 @@ public class Player extends Client implements Runnable {
     @Override
     public void run() {
         try {
-            sendData(playerNumber);
+            sendData(playerNumber); // send player number to player
             while (connected) {
                 Object data = getInput().readObject();
                 process(data); // proccessing datas
@@ -68,5 +68,9 @@ public class Player extends Client implements Runnable {
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
+    }
+
+    public String getName() {
+        return name;
     }
 }
