@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static Utilities.Card.Suit.*;
+
 public class GameService {
     public static Card[][] divideCards(int numberOfPlayers) throws IllegalArgumentException {
         if (numberOfPlayers != 2 && numberOfPlayers != 4) {
@@ -39,5 +41,127 @@ public class GameService {
         }
 
         return dividedList;
+    }
+    public static Card topCard (ArrayList<Card> cards, Card.Suit hokm){
+        Card.Suit base = cards.get(0).getSuit();
+        int counter=0;
+        if (cards.size() == 4) {
+            if (base == hokm) {
+                ArrayList<Card> validCards = new ArrayList<>();
+                Card biggestCard;
+                for (int i=0 ;i<4;i++){
+                    if(cards.get(i).getSuit()==hokm){
+                        validCards.add(cards.get(i));
+                    }
+                }
+                biggestCard = validCards.get(0);
+                for (int i=0;i<validCards.size();i++){
+                    if((i<validCards.size()-1)){
+                        if(validCards.get(i).compareTo(validCards.get(i+1))>0){
+                            continue;
+                        }
+                        else{
+                            biggestCard=validCards.get(i+1);
+                        }
+                    }
+                    else {
+                        return biggestCard;
+                    }
+                }
+            }
+            else {
+                for (int i = 0; i < 4; i++) {
+                    if (cards.get(i).getSuit() == hokm) {
+                        counter++;
+                    }
+                }
+                if(counter==0){
+                    ArrayList<Card> validCards = new ArrayList<>();
+                    Card biggestCard;
+                    for (int i=0 ;i<4;i++){
+                        if(cards.get(i).getSuit()==base){
+                            validCards.add(cards.get(i));
+                        }
+                    }
+                    biggestCard = validCards.get(0);
+                    for (int i=0;i<validCards.size();i++){
+                        if((i<validCards.size()-1)){
+                            if(validCards.get(i).compareTo(validCards.get(i+1))>0){
+                                continue;
+                            }
+                            else{
+                                biggestCard=validCards.get(i+1);
+                            }
+                        }
+                        else {
+                            return biggestCard;
+                        }
+                    }
+                }
+                else if (counter == 1) {
+                    for (int i = 0; i < 4; i++) {
+                        if (cards.get(i).getSuit() == hokm) {
+                            return cards.get(i);
+                        }
+                    }
+                }
+                else {
+                    ArrayList<Card> cutterCards = new ArrayList<>();
+                    for(int i=0 ; i<4;i++){
+                        if(cards.get(i).getSuit()==hokm){
+                            cutterCards.add(cards.get(i));
+                        }
+                    }
+                    Card biggestCard = cutterCards.get(0);
+                    for (int i=0;i<cutterCards.size();i++){
+                        if((i<cutterCards.size()-1)){
+                            if(cutterCards.get(i).compareTo(cutterCards.get(i+1))>0){
+                                continue;
+                            }
+                            else{
+                                biggestCard=cutterCards.get(i+1);
+                            }
+                        }
+                        else {
+                            return biggestCard;
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            for (int i = 0; i <2; i++) {
+                if (cards.get(i).getSuit() == hokm) {
+                    counter++;
+                }
+            }
+            if (base==hokm){
+                if(counter==1){
+                    return cards.get(0);
+                }
+                else{
+                    if(cards.get(0).compareTo(cards.get(1))>0){
+                        return cards.get(0);
+                    }
+                    else{
+                        return cards.get(1);
+                    }
+                }
+            }
+            else{
+                if(counter==1){
+                    return cards.get(1);
+                }
+                else{
+                    if(cards.get(0).compareTo(cards.get(1))>0){
+                        return cards.get(0);
+                    }
+                    else{
+                        return cards.get(1);
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
