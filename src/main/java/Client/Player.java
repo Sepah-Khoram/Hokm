@@ -7,6 +7,7 @@ import java.util.List;
 public class Player extends Client implements Runnable {
     private String name;
     private List<Card> cards;
+    boolean isRuler;
 
     public Player(String name) {
         this.name = name;
@@ -42,11 +43,17 @@ public class Player extends Client implements Runnable {
                     // get cards from server
                     cards = (List<Card>) getInput().readObject();
 
+                    if (isRuler) {
+                        // show 5 first cards and ask for hokm
+                    }
                     // print cards
                     System.out.println("Cards in your hand:");
                     int count = 0;
                     for (Card card : cards)
                         System.out.printf("%d. %s%n", ++count, card);
+                } else if (serverMessage.equals("dealer")) {
+                    isRuler = true;
+                    System.out.println("You are dealer!");
                 }
             }
         } catch (IOException|ClassNotFoundException e) {
