@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class Game implements Runnable {
     private final Player[] players;
-    private UUID token;
+    private final UUID token;
     private final ExecutorService executorService;
     private final CopyOnWriteArrayList<Player> connectedPlayers;
     private boolean gameStarted;
@@ -26,10 +26,6 @@ public class Game implements Runnable {
         gameStarted = false;
 
         addPlayer(player); // add player 1
-    }
-
-    private String generateToken() {
-        return UUID.randomUUID().toString();
     }
 
     public synchronized void addPlayer(Player player) {
@@ -52,11 +48,7 @@ public class Game implements Runnable {
 
         Card[][] cards = GameService.divideCards(players.length); // devide cards btw players
         for (int i = 0; i < players.length; i++) {
-            try {
-                players[i].setCards(new ArrayList<>(Arrays.asList(cards[i]))); // set cards of every player
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            players[i].setCards(Arrays.asList(cards[i])); // set cards of every player
         }
 
         System.out.println("Game started with " + players.length + " players.");
@@ -73,6 +65,11 @@ public class Game implements Runnable {
         }
 
         // منطق بازی که باید در حین اجرای بازی انجام شود
+    }
+
+    @Override
+    public String toString() {
+        return players.length + " players: " + connectedPlayers.toString();
     }
 
     public int getNumberOfPlayers() {
