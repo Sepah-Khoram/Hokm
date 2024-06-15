@@ -47,6 +47,13 @@ public class Game implements Runnable {
     }
 
     private void startGame() {
+        for(int i =0 ;i<4;i++){
+            for (int j =i+1;j<3;j++){
+                if(players[i].getName().equals(players[j].getName())){
+                    players[j].setName(players[j].getName()+"1");
+                }
+            }
+        }
         /*
          implement check name
 

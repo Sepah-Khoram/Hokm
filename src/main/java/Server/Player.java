@@ -50,6 +50,10 @@ public class Player extends Client implements Runnable {
         System.out.println("Received data: " + data);
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public synchronized void sendData(Object data) {
         try {
