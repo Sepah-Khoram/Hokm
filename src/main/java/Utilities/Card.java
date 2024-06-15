@@ -1,7 +1,9 @@
 // class to represent a Card in a deck of cards
 package Utilities;
 
-public class Card implements Comparable<Card> {
+import java.io.Serializable;
+
+public class Card implements Comparable<Card>, Serializable {
     private final Face face;
     private final Suit suit;
 
@@ -20,6 +22,11 @@ public class Card implements Comparable<Card> {
             return this.face.getCode() - 14;
 
         return this.face.getCode() - card.face.getCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-5s of %-8s", this.face, this.suit);
     }
 
     public Suit getSuit() {
