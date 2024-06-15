@@ -2,10 +2,9 @@ package Client;
 
 import Utilities.Card;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Player extends Client {
+public class Player extends Client implements Runnable {
     private String name;
     private List<Card> cards;
 
@@ -13,20 +12,48 @@ public class Player extends Client {
         this.name = name;
     }
 
-    public Player() {
-        this("Unknown");
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
+    @Override
+    public void run() {
+        try {
+            // check player number and prompt
+            int countPlayers = (Integer) getInput().readObject();
+            if (countPlayers == 404) {
+                System.out.println("Not found any game!");
+                return;
+            }
+            System.out.println("You are player number " + countPlayers);
 
-    public List<Card> getCards() {
-        return cards;
-    }
+            // send name of the player to server
+            sendData("name: " + name);
 
-    public void setCards(List<Card> cards) {
-        this.cards = cards;
+            // prompt to wait for others
+            if (getNumberOfPlayers() != countPlayers)
+                System.out.println("Please wait for other players...");
+
+            while (true) {
+                // get server messages
+                String serverMessage = (String) getInput().readObject();
+
+                if (serverMessage.equals("cards:")) {
+                    // get cards from server
+                    cards = (List<Card>) getInput().readObject();
+
+                    // print cards
+                    System.out.println("Cards in your hand:");
+                    int count = 0;
+                    for (Card card : cards)
+                        System.out.printf("%d. %s%n", ++count, card);
+                }
+            }
+        } catch (IOException|ClassNotFoundException e) {
+            if (!getConnection().isConnected())
+                return;
+            e.printStackTrace();
+        }
     }
 
     public static void showWinSets() {
@@ -71,14 +98,6 @@ public class Player extends Client {
     }
 
     public void recommendCard() {
-        try {
-            getOutput().writeObject("recommendCard");
-            getOutput().flush();
-
-            Card response = (Card) getInput().readObject();
-            System.out.println("Recommended card: " + response);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        // recommand card should handle in client
     }
 }
