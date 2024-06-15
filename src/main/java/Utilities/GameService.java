@@ -26,15 +26,15 @@ public class GameService {
 
         if (numberOfPlayers == 2) {
             for (int i = 0, j = 0; i < 52; i += 4, j++) {
-                dividedList[0][i] = cards.get(j);
-                dividedList[1][i + 2] = cards.get(j);
+                dividedList[0][j] = cards.get(i);
+                dividedList[1][j] = cards.get(i + 2);
             }
         } else {
             for (int i = 0, j = 0; i < 52; i += 4, j++) {
-                dividedList[0][i] = cards.get(j);
-                dividedList[1][i] = cards.get(j);
-                dividedList[2][i] = cards.get(j);
-                dividedList[3][i] = cards.get(j);
+                dividedList[0][j] = cards.get(i);
+                dividedList[1][j] = cards.get(i + 1);
+                dividedList[2][j] = cards.get(i + 2);
+                dividedList[3][j] = cards.get(i + 3);
             }
         }
 
