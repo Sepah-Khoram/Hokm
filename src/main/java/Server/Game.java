@@ -1,9 +1,9 @@
 package Server;
 
-import Utilities.GameService;
 import Utilities.Card;
+import Utilities.GameService;
+import Utilities.Set;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -16,14 +16,17 @@ public class Game implements Runnable {
     private final UUID token;
     private final ExecutorService executorService;
     private final CopyOnWriteArrayList<Player> connectedPlayers;
-    private boolean gameStarted;
+    private final ArrayList<Set> sets;
+    private Set currentSet;
+    private boolean isGameStarted;
 
     public Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
         token = UUID.randomUUID();
         connectedPlayers = new CopyOnWriteArrayList<>();
+        sets = new ArrayList<>();
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
-        gameStarted = false;
+        isGameStarted = false;
 
         addPlayer(player); // add player 1
     }
@@ -36,7 +39,7 @@ public class Game implements Runnable {
             player.setPlayerNumber(connectedPlayers.size()); // set player number
             executorService.execute(player);
 
-            if (connectedPlayers.size() == players.length) {
+            if (connectedPlayers.size() == getNumberOfPlayers()) {
                 executorService.shutdown();
                 startGame();
             }
@@ -44,19 +47,23 @@ public class Game implements Runnable {
     }
 
     private void startGame() {
-        gameStarted = true;
+        /*
+         implement check name
 
-        Card[][] cards = GameService.divideCards(players.length); // devide cards btw players
-        for (int i = 0; i < players.length; i++) {
-            players[i].setCards(Arrays.asList(cards[i])); // set cards of every player
+        */
+        System.out.println("Game " + token + " started with " + players.length + " players.");
+        isGameStarted = true;
+    }
+
+    private synchronized void sendData(Object data) {
+        for (Player player : players) {
+            player.sendData(data);
         }
-
-        System.out.println("Game started with " + players.length + " players.");
     }
 
     @Override
     public void run() {
-        while (!gameStarted) {
+        while (!isGameStarted) {
             try {
                 Thread.sleep(100); // Wait for a short period before checking again
             } catch (InterruptedException e) {
@@ -64,7 +71,20 @@ public class Game implements Runnable {
             }
         }
 
-        // منطق بازی که باید در حین اجرای بازی انجام شود
+        while (!isGameOver()) {
+            // new set
+            sets.add(new Set(players));
+            currentSet = sets.getLast();
+
+            sendData("set: " + sets.size()); // send set number to the clients
+            sendData("ruler: " + currentSet.getRuler().getName()); // get ruler of this set
+
+            // devide cards btw users and send them to users
+            Card[][] cards = GameService.divideCards(getNumberOfPlayers());
+            for (int i = 0; i < players.length; i++) {
+                players[i].setCards(Arrays.asList(cards[i]));
+            }
+        }
     }
 
     @Override
@@ -72,12 +92,17 @@ public class Game implements Runnable {
         return players.length + " players: " + connectedPlayers.toString();
     }
 
+    private boolean isGameOver() {
+        // codition to check if game is game overed
+        return false;
+    }
+
     public int getNumberOfPlayers() {
         return players.length;
     }
 
     public boolean isStarted() {
-        return gameStarted;
+        return isGameStarted;
     }
 
     public UUID getToken() {

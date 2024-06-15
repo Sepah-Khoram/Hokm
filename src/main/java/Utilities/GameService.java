@@ -1,5 +1,6 @@
 package Utilities;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +15,7 @@ public class GameService {
         }
 
         List<Card> cards = new ArrayList<>(52); // deck of cards
-
+        SecureRandom randomNumber = new SecureRandom(); // for generate random number
         int count = 0; // number of cards
 
         // populate deck with Card objects
@@ -22,9 +23,11 @@ public class GameService {
             for (Card.Face face : Card.Face.values())
                 cards.add(count++, new Card(face, suit));
 
-        Collections.shuffle(cards); // shuffle deck
+        for (int i = 0; i < randomNumber.nextInt(4); i++) {
+            Collections.shuffle(cards); // shuffle deck
+        }
 
-        Card[][] dividedList = new Card[numberOfPlayers][13];
+        Card[][] dividedList = new Card[numberOfPlayers][13]; // 2D array for cards
 
         if (numberOfPlayers == 2) {
             for (int i = 0, j = 0; i < 52; i += 4, j++) {
@@ -39,7 +42,6 @@ public class GameService {
                 dividedList[3][j] = cards.get(i + 3);
             }
         }
-
         return dividedList;
     }
     public static Card topCard (ArrayList<Card> cards, Card.Suit hokm){
