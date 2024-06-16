@@ -9,7 +9,7 @@ import java.util.*;
 public class Player extends Client implements Runnable {
     private final String name;
     private List<Card> cards;
-    private final Map<String, String> playerInGame; // <Name, Id>
+    private final Map<String, String> playerInGame; // <Id, Name>
     boolean isRuler;
 
     public Player(String name, Client client) {
@@ -30,7 +30,7 @@ public class Player extends Client implements Runnable {
             System.out.println("You are player number " + countPlayers);
 
             // send name of the player to server
-            sendData("name: " + name);
+            sendData("name:" + name);
 
             // prompt to wait for others
             if (getNumberOfPlayers() != countPlayers) {
@@ -59,7 +59,7 @@ public class Player extends Client implements Runnable {
                         System.out.println("You are ruler!");
                         isRuler = true;
                     } else {
-                        System.out.println(playerInGame.get(rulerId) + " is ruler.");
+                        System.out.println(playerInGame.get(rulerId).trim() + " is ruler.");
                         isRuler = false;
                     }
                 } else if (serverMessage.startsWith("set:")) {
@@ -130,7 +130,7 @@ public class Player extends Client implements Runnable {
         System.out.println("Cards in your hand:");
         int count = 0;
         for (Card card : cards)
-            System.out.printf("%d. %s%n", ++count, card);
+            System.out.printf("%2d. %s%n", ++count, card);
     }
 
     public Card putCard(Card card) {
