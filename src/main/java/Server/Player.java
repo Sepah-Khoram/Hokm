@@ -40,9 +40,9 @@ public class Player extends Client implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error handling player: " + e.getMessage());
         } catch (BrokenBarrierException e) {
-            System.err.println("Error waiting at barrier: " + e.getMessage());;
+            System.err.println("Error waiting at barrier: " + e.getMessage());
         } catch (InterruptedException e) {
-            System.err.println("Error thread interrupted: " + e.getMessage());;
+            System.err.println("Error thread interrupted: " + e.getMessage());
         } finally {
             closeConnection();
         }
