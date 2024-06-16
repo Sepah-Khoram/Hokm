@@ -1,11 +1,13 @@
 package Server;
 
 import Utilities.Card;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BrokenBarrierException;
 
 public class Player extends Client implements Runnable {
     private List<Card> cards = new ArrayList<>();
@@ -26,12 +28,21 @@ public class Player extends Client implements Runnable {
     public void run() {
         try {
             sendData(playerNumber); // send player number to player
+            // give player name
+            Object data = getInput().readObject();
+            process(data);
+            game.getBarrier().await();
+
             while (connected) {
-                Object data = getInput().readObject();
+                data = getInput().readObject();
                 process(data); // proccessing datas
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error handling player: " + e.getMessage());
+        } catch (BrokenBarrierException e) {
+            System.err.println("Error waiting at barrier: " + e.getMessage());;
+        } catch (InterruptedException e) {
+            System.err.println("Error thread interrupted: " + e.getMessage());;
         } finally {
             closeConnection();
         }
@@ -42,10 +53,10 @@ public class Player extends Client implements Runnable {
         return name;
     }
 
-    private void process(Object data) {
+    private void process(@NotNull Object data) {
         // proccesing datas
         if (data.toString().startsWith("name:")) {
-            name = data.toString().substring(6);
+            name = data.toString().substring(5);
         } else if (data.toString().startsWith("rule:")) {
             game.setRule(Card.Suit.valueOf(data.toString().substring(5)));
         }
@@ -83,5 +94,9 @@ public class Player extends Client implements Runnable {
 
     public UUID getId() {
         return Id;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
 }
