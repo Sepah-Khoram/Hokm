@@ -10,15 +10,15 @@ import java.util.UUID;
 public class Player extends Client implements Runnable {
     private List<Card> cards = new ArrayList<>();
     private String name;
-    private final UUID playerId;
+    private final UUID Id;
     private boolean connected;
     private int playerNumber;
 
     public Player(Client client) throws IOException {
         super(client);
         this.connected = true;
-        this.playerId = UUID.randomUUID();
-        sendData(playerId);
+        this.Id = UUID.randomUUID();
+        sendData(Id);
     }
 
     @Override
@@ -76,5 +76,9 @@ public class Player extends Client implements Runnable {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getId() {
+        return Id;
     }
 }
