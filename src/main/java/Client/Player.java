@@ -1,12 +1,15 @@
 package Client;
 
 import Utilities.Card;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class Player extends Client implements Runnable {
     private String name;
     private List<Card> cards;
+    private Map<String, String> playerInGame; // <Name, Id>
     boolean isRuler;
 
     public Player(String name) {
@@ -32,14 +35,25 @@ public class Player extends Client implements Runnable {
             sendData("name: " + name);
 
             // prompt to wait for others
-            if (getNumberOfPlayers() != countPlayers)
-                System.out.println("Please wait for other players...");
+            if (getNumberOfPlayers() != countPlayers) {
+                if (getNumberOfPlayers() == 2 || countPlayers == 3)
+                    System.out.println("Please wait for other player...");
+                else
+                    System.out.println("Please wait for other players...");
+            }
 
             while (true) {
                 // get server messages
                 String serverMessage = (String) getInput().readObject();
 
-                if (serverMessage.equals("cards:")) {
+                if (serverMessage.equals("players:")) {
+                    // save id and name of players in the game
+                    for (int i = 0; i < getNumberOfPlayers(); i++) {
+                        String message = (String) getInput().readObject();
+                        String[] temp = message.split(":");
+                        playerInGame.put(temp[0], temp[1]);
+                    }
+                } else if (serverMessage.equals("cards:")) {
                     // get cards from server
                     cards = (List<Card>) getInput().readObject();
 
@@ -51,9 +65,18 @@ public class Player extends Client implements Runnable {
                     int count = 0;
                     for (Card card : cards)
                         System.out.printf("%d. %s%n", ++count, card);
-                } else if (serverMessage.equals("dealer")) {
-                    isRuler = true;
-                    System.out.println("You are dealer!");
+                } else if (serverMessage.startsWith("ruler:")) {
+                    String rulerId = serverMessage.substring(6);
+                    if (getId().equals(rulerId)) {
+                        System.out.println("You are ruler!");
+                        isRuler = true;
+                    } else {
+                        System.out.println(playerInGame.get(rulerId) + " is ruler.");
+                        isRuler = false;
+                    }
+                } else if (serverMessage.startsWith("set:")) {
+                    int numberOfSet = Integer.parseInt(serverMessage.substring(4));
+                    System.out.println("Set " + numberOfSet + " has started.");
                 }
             }
         } catch (IOException|ClassNotFoundException e) {
