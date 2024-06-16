@@ -77,6 +77,10 @@ public class Player extends Client implements Runnable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setGame(Game game) {
         this.game = game;
     }

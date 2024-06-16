@@ -4,6 +4,7 @@ import Utilities.Card;
 import Utilities.GameService;
 import Utilities.Set;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +47,21 @@ public class Game implements Runnable {
             }
         }
     }
+    private void checkPlayerNames() {
+        ArrayList<String> uniquePlayerNames = new ArrayList<>();
+        for (Player player : players) {
+            String enteredName = player.getName();
+            String newName = enteredName;
 
+            int counter = 1;
+            while (uniquePlayerNames.contains(newName)) {
+                newName = enteredName + counter;
+                counter++;
+            }
+            uniquePlayerNames.add(newName);
+            player.setName(newName);
+        }
+    }
     private void startGame() {
         /*
          implement check name
