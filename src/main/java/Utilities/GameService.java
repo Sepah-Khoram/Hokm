@@ -2,8 +2,11 @@ package Utilities;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static Utilities.Card.Suit.*;
 
 public class GameService {
     public static Card[][] divideCards(int numberOfPlayers) throws IllegalArgumentException {
@@ -42,159 +45,20 @@ public class GameService {
         }
         return dividedList;
     }
-
     public static Card topCard(ArrayList<Card> cards, Card.Suit hokm) {
         Card.Suit base = cards.get(0).getSuit();
-        int counter = 0;
-        if (cards.size() == 4) {
-            if (base == hokm) {
-                ArrayList<Card> validCards = new ArrayList<>();
-                Card biggestCard;
-                for (int i = 0; i < 4; i++) {
-                    if (cards.get(i).getSuit() == hokm) {
-                        validCards.add(cards.get(i));
-                    }
-                }
-                biggestCard = validCards.get(0);
-                for (int i = 0; i < validCards.size(); i++) {
-                    if ((i < validCards.size() - 1)) {
-                        if (validCards.get(i).compareTo(validCards.get(i + 1)) > 0) {
-                            continue;
-                        } else {
-                            biggestCard = validCards.get(i + 1);
-                        }
-                    } else {
-                        return biggestCard;
-                    }
-                }
-            } else {
-                for (int i = 0; i < 4; i++) {
-                    if (cards.get(i).getSuit() == hokm) {
-                        counter++;
-                    }
-                }
-                if (counter == 0) {
-                    ArrayList<Card> validCards = new ArrayList<>();
-                    Card biggestCard;
-                    for (int i = 0; i < 4; i++) {
-                        if (cards.get(i).getSuit() == base) {
-                            validCards.add(cards.get(i));
-                        }
-                    }
-                    biggestCard = validCards.get(0);
-                    for (int i = 0; i < validCards.size(); i++) {
-                        if ((i < validCards.size() - 1)) {
-                            if (validCards.get(i).compareTo(validCards.get(i + 1)) > 0) {
-                                continue;
-                            } else {
-                                biggestCard = validCards.get(i + 1);
-                            }
-                        } else {
-                            return biggestCard;
-                        }
-                    }
-                } else if (counter == 1) {
-                    for (int i = 0; i < 4; i++) {
-                        if (cards.get(i).getSuit() == hokm) {
-                            return cards.get(i);
-                        }
-                    }
-                } else {
-                    ArrayList<Card> cutterCards = new ArrayList<>();
-                    for (int i = 0; i < 4; i++) {
-                        if (cards.get(i).getSuit() == hokm) {
-                            cutterCards.add(cards.get(i));
-                        }
-                    }
-                    Card biggestCard = cutterCards.get(0);
-                    for (int i = 0; i < cutterCards.size(); i++) {
-                        if ((i < cutterCards.size() - 1)) {
-                            if (cutterCards.get(i).compareTo(cutterCards.get(i + 1)) > 0) {
-                                continue;
-                            } else {
-                                biggestCard = cutterCards.get(i + 1);
-                            }
-                        } else {
-                            return biggestCard;
-                        }
-                    }
-                }
-            }
-        } else if (cards.size() == 2) {
-            for (int i = 0; i < 2; i++) {
-                if (cards.get(i).getSuit() == hokm) {
-                    counter++;
-                }
-            }
-            if (base == hokm) {
-                if (counter == 1) {
-                    return cards.get(0);
-                } else {
-                    if (cards.get(0).compareTo(cards.get(1)) > 0) {
-                        return cards.get(0);
-                    } else {
-                        return cards.get(1);
-                    }
-                }
-            } else {
-                if (counter == 1) {
-                    return cards.get(1);
-                } else {
-                    if (cards.get(0).compareTo(cards.get(1)) > 0) {
-                        return cards.get(0);
-                    } else {
-                        return cards.get(1);
-                    }
-                }
-            }
-        } else {                                                                              // if 3 cards
-            for (int i = 0; i < 3; i++) {
-                if (cards.get(i).getSuit() == hokm) {
-                    counter++;
-                }
-            }
-            if (cards.get(0).getSuit() == hokm) {
-                ArrayList<Card> validCards = new ArrayList<>();
-                Card biggestCard;
-                for (int i = 0; i < 4; i++) {
-                    if (cards.get(i).getSuit() == hokm) {
-                        validCards.add(cards.get(i));
-                    }
-                }
-                biggestCard = validCards.get(0);
-                for (int i = 0; i < validCards.size(); i++) {
-                    if ((i < validCards.size() - 1)) {
-                        if (validCards.get(i).compareTo(validCards.get(i + 1)) > 0) {
-                            continue;
-                        } else {
-                            biggestCard = validCards.get(i + 1);
-                        }
-                    } else {
-                        return biggestCard;
-                    }
-                }
-            } else if (counter == 2) {
-                if (cards.get(1).compareTo(cards.get(2)) > 0) {
-                    return cards.get(1);
-                } else {
-                    return cards.get(2);
-                }
-            } else if (counter == 1) {
-                for (int i = 0; i < 4; i++) {
-                    if (cards.get(i).getSuit() == hokm) {
-                        return cards.get(i);
-                    }
-                }
-            }
-            return null;
+        if (containCard(cards,hokm)){
+            return Collections.max(validcard(cards,hokm));
         }
-        return null;
+        else{
+            return Collections.max(validcard(cards,base));
+        }
     }
 
     public static Card suggestedCard (ArrayList<Card> playedCards,ArrayList<Card> myCards,Card.Suit hokm){
         Card.Suit base = playedCards.get(0).getSuit();
-        if((playedCards.size()==1) && (containCard(myCards,playedCards.get(0).getSuit())) && (haveBetterCard(myCards,playedCards.get(0)))){
-            return bestCard(myCards,playedCards.get(0).getSuit());
+        if((playedCards.size()==1) && (containCard(myCards,base)) && (haveBetterCard(myCards,playedCards.get(0)))){
+            return bestCard(myCards,base);
         }
         else if((playedCards.size()==2) && (!containCard(myCards,base)) && (containCard(playedCards,hokm)) && (containCard(myCards,hokm)) && (bestCard(myCards,hokm).compareTo(playedCards.get(1))<0) && (base!= hokm) && (playedCards.get(1).getSuit()==hokm)){
             return worstCard2(myCards,base,playedCards.get(1).getSuit());
@@ -228,104 +92,62 @@ public class GameService {
         }
         return null;
     }
-
     public static Card bestCard(ArrayList<Card> cardarray, Card.Suit cardType) {
+        return Collections.max(validcard(cardarray,cardType));
+    }
+    public static Card worstCard1(ArrayList<Card> cardarray, Card.Suit cardType1,Card.Suit cardType2){
         ArrayList<Card> validCards = new ArrayList<>();
-        for (int i = 0; i < cardarray.size(); i++) {
-            if (cardarray.get(i).getSuit() == cardType) {
-                validCards.add(cardarray.get(i));
+        for (Card card:cardarray){
+            if ((card.getSuit() == cardType1)||(card.getSuit() == cardType2)) {
+                validCards.add(card);
             }
         }
         if (validCards.isEmpty()) {
             return null;
-        } else {
-            Card biggestCard;
-            biggestCard = validCards.get(0);
-            for (int i = 0; i < validCards.size(); i++) {
-                if ((i < validCards.size() - 1)) {
-                    if (validCards.get(i).compareTo(validCards.get(i + 1)) > 0) {
-                        continue;
-                    } else {
-                        biggestCard = validCards.get(i + 1);
-                    }
-                } else {
-                    return biggestCard;
-                }
-            }
         }
-        return null;
+        return Collections.min(validCards);
     }
 
-    public static Card worstCard1(ArrayList<Card> cardarray, Card.Suit cardType1, Card.Suit cardType2){
-        ArrayList<Card> validCards = new ArrayList<>();
-        for (int i = 0; i < cardarray.size(); i++) {
-            if ((cardarray.get(i).getSuit() == cardType1)||(cardarray.get(i).getSuit() == cardType2)) {
-                validCards.add(cardarray.get(i));
-            }
+public static boolean containCard (ArrayList<Card> myCard,Card.Suit cardType){
+    for (Card card:myCard){
+        if (card.getSuit() == cardType) {
+            return true;
         }
-        if (validCards.isEmpty()) {
-            return null;
-        } else {
-            Card weakestCard;
-            weakestCard = validCards.get(0);
-            for (int i = 0; i < validCards.size(); i++) {
-                if ((i < validCards.size() - 1)) {
-                    if (validCards.get(i).compareTo(validCards.get(i + 1)) < 0) {
-                        continue;
-                    } else {
-                        weakestCard = validCards.get(i + 1);
-                    }
-                } else {
-                    return weakestCard;
-                }
-            }
-        }
-        return null;
     }
+    return false;
+}
 
-    public static boolean containCard (ArrayList<Card> myCard,Card.Suit cardType){
-        for (Card card : myCard) {
-            if (card.getSuit() == cardType)
-                return true; // contain at least one object
+public static boolean haveBetterCard (ArrayList<Card> myCard, Card checkCard){
+        if(bestCard(myCard, checkCard.getSuit()).compareTo(checkCard)>0){
+            return true;
         }
-        return false; // no card found
-    }
-
-    public static boolean haveBetterCard (ArrayList<Card> myCard, Card checkCard){
-            if(bestCard(myCard, checkCard.getSuit())!=null){
-                return true;
-            }
-            else{
-                return false;
-            }
-    }
+        else{
+            return false;
+        }
+}
 
     public static Card worstCard2(ArrayList<Card> cardarray, Card.Suit cardType1,Card.Suit cardType2){
         ArrayList<Card> validCards = new ArrayList<>();
-        for (int i = 0; i < cardarray.size(); i++) {
-            if ((cardarray.get(i).getSuit() != cardType1)&&(cardarray.get(i).getSuit() != cardType2)) {
-                validCards.add(cardarray.get(i));
+        for (Card card : cardarray) {
+            if ((card.getSuit() != cardType1) && (card.getSuit() != cardType2)) {
+                validCards.add(card);
             }
         }
         if (validCards.isEmpty()) {
             return null;
         } else {
-            Card weakestCard;
-            weakestCard = validCards.get(0);
-            for (int i = 0; i < validCards.size(); i++) {
-                if ((i < validCards.size() - 1)) {
-                    if (validCards.get(i).compareTo(validCards.get(i + 1)) < 0) {
-                        continue;
-                    } else {
-                        weakestCard = validCards.get(i + 1);
-                    }
-                } else {
-                    return weakestCard;
-                }
+           return Collections.min(validCards);
+        }
+    }    // do not contain that types
+    public static ArrayList<Card> validcard(ArrayList<Card> cards , Card.Suit cardType){
+        ArrayList<Card> validCards = new ArrayList<>();
+        for (Card card:cards){
+            if (card.getSuit() == cardType) {
+                validCards.add(card);
             }
         }
-        return null;
-    }    // do not contain that types
+        return validCards;
+    }
 
 }
 
