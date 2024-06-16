@@ -3,9 +3,8 @@ package Client;
 import Utilities.Card;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Map;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class Player extends Client implements Runnable {
     private String name;
@@ -55,49 +54,7 @@ public class Player extends Client implements Runnable {
                         playerInGame.put(temp[0], temp[1]);
                     }
                 } else if (serverMessage.equals("cards:")) {
-                    // get cards from server
-                    cards = (List<Card>) getInput().readObject();
-
-                    if (isRuler) {
-                        for(int i = 0; i<5 && i<cards.size(); i++){
-                            System.out.printf("%d. %s%n", i + 1, cards.get(i));
-                        }
-                        Scanner scanner = new Scanner(System.in);
-                        System.out.println("Ple>ase choose your hokm : ");
-                        System.out.println("1-->> Hearts");
-                        System.out.println("2-->> Diamonds");
-                        System.out.println("3-->> Clubs");
-                        System.out.println("4-->> Spades");
-                        String hokmChoice = scanner.nextLine();
-                        int choice = scanner.nextInt();
-                        switch (choice) {
-                            case 1:
-                                hokmChoice = "Hearts";
-                                break;
-                            case 2:
-                                hokmChoice = "Diamonds";
-                                break;
-                            case 3:
-                                hokmChoice = "Clubs";
-                            case 4:
-                                hokmChoice = "Spades";
-                                break;
-                            default:
-                                System.out.println("Invalid choice!");
-                                 hokmChoice = cards.get(2).getSuit().name();
-                                try {
-                                    getOutput().writeObject("Hokm: " + hokmChoice);
-                                    getOutput().flush();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                        }
-                    }
-                    // print cards
-                    System.out.println("Cards in your hand:");
-                    int count = 0;
-                    for (Card card : cards)
-                        System.out.printf("%d. %s%n", ++count, card);
+                    getCards();
                 } else if (serverMessage.startsWith("ruler:")) {
                     String rulerId = serverMessage.substring(6);
                     if (getId().equals(rulerId)) {
@@ -117,6 +74,58 @@ public class Player extends Client implements Runnable {
                 return;
             e.printStackTrace();
         }
+    }
+
+    private void getCards() throws IOException, ClassNotFoundException {
+        // get cards from server
+        cards = (List<Card>) getInput().readObject();
+
+        if (isRuler) {
+            // show 5 first cards of the player
+            System.out.println("Your first five cards: ");
+            for(int i = 0; i < 5; i++) {
+                System.out.printf("%d. %s%n", i + 1, cards.get(i));
+            }
+
+            // prompt to user to select rule
+            Scanner input = new Scanner(System.in);
+            System.out.println("please choose rule : ");
+            System.out.println("1-->> Hearts");
+            System.out.println("2-->> Diamonds");
+            System.out.println("3-->> Clubs");
+            System.out.println("4-->> Spades");
+            System.out.println();
+            System.out.print(">>> ");
+
+            // get rule from user
+            Card.Suit rule = null;
+            for (int i = 0; i < 3; i++) {
+                try {
+                    int choice = input.nextInt();
+                    if (1 <= choice  && choice <= 4) {
+                        rule = Card.Suit.values()[choice - 1]; // obtain rule
+                        System.out.println("Ok. Hokm is " + rule + "."); // print rule
+                        break;
+                    } else
+                        throw new InputMismatchException();
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input! please enter a number between 1 to 4.");
+                } // end of try-catch
+            } // end of if
+
+            // if user didn't choose it correctly
+            if (rule == null) {
+                System.out.println("3 incorrect input. Rule will choose randomly.");
+                rule = Card.Suit.values()[new SecureRandom().nextInt(0, 4)];
+            }
+
+            sendData("rule:" + rule.name()); // send rule to server
+        }
+        // print cards
+        System.out.println("Cards in your hand:");
+        int count = 0;
+        for (Card card : cards)
+            System.out.printf("%d. %s%n", ++count, card);
     }
 
     public static void showWinSets() {
