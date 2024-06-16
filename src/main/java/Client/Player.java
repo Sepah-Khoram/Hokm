@@ -7,17 +7,15 @@ import java.security.SecureRandom;
 import java.util.*;
 
 public class Player extends Client implements Runnable {
-    private String name;
+    private final String name;
     private List<Card> cards;
-    private Map<String, String> playerInGame; // <Name, Id>
+    private final Map<String, String> playerInGame; // <Name, Id>
     boolean isRuler;
 
-    public Player(String name) {
+    public Player(String name, Client client) {
+        super(client);
         this.name = name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        playerInGame = new HashMap<>();
     }
 
     @Override
@@ -86,50 +84,53 @@ public class Player extends Client implements Runnable {
             for(int i = 0; i < 5; i++) {
                 System.out.printf("%d. %s%n", i + 1, cards.get(i));
             }
-
-            // prompt to user to select rule
-            Scanner input = new Scanner(System.in);
-            System.out.println("please choose rule : ");
-            System.out.println("1-->> Hearts");
-            System.out.println("2-->> Diamonds");
-            System.out.println("3-->> Clubs");
-            System.out.println("4-->> Spades");
-            System.out.println();
-            System.out.print(">>> ");
-
-            // get rule from user
-            Card.Suit rule = null;
-            for (int i = 0; i < 3; i++) {
-                try {
-                    int choice = input.nextInt();
-                    if (1 <= choice  && choice <= 4) {
-                        rule = Card.Suit.values()[choice - 1]; // obtain rule
-                        System.out.println("Ok. Hokm is " + rule + "."); // print rule
-                        break;
-                    } else
-                        throw new InputMismatchException();
-                } catch (InputMismatchException e) {
-                    System.out.println("Invalid input! please enter a number between 1 to 4.");
-                } // end of try-catch
-            } // end of if
-
-            // if user didn't choose it correctly
-            if (rule == null) {
-                System.out.println("3 incorrect input. Rule will choose randomly.");
-                rule = Card.Suit.values()[new SecureRandom().nextInt(0, 4)];
-            }
-
-            sendData("rule:" + rule.name()); // send rule to server
+            getRule();
         }
         // print cards
+        showCards();
+    }
+
+    private void getRule() {
+        // prompt to user to select rule
+        Scanner input = new Scanner(System.in);
+        System.out.println("please choose rule : ");
+        System.out.println("1-->> Hearts");
+        System.out.println("2-->> Diamonds");
+        System.out.println("3-->> Clubs");
+        System.out.println("4-->> Spades");
+        System.out.println();
+        System.out.print(">>> ");
+
+        // get rule from user
+        Card.Suit rule = null;
+        for (int i = 0; i < 3; i++) {
+            try {
+                int choice = input.nextInt();
+                if (1 <= choice  && choice <= 4) {
+                    rule = Card.Suit.values()[choice - 1]; // obtain rule
+                    System.out.println("Ok. Rule is " + rule + "."); // print rule
+                    break;
+                } else
+                    throw new InputMismatchException();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input! please enter a number between 1 to 4.");
+            } // end of try-catch
+        } // end of if
+
+        // if user didn't choose it correctly
+        if (rule == null) {
+            System.out.println("3 incorrect input. Rule will choose randomly.");
+            rule = Card.Suit.values()[new SecureRandom().nextInt(0, 4)];
+        }
+
+        sendData("rule:" + rule.name()); // send rule to server
+    }
+
+    public void showCards() {
         System.out.println("Cards in your hand:");
         int count = 0;
         for (Card card : cards)
             System.out.printf("%d. %s%n", ++count, card);
-    }
-
-    public static void showWinSets() {
-
     }
 
     public Card putCard(Card card) {
@@ -152,24 +153,5 @@ public class Player extends Client implements Runnable {
             System.out.println("You have not put a card");
             return null;
         }
-    }
-
-    public void showCards() {
-        try {
-            getOutput().writeObject("showCards");
-            getOutput().flush();
-
-            List<Card> response = (List<Card>) getInput().readObject();
-            System.out.println("Cards in your hand:");
-            for (Card card : response) {
-                System.out.println(card);
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void recommendCard() {
-        // recommand card should handle in client
     }
 }
