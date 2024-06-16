@@ -9,6 +9,7 @@ public class Set {
     private Team winner;
     private final Player ruler;
     private int round;
+    private Card.Suit rule;
 
     public Set(Player[] players) {
         round = 0;
@@ -18,5 +19,9 @@ public class Set {
 
     public Player getRuler() {
         return ruler;
+    }
+
+    public void setRule(Card.Suit rule) {
+        this.rule = rule;
     }
 }
