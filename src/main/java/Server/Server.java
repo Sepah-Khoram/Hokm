@@ -1,5 +1,7 @@
 package Server;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.io.IOException;
@@ -68,7 +70,7 @@ public class Server {
         }
     } // end method execute
 
-    private void handleCommand(String command, Client client) {
+    private void handleCommand(@NotNull String command, Client client) {
         try {
             if (command.startsWith("create:")) {
                 int number = Integer.parseInt(command.substring(7));
@@ -103,9 +105,6 @@ public class Server {
             Game game = new Game(player, numberOfPlayers); // create new game
             games.add(game); // add a game to arraylist
             gameExecutor.execute(game); // assign new thread to this game and execute it
-
-            // information about logging
-            logger.info("Created a new game with " + numberOfPlayers + " players.");
         } catch (SocketException e) {
             logger.warning("SocketException in createNewGame: " + e.getMessage());
             closeConnection(client); // close client
