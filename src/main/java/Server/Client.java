@@ -1,5 +1,7 @@
 package Server;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,7 +17,7 @@ public class Client {
     private ObjectOutputStream output;
     private ObjectInputStream input;
 
-    public Client(Socket connection) {
+    public Client(@NotNull Socket connection) {
         try {
             this.connection = connection;
             this.output = new ObjectOutputStream(connection.getOutputStream());
@@ -27,7 +29,7 @@ public class Client {
         }
     }
 
-    protected Client(Client client) {
+    protected Client(@NotNull Client client) {
         connection = client.getConnection();
         output = client.getOutput();
         input = client.getInput();
