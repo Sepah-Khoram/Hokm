@@ -136,4 +136,8 @@ public class Client {
 
         this.numberOfPlayers = numberOfPlayer;
     }
+
+    public String getId() {
+        return id;
+    }
 }
