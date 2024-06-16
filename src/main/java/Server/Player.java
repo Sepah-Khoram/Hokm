@@ -13,6 +13,7 @@ public class Player extends Client implements Runnable {
     private final UUID Id;
     private boolean connected;
     private int playerNumber;
+    private Game game;
 
     public Player(Client client) throws IOException {
         super(client);
@@ -45,13 +46,11 @@ public class Player extends Client implements Runnable {
         // proccesing datas
         if (data.toString().startsWith("name:")) {
             name = data.toString().substring(6);
+        } else if (data.toString().startsWith("rule:")) {
+            game.setRule(Card.Suit.valueOf(data.toString().substring(5)));
         }
 
         System.out.println("Received data: " + data);
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -76,6 +75,10 @@ public class Player extends Client implements Runnable {
 
     public String getName() {
         return name;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public UUID getId() {
