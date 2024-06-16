@@ -4,6 +4,7 @@ import Utilities.Card;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Map;
 
 public class Player extends Client implements Runnable {
@@ -58,7 +59,39 @@ public class Player extends Client implements Runnable {
                     cards = (List<Card>) getInput().readObject();
 
                     if (isRuler) {
-                        // show 5 first cards and ask for hokm
+                        for(int i = 0; i<5 && i<cards.size(); i++){
+                            System.out.printf("%d. %s%n", i + 1, cards.get(i));
+                        }
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.println("Ple>ase choose your hokm : ");
+                        System.out.println("1-->> Hearts");
+                        System.out.println("2-->> Diamonds");
+                        System.out.println("3-->> Clubs");
+                        System.out.println("4-->> Spades");
+                        String hokmChoice = scanner.nextLine();
+                        int choice = scanner.nextInt();
+                        switch (choice) {
+                            case 1:
+                                hokmChoice = "Hearts";
+                                break;
+                            case 2:
+                                hokmChoice = "Diamonds";
+                                break;
+                            case 3:
+                                hokmChoice = "Clubs";
+                            case 4:
+                                hokmChoice = "Spades";
+                                break;
+                            default:
+                                System.out.println("Invalid choice!");
+                                 hokmChoice = cards.get(2).getSuit().name();
+                                try {
+                                    getOutput().writeObject("Hokm: " + hokmChoice);
+                                    getOutput().flush();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                        }
                     }
                     // print cards
                     System.out.println("Cards in your hand:");
