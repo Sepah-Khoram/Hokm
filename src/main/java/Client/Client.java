@@ -1,6 +1,7 @@
 package Client;
 
 import Server.Game;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,7 +19,7 @@ public class Client {
 
     public Client() {}
 
-    protected Client(Client client) {
+    protected Client(@NotNull Client client) {
         connection = client.getConnection();
         output = client.getOutput();
         input = client.getInput();
@@ -71,12 +72,12 @@ public class Client {
         return true;
     }
 
-    public boolean joinGame(String host, UUID token) {
+    public boolean joinGame(String host, @NotNull UUID token) {
         System.out.println("joining game..."); // prompt
 
         try {
             connectionTo(host);
-            sendData("join token:" + token.toString());
+            sendData("join token:" + token);
 
             // get player id
             id = input.readObject().toString();
