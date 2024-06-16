@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static Utilities.Card.Suit.*;
-
 public class GameService {
     public static Card[][] divideCards(int numberOfPlayers) throws IllegalArgumentException {
         if (numberOfPlayers != 2 && numberOfPlayers != 4) {
@@ -44,6 +42,7 @@ public class GameService {
         }
         return dividedList;
     }
+
     public static Card topCard(ArrayList<Card> cards, Card.Suit hokm) {
         Card.Suit base = cards.get(0).getSuit();
         int counter = 0;
@@ -229,6 +228,7 @@ public class GameService {
         }
         return null;
     }
+
     public static Card bestCard(ArrayList<Card> cardarray, Card.Suit cardType) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (int i = 0; i < cardarray.size(); i++) {
@@ -255,7 +255,8 @@ public class GameService {
         }
         return null;
     }
-    public static Card worstCard1(ArrayList<Card> cardarray, Card.Suit cardType1,Card.Suit cardType2){
+
+    public static Card worstCard1(ArrayList<Card> cardarray, Card.Suit cardType1, Card.Suit cardType2){
         ArrayList<Card> validCards = new ArrayList<>();
         for (int i = 0; i < cardarray.size(); i++) {
             if ((cardarray.get(i).getSuit() == cardType1)||(cardarray.get(i).getSuit() == cardType2)) {
@@ -282,29 +283,22 @@ public class GameService {
         return null;
     }
 
-public static boolean containCard (ArrayList<Card> myCard,Card.Suit cardType){
-    ArrayList<Card> validCards = new ArrayList<>();
-    for (int i = 0; i < myCard.size(); i++) {
-        if (myCard.get(i).getSuit() == cardType) {
-            validCards.add(myCard.get(i));
+    public static boolean containCard (ArrayList<Card> myCard,Card.Suit cardType){
+        for (Card card : myCard) {
+            if (card.getSuit() == cardType)
+                return true; // contain at least one object
         }
+        return false; // no card found
     }
-    if (validCards.isEmpty()) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
 
-public static boolean haveBetterCard (ArrayList<Card> myCard, Card checkCard){
-        if(bestCard(myCard, checkCard.getSuit())!=null){
-            return true;
-        }
-        else{
-            return false;
-        }
-}
+    public static boolean haveBetterCard (ArrayList<Card> myCard, Card checkCard){
+            if(bestCard(myCard, checkCard.getSuit())!=null){
+                return true;
+            }
+            else{
+                return false;
+            }
+    }
 
     public static Card worstCard2(ArrayList<Card> cardarray, Card.Suit cardType1,Card.Suit cardType2){
         ArrayList<Card> validCards = new ArrayList<>();
