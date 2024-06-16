@@ -15,12 +15,12 @@ public class ClientRunner {
     private static final String FILE_NAME = ".Hokm.txt";
     private static final Scanner input = new Scanner(System.in); // input String
     private static final Scanner inputInt = new Scanner(System.in); // input int
-    private static Player player;
+    private static Client client;
     private static String nameOfPlayer;
 
     public static void main(String[] args) {
         setupAppFile(); // setup applecation files
-        player = new Player(nameOfPlayer); // new player
+        client = new Client(); // new player
 
         // show and handle menu
         while (true) {
@@ -85,8 +85,10 @@ public class ClientRunner {
         for (int i = 0; i < 3; i++) {
             try {
                 System.out.print("Enter number of players: ");
-                if (player.createGame(HOST, input.nextInt()))
+                if (client.createGame(HOST, input.nextInt())) {
+                    Player player = new Player(nameOfPlayer, client);
                     player.run();
+                }
                 break;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -103,9 +105,10 @@ public class ClientRunner {
         for (int i = 0; i < 3; i++) {
             try {
                 System.out.print("Enter number of players: ");
-                if (player.joinGame(HOST, input.nextInt()))
+                if (client.joinGame(HOST, input.nextInt())) {
+                    Player player = new Player(nameOfPlayer, client);
                     player.run();
-                break;
+                }
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             } catch (InputMismatchException e) {
@@ -119,7 +122,7 @@ public class ClientRunner {
 
     private static void showCurrentGames() {
         // get games from server
-        ArrayList<Game> currentGames = player.showCurrentGames(HOST);
+        ArrayList<Game> currentGames = client.showCurrentGames(HOST);
 
         if (currentGames == null) {
             System.out.println("No current game in server. You can create a new game!");
@@ -143,9 +146,11 @@ public class ClientRunner {
                 Game selectGame = currentGames.get(gameNumber);
 
                 // add number of player and join to the game
-                player.setNumberOfPlayer(selectGame.getNumberOfPlayers());
-                if (player.joinGame(HOST, currentGames.get(gameNumber).getToken()))
+                client.setNumberOfPlayer(selectGame.getNumberOfPlayers());
+                if (client.joinGame(HOST, currentGames.get(gameNumber).getToken())) {
+                    Player player = new Player(nameOfPlayer, client);
                     player.run();
+                }
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number.");
             } catch (IndexOutOfBoundsException e) {
@@ -160,9 +165,19 @@ public class ClientRunner {
 
     private static void rename() {
         // give a number from user
-        System.out.print("Insert new name : ");
-        nameOfPlayer = input.nextLine();
+        String oldName = nameOfPlayer; // save old name for cancel
+        for (int i = 0; i < 3; i++) {
+            System.out.print("Insert new name : ");
+            nameOfPlayer = input.nextLine();
+            if (!nameOfPlayer.isEmpty())
+                break;
+        }
 
+        if (nameOfPlayer.isEmpty()) {
+            System.out.println("3 incorrect attempt. Rename was canceled!");
+            nameOfPlayer = oldName;
+            return;
+        }
         // write a number in the file
         try (Formatter outputFile = new Formatter(FILE_NAME)) {
             outputFile.format("%s", nameOfPlayer); // write in the file
@@ -174,8 +189,6 @@ public class ClientRunner {
         } catch (IOException e) {
             System.out.println("Problem loading application files. Terminating...");
         }
-
-        player.setName(nameOfPlayer); // rename the user
     }
 
     private static void setupAppFile() {
@@ -183,8 +196,10 @@ public class ClientRunner {
             System.out.println("Welcome to Hokm game!"); // welcome message
 
             // get the name
-            System.out.print("Please enter your name: ");
-            nameOfPlayer = input.nextLine();
+            do {
+                System.out.print("Please enter your name: ");
+                nameOfPlayer = input.nextLine();
+            } while (nameOfPlayer.isEmpty());
 
             // write name in the file
             try (Formatter outputFile = new Formatter(FILE_NAME)) {
