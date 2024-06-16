@@ -47,17 +47,15 @@ public class Game implements Runnable {
     }
 
     private void startGame() {
-        for(int i =0 ;i<4;i++){
-            for (int j =i+1;j<3;j++){
-                if(players[i].getName().equals(players[j].getName())){
-                    players[j].setName(players[j].getName()+"1");
-                }
-            }
-        }
         /*
          implement check name
-
         */
+        // send id and name of players in the game
+        sendData("players:");
+        for (Player player : players) {
+            sendData(player.getName() + ":" + player.getId());
+        }
+
         System.out.println("Game " + token + " started with " + players.length + " players.");
         isGameStarted = true;
     }
@@ -83,8 +81,8 @@ public class Game implements Runnable {
             sets.add(new Set(players));
             currentSet = sets.getLast();
 
-            sendData("set: " + sets.size()); // send set number to the clients
-            sendData("ruler: " + currentSet.getRuler().getName()); // get ruler of this set
+            sendData("set:" + sets.size()); // send set number to the clients
+            sendData("ruler:" + currentSet.getRuler().getId()); // get ruler of this set
 
             // devide cards btw users and send them to users
             Card[][] cards = GameService.divideCards(getNumberOfPlayers());
