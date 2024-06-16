@@ -4,6 +4,7 @@ import Utilities.Card;
 import Utilities.GameService;
 import Utilities.Set;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +20,7 @@ public class Game implements Runnable {
     private final ArrayList<Set> sets;
     private Set currentSet;
     private boolean isGameStarted;
+    private String hokm;
 
     public Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
@@ -90,9 +92,27 @@ public class Game implements Runnable {
             Card[][] cards = GameService.divideCards(getNumberOfPlayers());
             for (int i = 0; i < players.length; i++) {
                 players[i].setCards(Arrays.asList(cards[i]));
+
+                for (Player player : players) {
+                    try {
+                        Object data = player.getInput().readObject();
+                        if (data instanceof String) {
+                            String message = (String) data;
+                            if (message.startsWith("Hokm: ")) {
+                                hokm = message.substring(6);
+                                System.out.println("Hokm is: " + hokm);
+                                sendData("آokm: " + hokm);
+                                break;
+                            }
+                        }
+                    } catch (IOException | ClassNotFoundException e) {
+                        System.err.println("Error handling hokm data: " + e.getMessage());
+                    }
+                }
             }
         }
     }
+
 
     @Override
     public String toString() {
