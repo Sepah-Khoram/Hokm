@@ -178,16 +178,15 @@ public class ClientRunner {
             nameOfPlayer = oldName;
             return;
         }
+
         // write a number in the file
         try (Formatter outputFile = new Formatter(FILE_NAME)) {
             outputFile.format("%s", nameOfPlayer); // write in the file
-            Files.setAttribute(Paths.get(FILE_NAME), "dos:hidden", true); // hide the file
+            hideFile(); // hide the file
             System.out.println("Your name changed successfully."); // prompt
         } catch (FormatterClosedException | SecurityException | FileNotFoundException e) {
             System.err.println("Error writing to file. Terminating.");
             System.exit(1);
-        } catch (IOException e) {
-            System.out.println("Problem loading application files. Terminating...");
         }
     }
 
@@ -204,6 +203,7 @@ public class ClientRunner {
             // write name in the file
             try (Formatter outputFile = new Formatter(FILE_NAME)) {
                 outputFile.format("%s", nameOfPlayer);
+                hideFile(); // hide file in windows
             } catch (FormatterClosedException | SecurityException | FileNotFoundException e) {
                 System.err.println("Error writing to file. Terminating.");
                 System.exit(1);
@@ -221,5 +221,17 @@ public class ClientRunner {
                 System.exit(1);
             }
         } // end of if-else
+    }
+
+    private static void hideFile() {
+        // to hide file in windows
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c",
+                    "attrib +h " + FILE_NAME);
+            try {
+                Process process = builder.start();
+                process.waitFor();
+            } catch (IOException|InterruptedException ignored) {}
+        }
     }
 }
