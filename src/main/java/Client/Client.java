@@ -16,6 +16,16 @@ public class Client {
     private String id;
     private int numberOfPlayers;
 
+    public Client() {}
+
+    protected Client(Client client) {
+        connection = client.getConnection();
+        output = client.getOutput();
+        input = client.getInput();
+        id = client.id;
+        numberOfPlayers = client.numberOfPlayers;
+    }
+
     public ObjectOutputStream getOutput() {
         return output;
     }
