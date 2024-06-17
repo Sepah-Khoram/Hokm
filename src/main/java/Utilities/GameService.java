@@ -1,5 +1,7 @@
 package Utilities;
 
+import Server.Player;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,39 +44,29 @@ public class GameService {
         return dividedList;
     }
 
-    public static Card suggestedCard(ArrayList<Card> playedCards,ArrayList<Card> myCards,Card.Suit hokm) {
+    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> myCards, Card.Suit hokm) {
         Card.Suit base = playedCards.get(0).getSuit();
-        if((playedCards.size()==1) && (containCard(myCards,base)) && (haveBetterCard(myCards,playedCards.get(0)))){
-            return bestCard(myCards,base);
-        }
-        else if((playedCards.size()==2) && (!containCard(myCards,base)) && (containCard(playedCards,hokm)) && (containCard(myCards,hokm)) && (bestCard(myCards,hokm).compareTo(playedCards.get(1))<0) && (base!= hokm) && (playedCards.get(1).getSuit()==hokm)){
-            return worstCardNot(myCards,base,playedCards.get(1).getSuit());
-        }
-        else if ((playedCards.size()==2) && (containCard(myCards,base)) && (!haveBetterCard(myCards,topCard(playedCards,hokm)))  && (!containCard(playedCards,hokm))){
-            worstCard(myCards,base,base);
-        }
-        else if ((playedCards.size()==3) && (containCard(myCards,base)) && (topCard(playedCards,hokm)==playedCards.get(1)) ){
-            worstCard(myCards,base,base);
-        }
-        else if((playedCards.size()==2) && (!containCard(myCards,base)) && (containCard(playedCards,hokm)) && (!containCard(myCards,hokm)) &&  (base!= hokm) && (playedCards.get(1).getSuit()==hokm)){
-            return worstCardNot(myCards,base,playedCards.get(1).getSuit());
-        }
-        else if((playedCards.size()==2) && (containCard(myCards,base)) && (haveBetterCard(myCards,topCard(playedCards,hokm))) ){
-            bestCard(myCards,base);
-        }
-        else if ((playedCards.size()==3) && (containCard(myCards,base)) && (topCard(playedCards,hokm)!=playedCards.get(1)) && (haveBetterCard(myCards,topCard(playedCards,hokm))) ){
-            bestCard(myCards,base);
-        }
-        else if ((playedCards.size()==3) && (containCard(myCards,base)) && (topCard(playedCards,hokm)!=playedCards.get(1)) ){
-            worstCard(myCards,base,base);
-        }
-        else if ((playedCards.size()==2) && (!containCard(myCards,base)) && (topCard(playedCards,hokm)!= playedCards.get(0)) && (!containCard(playedCards,hokm))  && (containCard(myCards,hokm))) {          //maybe bad suggest
-            worstCard(myCards,hokm,hokm);
-        }
-        else if((playedCards.size()==1) && (!containCard(myCards,base)) && (containCard(myCards,hokm)) ){
-            worstCard(myCards,hokm,hokm);
-        }
-        else{
+        if ((playedCards.size() == 1) && (containCard(myCards, base)) && (haveBetterCard(myCards, playedCards.get(0)))) {
+            return bestCard(myCards, base);
+        } else if ((playedCards.size() == 2) && (!containCard(myCards, base)) && (containCard(playedCards, hokm)) && (containCard(myCards, hokm)) && (bestCard(myCards, hokm).compareTo(playedCards.get(1)) < 0) && (base != hokm) && (playedCards.get(1).getSuit() == hokm)) {
+            return worstCardNot(myCards, base, playedCards.get(1).getSuit());
+        } else if ((playedCards.size() == 2) && (containCard(myCards, base)) && (!haveBetterCard(myCards, topCard(playedCards, hokm))) && (!containCard(playedCards, hokm))) {
+            worstCard(myCards, base, base);
+        } else if ((playedCards.size() == 3) && (containCard(myCards, base)) && (topCard(playedCards, hokm) == playedCards.get(1))) {
+            worstCard(myCards, base, base);
+        } else if ((playedCards.size() == 2) && (!containCard(myCards, base)) && (containCard(playedCards, hokm)) && (!containCard(myCards, hokm)) && (base != hokm) && (playedCards.get(1).getSuit() == hokm)) {
+            return worstCardNot(myCards, base, playedCards.get(1).getSuit());
+        } else if ((playedCards.size() == 2) && (containCard(myCards, base)) && (haveBetterCard(myCards, topCard(playedCards, hokm)))) {
+            bestCard(myCards, base);
+        } else if ((playedCards.size() == 3) && (containCard(myCards, base)) && (topCard(playedCards, hokm) != playedCards.get(1)) && (haveBetterCard(myCards, topCard(playedCards, hokm)))) {
+            bestCard(myCards, base);
+        } else if ((playedCards.size() == 3) && (containCard(myCards, base)) && (topCard(playedCards, hokm) != playedCards.get(1))) {
+            worstCard(myCards, base, base);
+        } else if ((playedCards.size() == 2) && (!containCard(myCards, base)) && (topCard(playedCards, hokm) != playedCards.get(0)) && (!containCard(playedCards, hokm)) && (containCard(myCards, hokm))) {          //maybe bad suggest
+            worstCard(myCards, hokm, hokm);
+        } else if ((playedCards.size() == 1) && (!containCard(myCards, base)) && (containCard(myCards, hokm))) {
+            worstCard(myCards, hokm, hokm);
+        } else {
             return null;
         }
         return null;
@@ -82,7 +74,7 @@ public class GameService {
 
     private static Card worstCard(ArrayList<Card> cardarray, Card.Suit cardType1, Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
-        for (Card card : cardarray){
+        for (Card card : cardarray) {
             if ((card.getSuit() == cardType1) || (card.getSuit() == cardType2))
                 validCards.add(card);
         }
@@ -122,7 +114,7 @@ public class GameService {
     }
 
     private static boolean containCard(ArrayList<Card> cards, Card.Suit cardType) {
-        for (Card card : cards){
+        for (Card card : cards) {
             if (card.getSuit() == cardType)
                 return true;
         }
@@ -131,11 +123,52 @@ public class GameService {
 
     private static ArrayList<Card> findCard(ArrayList<Card> cards, Card.Suit cardType) {
         ArrayList<Card> validCards = new ArrayList<>();
-        for (Card card : cards){
+        for (Card card : cards) {
             if (card.getSuit() == cardType)
                 validCards.add(card);
         }
         return validCards;
     }
+
+    public static void checkPlayerNames(List<Player> players) {
+        if (players.size() == 2) {
+            Player player1 = players.get(0);
+            Player player2 = players.get(1);
+
+            String name1 = player1.getName();
+            String name2 = player2.getName();
+
+            if (name1.equals(name2)) {
+                player1.setName(name1 + "1");
+                player2.setName(name2 + "2");
+            }
+        } else if (players.size() == 4) {
+
+            Player player1 = players.get(0);
+            Player player2 = players.get(1);
+            Player player3 = players.get(2);
+            Player player4 = players.get(3);
+
+            String name1 = player1.getName();
+            String name2 = player2.getName();
+            String name3 = player3.getName();
+            String name4 = player4.getName();
+
+            if (name1.equals(name2)) {
+                player1.setName(name1 + "1");
+                player2.setName(name2 + "2");
+            }
+            if (name1.equals(name3) || name2.equals(name3)) {
+                player3.setName(name3 + "3");
+            }
+            if (name1.equals(name4) || name2.equals(name4) || name3.equals(name4)) {
+                player4.setName(name4 + "4");
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid number of players! We support just 2 or 4 players.");
+        }
+    }
 }
+
+
 
