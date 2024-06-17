@@ -61,6 +61,7 @@ public class Game implements Runnable {
             logger.warning("Attempted to add a player to a full game.");
         }
     }
+
     private void checkPlayerNames() {
 
         ArrayList<String> uniquePlayerNames = new ArrayList<>();
@@ -77,6 +78,7 @@ public class Game implements Runnable {
             player.setName(newName);
         }
     }
+
     private void startGame() {
         logger.info("All players have joined. Game is starting.");
         /*
