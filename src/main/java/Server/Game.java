@@ -62,6 +62,7 @@ public class Game implements Runnable {
         }
     }
     private void checkPlayerNames() {
+
         ArrayList<String> uniquePlayerNames = new ArrayList<>();
         for (Player player : players) {
             String enteredName = player.getName();
