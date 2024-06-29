@@ -4,7 +4,6 @@ import Utilities.Card;
 import Utilities.GameService;
 import Utilities.Set;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -105,6 +104,12 @@ public class Game implements Runnable {
             logger.info("New set started. Set number: " + sets.size());
             logger.info("Ruler of the set: " + currentSet.getRuler().getId());
 
+            divideCard();
+        }
+    }
+
+    public void divideCard() {
+        if (getNumberOfPlayers() == 4) {
             // devide cards btw users and send them to users
             Card[][] cards = GameService.divideCards(getNumberOfPlayers());
             for (int i = 0; i < players.length; i++) {
