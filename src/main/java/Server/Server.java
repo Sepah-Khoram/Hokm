@@ -2,9 +2,9 @@ package Server;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
-import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Server {
+public class Server implements Runnable {
     private static final Logger logger = LoggerManager.getLogger();
     private ServerSocket serverSocket; // server socket to connect with clients
     private final List<Client> clients; // clients that connected to server
@@ -37,7 +37,8 @@ public class Server {
         gameExecutor = Executors.newCachedThreadPool(); // create thread pool
     } // end constructor
 
-    public void execute() {
+    @Override
+    public void run() {
         while (true) {
             Client newClient = null;
             try {
