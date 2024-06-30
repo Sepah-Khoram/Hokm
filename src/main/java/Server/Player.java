@@ -56,7 +56,7 @@ public class Player extends Client implements Runnable {
     private void process(@NotNull Object data) {
         // proccesing datas
         if (data.toString().startsWith("name:")) {
-            name = data.toString().substring(5);
+            name = data.toString().substring(5).trim();
         } else if (data.toString().startsWith("rule:")) {
             game.setRule(Card.Suit.valueOf(data.toString().substring(5)));
         }
@@ -87,7 +87,6 @@ public class Player extends Client implements Runnable {
     public String getName() {
         return name;
     }
-
 
     public void setName(String name) {
         this.name = name;
