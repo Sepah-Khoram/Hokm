@@ -45,11 +45,18 @@ public class Player extends Client implements Runnable {
                 String serverMessage = (String) getInput().readObject();
 
                 if (serverMessage.equals("players:")) {
+                    System.out.println("Player in games: ");
                     // save id and name of players in the game
                     for (int i = 0; i < getNumberOfPlayers(); i++) {
                         String message = (String) getInput().readObject();
                         String[] temp = message.split(":");
                         playerInGame.put(temp[0], temp[1]);
+
+                        // print in the output
+                        System.out.print((i + 1) + "." + temp[1] + " ");
+                        if (temp[0].equals(getId()))
+                            System.out.print("(You)");
+                        System.out.println();
                     }
                 } else if (serverMessage.equals("cards:")) {
                     getCards();
@@ -65,6 +72,15 @@ public class Player extends Client implements Runnable {
                 } else if (serverMessage.startsWith("set:")) {
                     int numberOfSet = Integer.parseInt(serverMessage.substring(4));
                     System.out.println("Set " + numberOfSet + " has started.");
+                } else if (serverMessage.startsWith("team")) {
+                    String[] team = serverMessage.substring(5).split(",");
+                    if (team[1].equals(getId()) || team[2].equals(getId())) {
+                        System.out.println("Your team: " + playerInGame.get(team[1]) +
+                                ", " + playerInGame.get(team[2]));
+                    } else {
+                        System.out.println("Other team: " + playerInGame.get(team[1]) +
+                                ", " + playerInGame.get(team[2]));
+                    }
                 }
             }
         } catch (IOException|ClassNotFoundException e) {
