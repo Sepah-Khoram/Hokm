@@ -4,8 +4,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ServerManager implements Runnable{
-    public ServerManager(Server server1){
-        server=server1;
+    public ServerManager(Server server) {
+        this.server = server;
     }
     Server server = new Server();
 
