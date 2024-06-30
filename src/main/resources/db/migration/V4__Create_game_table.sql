@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS game (
+    game_id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL,
+    players VARCHAR(255) NOT NULL,
+    resalt Varchar(255)
