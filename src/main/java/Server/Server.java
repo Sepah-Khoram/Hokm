@@ -21,6 +21,10 @@ public class Server implements Runnable {
     private final List<Game> games; // games that play in the server
     private final ExecutorService gameExecutor; // will run games in threads
 
+    public List<Game> getGames() {
+        return games;
+    }
+
     // constructor
     public Server() {
         try {
