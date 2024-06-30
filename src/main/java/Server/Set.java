@@ -1,6 +1,6 @@
-package Utilities;
+package Server;
 
-import Server.Player;
+import Utilities.Card;
 
 import java.security.SecureRandom;
 
