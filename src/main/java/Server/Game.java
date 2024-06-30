@@ -2,8 +2,9 @@ package Server;
 
 import Utilities.Card;
 import Utilities.GameService;
-import Utilities.Set;
+import org.jetbrains.annotations.NotNull;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,17 +17,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Game implements Runnable {
-    private final Player[] players;
-    private final UUID token;
+    // for manage the multithreading and logging
     private static final Logger logger = LoggerManager.getLogger(); // logger for logging
     private final CyclicBarrier gameStartBarrier; // for wait threads for the game to start
     private final CopyOnWriteArrayList<Player> connectedPlayers;
     private final ExecutorService executorService; // manage threads
+
+    // for manage the game
+    private final Player[] players;
+    private ArrayList<Team> teams;
+    private final UUID token;
     private final List<Set> sets;
     private Set currentSet;
     private boolean isGameStarted;
 
-    public Game(Player player, int numberOfPlayers) {
+    Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
         token = UUID.randomUUID();
         connectedPlayers = new CopyOnWriteArrayList<>();
@@ -41,7 +46,7 @@ public class Game implements Runnable {
         addPlayer(player); // add player 1
     }
 
-    public synchronized void addPlayer(Player player) {
+    synchronized void addPlayer(Player player) {
         if (connectedPlayers.size() < players.length) {
             players[connectedPlayers.size()] = player;
             connectedPlayers.add(player);
@@ -60,6 +65,7 @@ public class Game implements Runnable {
             logger.warning("Attempted to add a player to a full game.");
         }
     }
+
     private void startGame() {
         logger.info("All players have joined. Game is starting.");
         /*
@@ -71,22 +77,22 @@ public class Game implements Runnable {
             sendData(player.getId() + ":" + player.getName());
         }
 
+        // make two treams
+        if (getNumberOfPlayers() == 4) {
+            makeTwoTeams();
+            sendData("team1:" + teams.getFirst());
+            sendData("team2:" + teams.getLast());
+        }
+
         System.out.println("Game " + token + " started with " + players.length + " players.");
         isGameStarted = true;
-    }
-
-    private synchronized void sendData(Object data) {
-        for (Player player : players) {
-            player.sendData(data);
-        }
-        logger.info("Data sent to all players: " + data);
     }
 
     @Override
     public void run() {
         while (!isGameStarted) {
             try {
-                Thread.sleep(100); // Wait for a short period before checking again
+                Thread.sleep(1000); // Wait for a short period before checking again
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.log(Level.SEVERE, "Game thread interrupted while waiting to start", e);
@@ -98,17 +104,23 @@ public class Game implements Runnable {
             sets.add(new Set(players));
             currentSet = sets.getLast();
 
+            if (getNumberOfPlayers() == 4) {
+                teams.getFirst().addSet(currentSet);
+                teams.getLast().addSet(currentSet);
+            }
+
             sendData("set:" + sets.size()); // send set number to the clients
             sendData("ruler:" + currentSet.getRuler().getId()); // get ruler of this set
 
             logger.info("New set started. Set number: " + sets.size());
             logger.info("Ruler of the set: " + currentSet.getRuler().getId());
 
-            divideCard();
+            divideCards();
+
         }
     }
 
-    public void divideCard() {
+    private void divideCards() {
         if (getNumberOfPlayers() == 4) {
             // devide cards btw users and send them to users
             Card[][] cards = GameService.divideCards(getNumberOfPlayers());
@@ -120,9 +132,26 @@ public class Game implements Runnable {
         }
     }
 
-    @Override
-    public String toString() {
-        return players.length + " players: " + connectedPlayers.toString();
+    private void makeTwoTeams() {
+        // create team1 and team2
+        ArrayList<Player> team1 = new ArrayList<>(2);
+        team1.add(players[4]);
+
+        ArrayList<Player> team2 = new ArrayList<>(2);
+
+        // find the teammate for the last player
+        int teammateIndex = new SecureRandom().nextInt(4);
+        team1.add(players[teammateIndex]);
+
+        // make team2
+        for (int i = 0; i < 3; i++) {
+            if (i != teammateIndex)
+                team2.add(players[i]);
+        }
+
+        // add team to game
+        teams.add(new Team(team1));
+        teams.add(new Team(team2));
     }
 
     private boolean isGameOver() {
@@ -130,11 +159,26 @@ public class Game implements Runnable {
         return false;
     }
 
+    private synchronized void sendData(Object data, Player @NotNull ... players) {
+        for (Player player : players) {
+            player.sendData(data);
+        }
+    }
+
+    private synchronized void sendData(Object data) {
+        sendData(data, players);
+    }
+
+    @Override
+    public String toString() {
+        return players.length + " players: " + connectedPlayers.toString();
+    }
+
     public int getNumberOfPlayers() {
         return players.length;
     }
 
-    public boolean isStarted() {
+    boolean isStarted() {
         return isGameStarted;
     }
 
@@ -142,12 +186,12 @@ public class Game implements Runnable {
         return token;
     }
 
-    public void setRule(Card.Suit rule) {
+    void setRule(Card.Suit rule) {
         currentSet.setRule(rule);
         logger.info("Rule set for the current set: " + rule);
     }
 
-    public CyclicBarrier getBarrier() {
+    CyclicBarrier getBarrier() {
         return gameStartBarrier;
     }
 }
