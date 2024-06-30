@@ -28,7 +28,7 @@ public class Set implements Runnable {
     private String result;
     private Team winner;
 
-    public static Server.Team getWinner() {
+    public  Team getWinner() {
         return winner;
     }
 

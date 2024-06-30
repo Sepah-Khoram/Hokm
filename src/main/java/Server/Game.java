@@ -28,7 +28,7 @@ public class Game implements Runnable {
     private Set currentSet;
     private boolean isGameStarted;
     private int winTeam1=0;
-    private int wintTeam2=0;
+    private int winTeam2 = 0;
 
     Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
@@ -115,11 +115,11 @@ public class Game implements Runnable {
 
             // start the set
             currentSet.run();
-            if (teams.getFirst() == Set.getWinner()){
+            if (teams.getFirst() == currentSet.getWinner()) {
                 winTeam1++;
             }
             else{
-                wintTeam2++;
+                winTeam2++;
             }
         }
     }
