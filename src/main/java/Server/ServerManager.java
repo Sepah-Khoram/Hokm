@@ -1,5 +1,6 @@
 package Server;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ServerManager implements Runnable{
@@ -10,11 +11,20 @@ public class ServerManager implements Runnable{
 
     @Override
     public void run() {
-        while(true){
         Scanner scanner =new Scanner(System.in);
+        int entry;
+        while(true){
+
         System.out.println("1. Show all games \n2. Show details of the selected game \n3. Loging the information" );
         System.out.println("insert your Choose :");
-        switch (scanner.nextInt()){
+        try{
+            entry = scanner.nextInt();
+        }catch (InputMismatchException e){
+            System.out.println("wrong entry!");
+            continue;
+        }
+
+        switch (entry){
             case 1:
                 System.out.println("games list :");
                 for (int i=0 ; i < server.getGames().size();i++){
@@ -22,8 +32,13 @@ public class ServerManager implements Runnable{
                 }
             case 2:
                 System.out.println("wich game do you want to see the detail ? ");
-                server.showGamedetail(server.getGames(),scanner.nextInt());
-
+                try{
+                    server.showGamedetail(server.getGames(),scanner.nextInt());
+                }
+                catch (InputMismatchException e){
+                    System.out.println("wrong entry!");
+                    continue;
+                }
             default:
         }
         }
