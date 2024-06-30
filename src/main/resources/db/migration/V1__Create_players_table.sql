@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS players (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    score INT DEFAULT 0
+    );
