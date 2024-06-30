@@ -181,6 +181,15 @@ public class GameService {
             throw new IllegalArgumentException("Invalid number of players! We support just 2 or 4 players.");
         }
     }
+    public static boolean validCard(ArrayList<Card> playedCards,ArrayList<Card> myCards,Card checkCard,Card.Suit hokm){
+        Card.Suit base = playedCards.get(0).getSuit();
+        if((containCard(myCards,base))&&(checkCard.getSuit()!=base)){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 }
 
 

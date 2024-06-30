@@ -14,12 +14,16 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Server {
+public class Server implements Runnable {
     private static final Logger logger = LoggerManager.getLogger();
     private final List<Client> clients; // clients that connected to server
     private final List<Game> games; // games that play in the server
     private final ExecutorService gameExecutor; // will run games in threads
     private ServerSocket serverSocket; // server socket to connect with clients
+
+    public List<Game> getGames() {
+        return games;
+    }
 
     // constructor
     public Server() {
@@ -35,7 +39,8 @@ public class Server {
         gameExecutor = Executors.newCachedThreadPool(); // create thread pool
     } // end constructor
 
-    public void execute() {
+    @Override
+    public void run() {
         while (true) {
             Client newClient = null;
             try {
@@ -166,5 +171,11 @@ public class Server {
     private void closeConnection(Client client) {
         clients.remove(client); // remove connection from arraylist
         client.closeConnection();
+    }
+    public void showGamedetail(List<Game> games,int choosenGame){
+        System.out.println("this game have this infotmation :");
+        System.out.println("first team win "+String.valueOf(games.get(choosenGame).getWinTeam1())+"sets");
+        System.out.println("second team win "+String.valueOf(games.get(choosenGame).getWinTeam2())+"sets");
+        System.out.println("now game is in set :"+String.valueOf(games.get(choosenGame).getWinTeam1()+games.get(choosenGame).getWinTeam2()));
     }
 }

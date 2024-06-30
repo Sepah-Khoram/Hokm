@@ -37,6 +37,10 @@ public class Set implements Runnable {
     private String result;
     private Team winner;
 
+    public  Team getWinner() {
+        return winner;
+    }
+
     Set(Player @NotNull [] players, ArrayList<Team> teams) {
         this.players = players;
         this.numberOfPlayers = players.length;
