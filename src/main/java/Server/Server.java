@@ -2,9 +2,9 @@ package Server;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
-import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
 import java.util.UUID;
@@ -16,18 +16,16 @@ import java.util.logging.Logger;
 
 public class Server {
     private static final Logger logger = LoggerManager.getLogger();
-    private ServerSocket serverSocket; // server socket to connect with clients
     private final List<Client> clients; // clients that connected to server
     private final List<Game> games; // games that play in the server
     private final ExecutorService gameExecutor; // will run games in threads
+    private ServerSocket serverSocket; // server socket to connect with clients
 
     // constructor
     public Server() {
         try {
             serverSocket = new ServerSocket(5482);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error creating server socket", e);
             System.exit(1);
         }
@@ -165,7 +163,7 @@ public class Server {
         return false;
     }
 
-    private void closeConnection (Client client) {
+    private void closeConnection(Client client) {
         clients.remove(client); // remove connection from arraylist
         client.closeConnection();
     }

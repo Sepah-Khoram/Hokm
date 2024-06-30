@@ -8,9 +8,9 @@ import java.util.*;
 
 public class Player extends Client implements Runnable {
     private final String name;
-    private List<Card> cards;
     private final Map<String, String> playerInGame; // <Id, Name>
     boolean isRuler;
+    private List<Card> cards;
 
     public Player(String name, Client client) {
         super(client);
@@ -76,7 +76,7 @@ public class Player extends Client implements Runnable {
                     }
                 }
             }
-        } catch (IOException|ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             if (!getConnection().isConnected())
                 return;
             e.printStackTrace();
@@ -119,7 +119,7 @@ public class Player extends Client implements Runnable {
         for (int i = 0; i < 3; i++) {
             try {
                 int choice = input.nextInt();
-                if (1 <= choice  && choice <= 4) {
+                if (1 <= choice && choice <= 4) {
                     rule = Card.Suit.values()[choice - 1]; // obtain rule
                     System.out.println("Ok. Rule is " + rule + "."); // print rule
                     break;
