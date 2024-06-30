@@ -45,19 +45,7 @@ public class Player extends Client implements Runnable {
                 String serverMessage = (String) getInput().readObject();
 
                 if (serverMessage.equals("players:")) {
-                    System.out.println("Player in games: ");
-                    // save id and name of players in the game
-                    for (int i = 0; i < getNumberOfPlayers(); i++) {
-                        String message = (String) getInput().readObject();
-                        String[] temp = message.split(":");
-                        playerInGame.put(temp[0], temp[1]);
-
-                        // print in the output
-                        System.out.print((i + 1) + "." + temp[1] + " ");
-                        if (temp[0].equals(getId()))
-                            System.out.print("(You)");
-                        System.out.println();
-                    }
+                    showPlayers();
                 } else if (serverMessage.equals("cards:")) {
                     getCards();
                 } else if (serverMessage.startsWith("ruler:")) {
@@ -73,13 +61,18 @@ public class Player extends Client implements Runnable {
                     int numberOfSet = Integer.parseInt(serverMessage.substring(4));
                     System.out.println("Set " + numberOfSet + " has started.");
                 } else if (serverMessage.startsWith("team")) {
-                    String[] team = serverMessage.substring(5).split(",");
+                    String[] team = serverMessage.substring(6).split(",");
                     if (team[1].equals(getId()) || team[2].equals(getId())) {
                         System.out.println("Your team: " + playerInGame.get(team[1]) +
                                 ", " + playerInGame.get(team[2]));
                     } else {
                         System.out.println("Other team: " + playerInGame.get(team[1]) +
                                 ", " + playerInGame.get(team[2]));
+                    }
+                } else if (serverMessage.startsWith("rule:")) {
+                    if (!isRuler) {
+                        String rule = serverMessage.substring(5);
+                        System.out.println("Rule: " + rule);
                     }
                 }
             }
@@ -97,19 +90,23 @@ public class Player extends Client implements Runnable {
         if (isRuler) {
             // show 5 first cards of the player
             System.out.println("Your first five cards: ");
-            for(int i = 0; i < 5; i++) {
-                System.out.printf("%d. %s%n", i + 1, cards.get(i));
-            }
+            showCards();
             getRule();
+
+            // get complete cards from server
+            cards = (List<Card>) getInput().readObject();
         }
+
         // print cards
         showCards();
+        if (!isRuler)
+            System.out.println("Wait for ruler to select the rule.");
     }
 
     private void getRule() {
         // prompt to user to select rule
         Scanner input = new Scanner(System.in);
-        System.out.println("please choose rule : ");
+        System.out.println("Please choose rule : ");
         System.out.println("1-->> Hearts");
         System.out.println("2-->> Diamonds");
         System.out.println("3-->> Clubs");
@@ -142,11 +139,27 @@ public class Player extends Client implements Runnable {
         sendData("rule:" + rule.name()); // send rule to server
     }
 
-    public void showCards() {
+    private void showCards() {
         System.out.println("Cards in your hand:");
         int count = 0;
         for (Card card : cards)
             System.out.printf("%2d. %s%n", ++count, card);
+    }
+
+    private void showPlayers() throws IOException, ClassNotFoundException {
+        System.out.println("Player in games: ");
+        // save id and name of players in the game
+        for (int i = 0; i < getNumberOfPlayers(); i++) {
+            String message = (String) getInput().readObject();
+            String[] temp = message.split(":");
+            playerInGame.put(temp[0], temp[1]);
+
+            // print in the output
+            System.out.print((i + 1) + "." + temp[1] + " ");
+            if (temp[0].equals(getId()))
+                System.out.print("(You)");
+            System.out.println();
+        }
     }
 
     public Card putCard(Card card) {
