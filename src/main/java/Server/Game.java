@@ -79,6 +79,16 @@ public class Game implements Runnable {
             makeTwoTeams();
             sendData("team1:" + teams.getFirst());
             sendData("team2:" + teams.getLast());
+        } else {
+            // simulate player1 with team1
+            ArrayList<Player> team1 = new ArrayList<>();
+            team1.add(players[0]);
+            teams.add(new Team(team1));
+
+            // simulate player2 with team2
+            ArrayList<Player> team2 = new ArrayList<>();
+            team2.add(players[1]);
+            teams.add(new Team(team2));
         }
 
         System.out.println("Game " + token + " started with " + players.length + " players.");
@@ -98,15 +108,10 @@ public class Game implements Runnable {
 
         while (!isGameOver()) {
             // new set
-            if (getNumberOfPlayers() == 4) {
-                sets.add(new Set(players, teams));
-                currentSet = sets.getLast();
-                teams.getFirst().addSet(currentSet);
-                teams.getLast().addSet(currentSet);
-            } else {
-                sets.add(new Set(players));
-                currentSet = sets.getLast();
-            }
+            sets.add(new Set(players, teams));
+            currentSet = sets.getLast();
+            teams.getFirst().addSet(currentSet);
+            teams.getLast().addSet(currentSet);
 
             sendData("set:" + sets.size()); // send set number to the clients
             logger.info("New set started. Set number: " + sets.size());
