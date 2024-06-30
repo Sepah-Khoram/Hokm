@@ -27,6 +27,8 @@ public class Game implements Runnable {
     private final List<Set> sets;
     private Set currentSet;
     private boolean isGameStarted;
+    private int winTeam1=0;
+    private int wintTeam2=0;
 
     Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
@@ -113,6 +115,12 @@ public class Game implements Runnable {
 
             // start the set
             currentSet.run();
+            if (teams.getFirst() == Set.getWinner()){
+                winTeam1++;
+            }
+            else{
+                wintTeam2++;
+            }
         }
     }
 
@@ -140,7 +148,20 @@ public class Game implements Runnable {
 
     private boolean isGameOver() {
         // codition to check if game is game overed
-        return false;
+        if(sets.size()<7){
+            return false;
+        }
+        else{
+            if(winTeam1>=7){
+                return true;
+            }
+            else if (wintTeam2>=7) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
     }
 
     private synchronized void sendData(Object data) {
