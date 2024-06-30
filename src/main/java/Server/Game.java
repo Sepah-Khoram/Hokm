@@ -152,17 +152,7 @@ public class Game implements Runnable {
 
     private boolean isGameOver() {
         // codition to check if game is game overed
-        if (sets.size() < 7) {
-            return false;
-        } else {
-            if (winTeam1 >= 7) {
-                return true;
-            } else if (wintTeam2 >= 7) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        return (winTeam1 == 7 || winTeam2 == 7);
     }
 
     private synchronized void sendData(Object data) {
