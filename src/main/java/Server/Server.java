@@ -174,4 +174,10 @@ public class Server implements Runnable {
         clients.remove(client); // remove connection from arraylist
         client.closeConnection();
     }
+    public void showGamedetail(List<Game> games,int choosenGame){
+        System.out.println("this game have this infotmation :");
+        System.out.println("first team win "+String.valueOf(games.get(choosenGame).getWinTeam1())+"sets");
+        System.out.println("second team win "+String.valueOf(games.get(choosenGame).getWinTeam2())+"sets");
+        System.out.println("now game is in set :"+String.valueOf(games.get(choosenGame).getWinTeam1()+games.get(choosenGame).getWinTeam2()));
+    }
 }

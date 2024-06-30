@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 public class ServerRunner {
     private final ExecutorService mainExecutor;
     Server server = new Server();
-    ServerManager serverManager = new ServerManager();
+    ServerManager serverManager = new ServerManager(server);
 
     public ServerRunner(ExecutorService mainExecutor) {
         this.mainExecutor = mainExecutor;

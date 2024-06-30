@@ -1,12 +1,11 @@
 package Server;
 
-import Utilities.Card;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class ServerManager implements Runnable{
+    public ServerManager(Server server1){
+        server=server1;
+    }
     Server server = new Server();
 
     @Override
@@ -22,7 +21,9 @@ public class ServerManager implements Runnable{
                     System.out.println(String.valueOf(i+1)+ ". "+ server.getGames().get(i).toString());
                 }
             case 2:
-                //
+                System.out.println("wich game do you want to see the detail ? ");
+                server.showGamedetail(server.getGames(),scanner.nextInt());
+
             default:
         }
         }

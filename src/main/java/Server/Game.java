@@ -27,7 +27,7 @@ public class Game implements Runnable {
     private final List<Set> sets;
     private Set currentSet;
     private boolean isGameStarted;
-    private int winTeam1=0;
+    private int winTeam1 = 0;
     private int winTeam2 = 0;
 
     Game(Player player, int numberOfPlayers) {
@@ -117,8 +117,7 @@ public class Game implements Runnable {
             currentSet.run();
             if (teams.getFirst() == currentSet.getWinner()) {
                 winTeam1++;
-            }
-            else{
+            } else {
                 winTeam2++;
             }
         }
@@ -148,17 +147,14 @@ public class Game implements Runnable {
 
     private boolean isGameOver() {
         // codition to check if game is game overed
-        if(sets.size()<7){
+        if (sets.size() < 7) {
             return false;
-        }
-        else{
-            if(winTeam1>=7){
+        } else {
+            if (winTeam1 >= 7) {
                 return true;
-            }
-            else if (wintTeam2>=7) {
+            } else if (wintTeam2 >= 7) {
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
         }
@@ -194,5 +190,13 @@ public class Game implements Runnable {
 
     CyclicBarrier getBarrier() {
         return gameStartBarrier;
+    }
+
+    public int getWinTeam1() {
+        return winTeam1;
+    }
+
+    public int getWinTeam2() {
+        return winTeam2;
     }
 }
