@@ -1,6 +1,8 @@
 package Utilities;
 
 import Server.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -44,7 +46,8 @@ public class GameService {
         return dividedList;
     }
 
-    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> myCards, Card.Suit hokm) {
+    public static @Nullable Card suggestedCard(@NotNull ArrayList<Card> playedCards,
+                                               ArrayList<Card> myCards, Card.Suit hokm) {
         Card.Suit base = playedCards.get(0).getSuit();
         if ((playedCards.size() == 1) && (containCard(myCards, base)) && (haveBetterCard(myCards, playedCards.get(0)))) {
             return bestCard(myCards, base);
@@ -72,7 +75,8 @@ public class GameService {
         return null;
     }
 
-    private static Card worstCard(ArrayList<Card> cardarray, Card.Suit cardType1, Card.Suit cardType2) {
+    private static @Nullable Card worstCard(@NotNull ArrayList<Card> cardarray, Card.Suit cardType1,
+                                            Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cardarray) {
             if ((card.getSuit() == cardType1) || (card.getSuit() == cardType2))
@@ -85,7 +89,8 @@ public class GameService {
     }
 
     // do not contain type of parameters
-    private static Card worstCardNot(ArrayList<Card> cards, Card.Suit cardType1, Card.Suit cardType2) {
+    private static @Nullable Card worstCardNot(@NotNull ArrayList<Card> cards, Card.Suit cardType1,
+                                               Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
             if ((card.getSuit() != cardType1) && (card.getSuit() != cardType2))
@@ -97,7 +102,7 @@ public class GameService {
             return Collections.min(validCards);
     }
 
-    private static Card topCard(ArrayList<Card> cards, Card.Suit hokm) {
+    private static Card topCard(@NotNull ArrayList<Card> cards, Card.Suit hokm) {
         Card.Suit base = cards.getFirst().getSuit();
         if (containCard(cards, hokm))
             return Collections.max(findCard(cards, hokm));
@@ -105,7 +110,7 @@ public class GameService {
             return Collections.max(findCard(cards, base));
     }
 
-    private static boolean haveBetterCard(ArrayList<Card> myCard, Card checkCard) {
+    private static boolean haveBetterCard(ArrayList<Card> myCard, @NotNull Card checkCard) {
         return bestCard(myCard, checkCard.getSuit()).compareTo(checkCard) > 0;
     }
 
@@ -113,7 +118,7 @@ public class GameService {
         return Collections.max(findCard(cards, cardType));
     }
 
-    private static boolean containCard(ArrayList<Card> cards, Card.Suit cardType) {
+    private static boolean containCard(@NotNull ArrayList<Card> cards, Card.Suit cardType) {
         for (Card card : cards) {
             if (card.getSuit() == cardType)
                 return true;
@@ -121,7 +126,8 @@ public class GameService {
         return false;
     }
 
-    private static ArrayList<Card> findCard(ArrayList<Card> cards, Card.Suit cardType) {
+    private static @NotNull ArrayList<Card> findCard(@NotNull ArrayList<Card> cards,
+                                                     Card.Suit cardType) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
             if (card.getSuit() == cardType)
@@ -130,7 +136,7 @@ public class GameService {
         return validCards;
     }
 
-    public static void checkPlayerNames(List<Player> players) {
+    public static void checkPlayerNames(@NotNull List<Player> players) {
         if (players.size() == 2) {
             Player player1 = players.get(0);
             Player player2 = players.get(1);
@@ -143,7 +149,6 @@ public class GameService {
                 player2.setName(name2 + "2");
             }
         } else if (players.size() == 4) {
-
             Player player1 = players.get(0);
             Player player2 = players.get(1);
             Player player3 = players.get(2);
