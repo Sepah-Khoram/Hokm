@@ -1,12 +1,9 @@
 package Server;
 
 import Utilities.Card;
-import Utilities.GameService;
-import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +22,7 @@ public class Game implements Runnable {
 
     // for manage the game
     private final Player[] players;
-    private ArrayList<Team> teams;
+    private final ArrayList<Team> teams = new ArrayList<>();
     private final UUID token;
     private final List<Set> sets;
     private Set currentSet;
@@ -101,34 +98,21 @@ public class Game implements Runnable {
 
         while (!isGameOver()) {
             // new set
-            sets.add(new Set(players));
-            currentSet = sets.getLast();
-
             if (getNumberOfPlayers() == 4) {
+                sets.add(new Set(players, teams));
+                currentSet = sets.getLast();
                 teams.getFirst().addSet(currentSet);
                 teams.getLast().addSet(currentSet);
+            } else {
+                sets.add(new Set(players));
+                currentSet = sets.getLast();
             }
 
             sendData("set:" + sets.size()); // send set number to the clients
-            sendData("ruler:" + currentSet.getRuler().getId()); // get ruler of this set
-
             logger.info("New set started. Set number: " + sets.size());
-            logger.info("Ruler of the set: " + currentSet.getRuler().getId());
 
-            divideCards();
-
-        }
-    }
-
-    private void divideCards() {
-        if (getNumberOfPlayers() == 4) {
-            // devide cards btw users and send them to users
-            Card[][] cards = GameService.divideCards(getNumberOfPlayers());
-            for (int i = 0; i < players.length; i++) {
-                players[i].setCards(Arrays.asList(cards[i]));
-                logger.info("Cards dealt to player " +
-                        players[i].getPlayerNumber() + ": " + Arrays.toString(cards[i]));
-            }
+            // start the set
+            currentSet.run();
         }
     }
 
@@ -159,14 +143,10 @@ public class Game implements Runnable {
         return false;
     }
 
-    private synchronized void sendData(Object data, Player @NotNull ... players) {
+    private synchronized void sendData(Object data) {
         for (Player player : players) {
             player.sendData(data);
         }
-    }
-
-    private synchronized void sendData(Object data) {
-        sendData(data, players);
     }
 
     @Override
