@@ -12,18 +12,27 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Set implements Runnable {
-    // stream of the game
+    // player
     private final Player[] players;
     private final int numberOfPlayers;
 
+    // property of ruler
     private final Player ruler;
     private final int indexOfRuler;
     private Card.Suit rule;
 
+    // teams
     private final ArrayList<Team> teams;
-    private final Lock lock = new ReentrantLock();
-    private final Condition ruleSelected = lock.newCondition();
+    private int team1Wins;
+    private int team2Wins;
     private int round;
+
+    // concurrency
+    private final Lock setLock = new ReentrantLock();
+    private final Condition ruleSelected = setLock.newCondition();
+    private final Condition[] otherPlayerTurn;
+    private int currentPlayerIndex;
+
     // result of the game
     private String result;
     private Team winner;
@@ -40,10 +49,12 @@ public class Set implements Runnable {
         // determine ruler
         this.indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
         this.ruler = players[indexOfRuler];
-    }
 
-    Set(Player[] players) {
-        this(players, null);
+        // determine conditions
+        this.otherPlayerTurn = new Condition[numberOfPlayers];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            otherPlayerTurn[i] = setLock.newCondition();
+        }
     }
 
     @Override
@@ -52,13 +63,36 @@ public class Set implements Runnable {
         sendData("ruler:" + ruler.getId());
 
         divideCards();
+
+        while (team1Wins < 7 && team2Wins < 7) {
+            currentPlayerIndex = 0;
+            for (int i = 0; i < numberOfPlayers; i++) {
+                setLock.lock();
+                try {
+                    while (currentPlayerIndex != i) {
+                        otherPlayerTurn[i].await();
+                    }
+                    // get cards from the current player
+                    sendData("turn", players[currentPlayerIndex]);
+                    // Card playedCard = players[i].playCard();
+                    // System.out.println("Player " + players[i].getId() + " played: " + playedCard);
+                    currentPlayerIndex++;
+                    otherPlayerTurn[currentPlayerIndex].signal();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Thread interrupted while waiting for player's turn: " + e.getMessage());
+                } finally {
+                    setLock.unlock();
+                }
+            }
+        }
     }
 
     private void divideCards() {
-        if (numberOfPlayers == 4) {
-            // devide cards btw users and send them to users
-            Card[][] cards = GameService.divideCards(numberOfPlayers);
+        // devide cards btw users and send them to users
+        Card[][] cards = GameService.divideCards(numberOfPlayers);
 
+        if (numberOfPlayers == 4) {
             for (int i = 0; i < numberOfPlayers; i++) {
                 if (i != indexOfRuler)
                     players[i].setCards(Arrays.asList(cards[i]));
@@ -68,7 +102,7 @@ public class Set implements Runnable {
             ruler.setCards(Arrays.asList(cards[indexOfRuler]).subList(0, 5));
 
             // Wait for ruler to select the rule
-            lock.lock();
+            setLock.lock();
             try {
                 while (rule == null) {
                     ruleSelected.await();
@@ -80,11 +114,13 @@ public class Set implements Runnable {
                 System.err.println("Thread interrupted while waiting for rule selection: " +
                         e.getMessage());
             } finally {
-                lock.unlock();
+                setLock.unlock();
             }
 
             // send the rule of the game
             sendData("rule:" + rule);
+        } else {
+
         }
     }
 
@@ -99,12 +135,12 @@ public class Set implements Runnable {
     }
 
     public void setRule(Card.Suit rule) {
-        lock.lock();
+        setLock.lock();
         try {
             this.rule = rule;
             ruleSelected.signalAll();
         } finally {
-            lock.unlock();
+            setLock.unlock();
         }
     }
 }

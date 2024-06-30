@@ -15,6 +15,7 @@ public class GameService {
             throw new IllegalArgumentException(
                     "Invalid number of players!We support just 2 or 4 players.");
         }
+
         List<Card> cards = new ArrayList<>(52); // deck of cards
         SecureRandom randomNumber = new SecureRandom(); // for generate random number
         int count = 0; // number of cards
@@ -28,14 +29,20 @@ public class GameService {
             Collections.shuffle(cards); // shuffle deck
         }
 
-        Card[][] dividedList = new Card[numberOfPlayers][13]; // 2D array for cards
+        Card[][] dividedList; // 2D array for cards
 
         if (numberOfPlayers == 2) {
-            for (int i = 0, j = 0; i < 52; i += 4, j++) {
+            // divide the cards into two decks of 26
+            dividedList = new Card[2][26];
+            for (int i = 0, j = 0; i < 52; i += 2, j++) {
                 dividedList[0][j] = cards.get(i);
+                dividedList[0][j] = cards.get(i + 1);
                 dividedList[1][j] = cards.get(i + 2);
+                dividedList[1][j] = cards.get(i + 3);
             }
         } else {
+            // divide the cards into four decks of 13
+            dividedList = new Card[4][13];
             for (int i = 0, j = 0; i < 52; i += 4, j++) {
                 dividedList[0][j] = cards.get(i);
                 dividedList[1][j] = cards.get(i + 1);
@@ -43,6 +50,7 @@ public class GameService {
                 dividedList[3][j] = cards.get(i + 3);
             }
         }
+
         return dividedList;
     }
 

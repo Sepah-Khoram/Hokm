@@ -231,7 +231,8 @@ public class ClientRunner {
             try {
                 Process process = builder.start();
                 process.waitFor();
-            } catch (IOException|InterruptedException ignored) {}
+            } catch (IOException | InterruptedException ignored) {
+            }
         }
     }
 }

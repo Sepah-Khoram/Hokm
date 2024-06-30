@@ -17,7 +17,8 @@ public class Client {
     private String id;
     private int numberOfPlayers;
 
-    public Client() {}
+    public Client() {
+    }
 
     protected Client(@NotNull Client client) {
         connection = client.getConnection();
@@ -49,7 +50,7 @@ public class Client {
             throw new RuntimeException(e);
         }
 
-         return currentGames;
+        return currentGames;
     }
 
     public boolean joinGame(String host, int numberOfPlayers) throws IllegalArgumentException {

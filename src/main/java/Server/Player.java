@@ -10,9 +10,9 @@ import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 
 public class Player extends Client implements Runnable {
+    private final UUID Id;
     private List<Card> cards = new ArrayList<>();
     private String name;
-    private final UUID Id;
     private boolean connected;
     private int playerNumber;
     private Game game;
@@ -80,10 +80,6 @@ public class Player extends Client implements Runnable {
         sendData(cards);
     }
 
-    public void setPlayerNumber(int playerNumber) {
-        this.playerNumber = playerNumber;
-    }
-
     public String getName() {
         return name;
     }
@@ -102,5 +98,9 @@ public class Player extends Client implements Runnable {
 
     public int getPlayerNumber() {
         return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
     }
 }

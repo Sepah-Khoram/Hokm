@@ -16,10 +16,10 @@ import java.util.logging.Logger;
 
 public class Server implements Runnable {
     private static final Logger logger = LoggerManager.getLogger();
-    private ServerSocket serverSocket; // server socket to connect with clients
     private final List<Client> clients; // clients that connected to server
     private final List<Game> games; // games that play in the server
     private final ExecutorService gameExecutor; // will run games in threads
+    private ServerSocket serverSocket; // server socket to connect with clients
 
     public List<Game> getGames() {
         return games;
@@ -29,9 +29,7 @@ public class Server implements Runnable {
     public Server() {
         try {
             serverSocket = new ServerSocket(5482);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Error creating server socket", e);
             System.exit(1);
         }
@@ -170,7 +168,7 @@ public class Server implements Runnable {
         return false;
     }
 
-    private void closeConnection (Client client) {
+    private void closeConnection(Client client) {
         clients.remove(client); // remove connection from arraylist
         client.closeConnection();
     }
