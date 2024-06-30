@@ -19,7 +19,7 @@ public class ServerManager implements Runnable{
             case 1:
                 System.out.println("games list :");
                 for (int i=0 ; i < server.getGames().size();i++){
-                    System.out.println(String.valueOf(i)+ ". "+ server.getGames().get(i).toString());
+                    System.out.println(String.valueOf(i+1)+ ". "+ server.getGames().get(i).toString());
                 }
             case 2:
                 //
