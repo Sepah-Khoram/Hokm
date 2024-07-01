@@ -16,7 +16,7 @@ public class ServerManager implements Runnable{
         int entry;
         while(true){
 
-        System.out.println("1. Show all games \n2. Show details of the selected game \n3. Loging the information" );
+        System.out.println("1. Show all games \n2. Show details of the selected game \n3. Send a message to the specified game \n4. Send a massage to all games" );
         System.out.println("insert your Choose :");
         try{
             entry = scanner.nextInt();
@@ -49,6 +49,12 @@ public class ServerManager implements Runnable{
                 }
                 System.out.println("insert your massage :");
                 server.getGames().get(entry).massageToAll(scanner.nextLine(),entry,server.getGames());
+            case 4:
+                System.out.println("insert your massage :");
+                String massage = scanner.nextLine();
+                for (int i=0;i<server.getGames().size();i++){
+                    server.getGames().get(i).massageToAll(massage,i,server.getGames());
+                }
             default:
         }
         }

@@ -105,7 +105,7 @@ public class Set implements Runnable {
                 scores[0]++;
             else
                 scores[1]++;
-            sendData("winner:");
+            sendData("winner round:");
             sendData(winner.getId());
 
             // initial again
