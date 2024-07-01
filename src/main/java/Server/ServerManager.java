@@ -55,9 +55,8 @@ public class ServerManager implements Runnable{
                 case 4:
                     System.out.println("insert your massage :");
                     String massage = input.nextLine();
-                    for (int i=0;i<server.getGames().size();i++){
+                    for (int i = 0; i < server.getGames().size(); i++)
                         server.getGames().get(i).massageToAll(massage,i,server.getGames());
-                    }
                 default:
             }
         }
