@@ -39,7 +39,7 @@ public class ClientRunner {
         JMenuBar m = new JMenuBar();
         JMenuItem first = new JMenuItem("Creat New Game");
         JMenuItem second = new JMenuItem("Join Game");
-        menu.add (first);
+        menu.add(first);
         menu.add(second);
         menu1.add(first);
         menu1.add(second);
@@ -164,7 +164,7 @@ public class ClientRunner {
         }
         System.out.println("number    number of player    number of connected player");
         for (int i = 0; i < currentGames.size(); i++) {
-            System.out.printf("  %-2d             %d                       %d",i,currentGames.get(i).getNumberOfPlayers(),currentGames.get(i).getOnlinePlayer());
+            System.out.printf("  %-2d             %d                       %d", i, currentGames.get(i).getNumberOfPlayers(), currentGames.get(i).getOnlinePlayer());
         }
         // for count games
         int count = 0;
