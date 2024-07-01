@@ -136,12 +136,12 @@ public class ClientRunner {
             System.out.printf("  %-2d             %d                       %d", i, currentGames.get(i).getNumberOfPlayers(), currentGames.get(i).getOnlinePlayer());
         }
         System.out.println("\nGames with players >>");
-        for (int i = 0; i < currentGames.size(); i++) {
-            System.out.printf("%d . %s",i+1,"Playears: \n");
-            for (int j = 0; j < currentGames.get(i).getOnlinePlayer(); j++) {
-                System.out.printf("    %d . %s",j+1,currentGames.get(i).getConnectedPlayers().get(j));
-            }
-        }
+//        for (int i = 0; i < currentGames.size(); i++) {
+//            System.out.printf("%d . %s",i+1,"Playears: \n");
+//            for (int j = 0; j < currentGames.get(i).getOnlinePlayer(); j++) {
+//                System.out.printf("    %d . %s",j+1,currentGames.get(i).getConnectedPlayers().get(j));
+//            }
+//        }
         // for count games
         int count = 0;
 
