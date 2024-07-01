@@ -2,6 +2,10 @@ package Client;
 
 import Server.Game;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +31,30 @@ public class ClientRunner {
             showMenu();
             handleMenu();
         }
+        JFrame frame = new JFrame("Hokm");
+        JMenu menu = new JMenu("Game");
+        JMenuBar m = new JMenuBar();
+        JMenuItem first = new JMenuItem("Creat New Game");
+        JMenuItem second = new JMenuItem("Join Game");
+        menu.add (first);
+        menu.add(second);
+        first.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createGame();
+            }
+        });
+        second.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                joinGame();
+            }
+        });
+        m.add(menu);
+        frame.setJMenuBar(m);
+        frame.setLayout(new FlowLayout());
+        frame.setSize(300,300);
+        frame.setVisible(true);
     }
 
     private static void showMenu() {
