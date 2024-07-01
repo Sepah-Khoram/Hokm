@@ -188,4 +188,12 @@ public class Server implements Runnable {
             System.out.println("Invalid choice!");
         }
     }
+
+    public void massageToGame (String massage, int gameNumber){
+        games.get(gameNumber).sendData("Server massage: "+massage);
+    }
+    public void massageToGame (String massage){
+        for (int i = 0; i < games.size(); i++)
+        games.get(i).sendData("Server massage: "+massage);
+    }
 }

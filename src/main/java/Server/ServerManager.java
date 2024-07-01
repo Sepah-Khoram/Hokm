@@ -45,7 +45,6 @@ public class ServerManager implements Runnable{
                         System.out.println("Invalid choice!");
                         continue;
                     }
-
                     break;
                 case 3:
                     System.out.println("Which game do you want to send a massage ? ");
@@ -56,22 +55,21 @@ public class ServerManager implements Runnable{
                         System.out.println("Please enter a number");
                         continue;
                     }
+
                     if (choice >= server.getGames().size() ){
-                        System.out.println("You enter out of range!");
+                        System.out.println("Your enter out of range!");
                         continue;
                     }
                     System.out.print("Enter your massage : ");
-                    server.getGames().get(choice).massageToAll(input.nextLine(),choice,server.getGames());
+                    server.massageToGame(input.nextLine(), choice);
                     break;
                 case 4:
                     System.out.print("Enter your massage : ");
                     String massage = input.nextLine();
-                    for (int i = 0; i < server.getGames().size(); i++)
-                        server.getGames().get(i).massageToAll(massage,i,server.getGames());
+                        server.massageToGame(massage);
                     break;
                 default:
                     System.out.println("Invalid choice!");
-                    continue;
             }
         }
     }
