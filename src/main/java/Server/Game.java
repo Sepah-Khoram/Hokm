@@ -194,4 +194,7 @@ public class Game implements Runnable {
     public int getWinTeam2() {
         return winTeam2;
     }
+    public  void massageToAll (String massage, int gameNumber, List<Game> games){
+        games.get(gameNumber).sendData("Server massage:"+massage);
+    }
 }

@@ -75,6 +75,9 @@ public class Player extends Client implements Runnable {
                         System.out.println("Rule: " + rule);
                     }
                 }
+                else if (serverMessage.startsWith("Server massage:")){
+                    System.out.println(serverMessage);
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             if (!getConnection().isConnected())
