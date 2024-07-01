@@ -91,11 +91,28 @@ public class Player extends Client implements Runnable {
                                 onTableCards.getLast());
                     }
                 } else if (serverMessage.startsWith("turn")) {
-                    showCards();
-                    System.out.println("Your turn!");
-                    System.out.println("Choose one of them(suggested card is " +
-                            GameService.suggestedCard(onTableCards, cards, rule) + "):");
-                    System.out.println(">>> ");
+                    Scanner scanner = new Scanner(System.in);
+                    int entry ;
+                    while (true) {
+                        showCards();
+                        System.out.println("Your turn!");
+                        System.out.println("Choose one of them(suggested card is " +
+                                GameService.suggestedCard(onTableCards, cards, rule) + "):");
+                        System.out.println(">>> ");
+                        try {
+                            entry = scanner.nextInt();
+                            if (entry >= cards.size()) {
+                                System.out.println("you insert out of range!");
+                                continue;
+                            }
+                            else{
+                                putCard(cards.get(entry));
+                            }
+                        }catch (InputMismatchException e){
+                            System.out.println("please insert number!");
+                            continue;
+                        }
+                    }
                 }
                 else if (serverMessage.startsWith("Server massage:")){
                     System.out.println(serverMessage);
