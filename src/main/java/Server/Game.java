@@ -207,4 +207,8 @@ public class Game implements Runnable {
         return connectedPlayers.size();
     }
 
+    public CopyOnWriteArrayList<Player> getConnectedPlayers() {
+        return connectedPlayers;
+    }
+
 }
