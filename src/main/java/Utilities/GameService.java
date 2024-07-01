@@ -59,6 +59,8 @@ public class GameService {
         Card.Suit base = playedCards.getFirst().getSuit();
         if ((playedCards.size() == 1) && (containCard(cardsInHand, base)) && (haveBetterCard(cardsInHand, playedCards.get(0)))) {
             return bestCard(cardsInHand, base);
+        } else if (playedCards.isEmpty()) {
+            return Collections.max(cardsInHand);
         } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (containCard(playedCards, rule)) && (containCard(cardsInHand, rule)) && (bestCard(cardsInHand, rule).compareTo(playedCards.get(1)) < 0) && (base != rule) && (playedCards.get(1).getSuit() == rule)) {
             return worstCardNot(cardsInHand, base, playedCards.get(1).getSuit());
         } else if ((playedCards.size() == 2) && (containCard(cardsInHand, base)) && (!haveBetterCard(cardsInHand, topCard(playedCards, rule))) && (!containCard(playedCards, rule))) {
