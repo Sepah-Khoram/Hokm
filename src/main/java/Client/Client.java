@@ -1,7 +1,6 @@
 package Client;
 
 import Server.Game;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,7 +19,7 @@ public class Client {
     public Client() {
     }
 
-    protected Client(@NotNull Client client) {
+    protected Client(Client client) {
         connection = client.getConnection();
         output = client.getOutput();
         input = client.getInput();
@@ -40,7 +39,7 @@ public class Client {
         ArrayList<Game> currentGames = null;
 
         try {
-            connectionTo(host);
+            connectTo(host);
             sendData("getGames"); // send request to server
 
             currentGames = (ArrayList<Game>) input.readObject(); // get games from server
@@ -59,7 +58,7 @@ public class Client {
         System.out.println("joining game..."); // prompt
 
         try {
-            connectionTo(host);
+            connectTo(host);
             sendData("join random:" + numberOfPlayers);
 
             // get player id
@@ -73,11 +72,11 @@ public class Client {
         return true;
     }
 
-    public boolean joinGame(String host, @NotNull UUID token) {
+    public boolean joinGame(String host, UUID token) {
         System.out.println("joining game..."); // prompt
 
         try {
-            connectionTo(host);
+            connectTo(host);
             sendData("join token:" + token);
 
             // get player id
@@ -97,7 +96,7 @@ public class Client {
         System.out.println("Creating game..."); // prompt
 
         try {
-            connectionTo(host);
+            connectTo(host);
             sendData("create:" + numberOfPlayers);
 
             // get player id
@@ -120,7 +119,7 @@ public class Client {
         }
     }
 
-    private void connectionTo(String host) throws IOException {
+    private void connectTo(String host) throws IOException {
         connection = new Socket(host, 5482);
         output = new ObjectOutputStream(connection.getOutputStream());
         input = new ObjectInputStream(connection.getInputStream());

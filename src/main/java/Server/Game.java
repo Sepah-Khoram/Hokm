@@ -4,9 +4,9 @@ import Utilities.Card;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +17,6 @@ public class Game implements Runnable {
     // for manage the multithreading and logging
     private static final Logger logger = LoggerManager.getLogger(); // logger for logging
     private final CyclicBarrier gameStartBarrier; // for wait threads for the game to start
-    private final CopyOnWriteArrayList<Player> connectedPlayers;
     private final ExecutorService executorService; // manage threads
 
     // for manage the game
@@ -27,13 +26,13 @@ public class Game implements Runnable {
     private final List<Set> sets;
     private Set currentSet;
     private boolean isGameStarted;
+    private int connectedPlayers; // no one added
     private int winTeam1 = 0;
     private int winTeam2 = 0;
 
     Game(Player player, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
         token = UUID.randomUUID();
-        connectedPlayers = new CopyOnWriteArrayList<>();
         sets = new ArrayList<>();
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
         gameStartBarrier = new CyclicBarrier(numberOfPlayers, this::startGame);
@@ -46,18 +45,30 @@ public class Game implements Runnable {
     }
 
     synchronized void addPlayer(Player player) {
-        if (connectedPlayers.size() < players.length) {
-            players[connectedPlayers.size()] = player;
-            connectedPlayers.add(player);
+        if (connectedPlayers < players.length) {
+            players[connectedPlayers++] = player;
 
             player.setGame(this); // set game
-            player.setPlayerNumber(connectedPlayers.size()); // set player number
+            player.setPlayerNumber(connectedPlayers); // set player number
             executorService.execute(player);
+
+            // send information about new player to previous player
+            if (connectedPlayers > 1) {
+                try {
+                    while (player.getName() == null)
+                        Thread.sleep(10);
+                    // send the notification to previous players
+                    Player[] previousPlayers = Arrays.copyOfRange(players, 0, connectedPlayers - 1);
+                    sendData("new player:" + player.getName(), previousPlayers);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
 
             logger.info("Player " + player.getId() + " added to the game. Player number: "
                     + player.getPlayerNumber());
 
-            if (connectedPlayers.size() == players.length) {
+            if (connectedPlayers == players.length) {
                 logger.info("All players have joined the game.");
             }
         } else {
@@ -79,8 +90,8 @@ public class Game implements Runnable {
         // make two treams
         if (getNumberOfPlayers() == 4) {
             makeTwoTeams();
-            sendData("team1:" + teams.getFirst());
-            sendData("team2:" + teams.getLast());
+            sendData("team1:" + teams.getFirst().toString());
+            sendData("team2:" + teams.getLast().toString());
         } else {
             // simulate player1 with team1
             ArrayList<Player> team1 = new ArrayList<>();
@@ -131,12 +142,12 @@ public class Game implements Runnable {
     private void makeTwoTeams() {
         // create team1 and team2
         ArrayList<Player> team1 = new ArrayList<>(2);
-        team1.add(players[4]);
+        team1.add(players[3]);
 
         ArrayList<Player> team2 = new ArrayList<>(2);
 
         // find the teammate for the last player
-        int teammateIndex = new SecureRandom().nextInt(4);
+        int teammateIndex = new SecureRandom().nextInt(0, 3);
         team1.add(players[teammateIndex]);
 
         // make team2
@@ -155,15 +166,18 @@ public class Game implements Runnable {
         return (winTeam1 == 7 || winTeam2 == 7);
     }
 
-     synchronized void sendData(Object data) {
-        for (Player player : players) {
+    private synchronized void sendData(Object data, Player... players) {
+        for (Player player : players)
             player.sendData(data);
-        }
+    }
+
+    synchronized void sendData(Object data) {
+        sendData(data, players);
     }
 
     @Override
     public String toString() {
-        return players.length + " players: " + connectedPlayers.toString();
+        return players.length + " players: " + Arrays.toString(players);
     }
 
     public int getNumberOfPlayers() {
@@ -202,6 +216,4 @@ public class Game implements Runnable {
     int getCurrentRound() {
         return currentSet.getRound();
     }
-
-
 }

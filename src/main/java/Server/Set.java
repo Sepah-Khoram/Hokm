@@ -2,7 +2,6 @@ package Server;
 
 import Utilities.Card;
 import Utilities.GameService;
-import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -35,14 +34,13 @@ public class Set implements Runnable {
     private int currentPlayerIndex;
 
     // result of the game
-    private String result;
     private Team winner;
 
     public  Team getWinner() {
         return winner;
     }
 
-    Set(Player @NotNull [] players, @NotNull ArrayList<Team> teams) {
+    Set(Player[] players, ArrayList<Team> teams) {
         this.players = players;
         this.numberOfPlayers = players.length;
         this.teams = teams;
@@ -173,7 +171,7 @@ public class Set implements Runnable {
         }
     }
 
-    private synchronized void sendData(Object data, Player @NotNull ... players) {
+    private synchronized void sendData(Object data, Player... players) {
         for (Player player : players) {
             player.sendData(data);
         }

@@ -1,8 +1,6 @@
 // class to represent a Card in a deck of cards
 package Utilities;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 
 public class Card implements Comparable<Card>, Serializable {
@@ -16,7 +14,7 @@ public class Card implements Comparable<Card>, Serializable {
     }
 
     @Override
-    public int compareTo(@NotNull Card card) {
+    public int compareTo(Card card) {
         return suit.compareTo(card.getSuit());
     }
 

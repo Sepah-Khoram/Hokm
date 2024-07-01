@@ -2,10 +2,6 @@ package Client;
 
 import Server.Game;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,36 +27,6 @@ public class ClientRunner {
             showMenu();
             handleMenu();
         }
-//        JFrame frame = new JFrame("Hokm");
-//        JLabel label = new JLabel("Wecome to Hokm game ");
-//        JTextField name = new JTextField("");
-//        JMenu menu = new JMenu("4 Player Game");
-//        JMenu menu1 = new JMenu("2 Player Game");
-//        JMenuBar m = new JMenuBar();
-//        JMenuItem first = new JMenuItem("Creat New Game");
-//        JMenuItem second = new JMenuItem("Join Game");
-//        menu.add (first);
-//        menu.add(second);
-//        menu1.add(first);
-//        menu1.add(second);
-//        first.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                createGame();
-//            }
-//        });
-//        second.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                joinGame();
-//            }
-//        });
-//        m.add(menu);
-//        m.add(menu1);
-//        frame.setJMenuBar(m);
-//        frame.setLayout(new GridBagLayout());
-//        frame.pack();
-//        frame.setVisible(true);
     }
 
     private static void showMenu() {
@@ -81,8 +47,9 @@ public class ClientRunner {
             try {
                 choice = inputInt.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("Invalid choice. Try agaain.");
+                System.out.println("Please enter a number. Try agaain.");
                 System.out.print(">>> ");
+                input.nextLine();
                 continue;
             }
 
@@ -127,6 +94,7 @@ public class ClientRunner {
                 System.out.println(e.getMessage());
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number(2 or 4).");
+                input.nextLine();
             }
             // cancel proccess
             if (i == 2)
@@ -141,11 +109,13 @@ public class ClientRunner {
                 if (client.joinGame(HOST, input.nextInt())) {
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
+                    return;
                 }
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number(2 or 4).");
+                input.nextLine();
             }
             // cancel proccess
             if (i == 2)
@@ -183,9 +153,11 @@ public class ClientRunner {
                 if (client.joinGame(HOST, currentGames.get(gameNumber).getToken())) {
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
+                    return;
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number.");
+                input.nextLine();
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Please write a correct number in the range.");
             }
@@ -200,7 +172,7 @@ public class ClientRunner {
         // give a number from user
         String oldName = nameOfPlayer; // save old name for cancel
         for (int i = 0; i < 3; i++) {
-            System.out.print("Insert new name : ");
+            System.out.print("Enter your new name: ");
             nameOfPlayer = input.nextLine();
             if (!nameOfPlayer.isEmpty())
                 break;

@@ -1,7 +1,6 @@
 package Server;
 
 import Utilities.Card;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class Player extends Client implements Runnable {
     @Override
     public void run() {
         try {
-            sendData(playerNumber); // send player number to player
+            sendInt(playerNumber); // send player number to player
             // give player name
             Object data = getInput().readObject();
             process(data);
@@ -54,7 +53,7 @@ public class Player extends Client implements Runnable {
         return name;
     }
 
-    private void process(@NotNull Object data) {
+    private void process(Object data) {
         // proccesing datas
         if (data.toString().startsWith("name:")) {
             name = data.toString().substring(5).trim();
@@ -65,16 +64,6 @@ public class Player extends Client implements Runnable {
         }
 
         System.out.println("Received data: " + data);
-    }
-
-    @Override
-    public synchronized void sendData(Object data) {
-        try {
-            getOutput().writeObject(data);
-            getOutput().flush();
-        } catch (IOException e) {
-            System.err.println("Error sending data: " + e.getMessage());
-        }
     }
 
     synchronized Card playCard() {
@@ -95,7 +84,7 @@ public class Player extends Client implements Runnable {
     void setCards(List<Card> cards) {
         this.cards = cards;
         sendData("cards:");
-        sendData(cards);
+        sendData(new ArrayList<>(cards));
     }
 
     public String getName() {

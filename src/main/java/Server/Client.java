@@ -1,7 +1,5 @@
 package Server;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,7 +15,7 @@ public class Client {
     private ObjectOutputStream output;
     private ObjectInputStream input;
 
-    public Client(@NotNull Socket connection) {
+    public Client(Socket connection) {
         try {
             this.connection = connection;
             this.output = new ObjectOutputStream(connection.getOutputStream());
@@ -29,13 +27,13 @@ public class Client {
         }
     }
 
-    protected Client(@NotNull Client client) {
+    protected Client(Client client) {
         connection = client.getConnection();
         output = client.getOutput();
         input = client.getInput();
     }
 
-    public void sendInt(int number) {
+    public synchronized void sendInt(int number) {
         try {
             output.writeInt(number);
             output.flush();
@@ -45,7 +43,7 @@ public class Client {
         }
     }
 
-    public void sendData(Object data) {
+    public synchronized void sendData(Object data) {
         try {
             output.writeObject(data);
             output.flush();

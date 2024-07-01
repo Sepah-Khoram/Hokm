@@ -1,7 +1,5 @@
 package Server;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -73,7 +71,7 @@ public class Server implements Runnable {
         }
     } // end method execute
 
-    private void handleCommand(@NotNull String command, Client client) {
+    private void handleCommand(String command, Client client) {
         try {
             if (command.startsWith("create:")) {
                 int number = Integer.parseInt(command.substring(7));
@@ -189,11 +187,12 @@ public class Server implements Runnable {
         }
     }
 
-    public void massageToGame (String massage, int gameNumber){
-        games.get(gameNumber).sendData("Server massage: "+massage);
+    public void massageToGame(String massage, int gameNumber) {
+        games.get(gameNumber).sendData("server massage: " + massage);
     }
-    public void massageToGame (String massage){
-        for (int i = 0; i < games.size(); i++)
-        games.get(i).sendData("Server massage: "+massage);
+
+    public void massageToGame(String massage) {
+        for (Game game : games)
+            game.sendData("server massage: " + massage);
     }
 }

@@ -23,6 +23,7 @@ public class ServerManager implements Runnable{
                 choice = input.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid entery. Please write a number.");
+                input.nextLine(); // to ignore shit words
                 continue;
             }
 
@@ -32,8 +33,7 @@ public class ServerManager implements Runnable{
                     break;
                 case 2:
                     // determine whether there is a game
-                    boolean found = showGames();
-                    if (!found)
+                    if (!showGames())
                         continue;
 
                     System.out.println("Which game do you want to see the detail of?");
@@ -45,28 +45,41 @@ public class ServerManager implements Runnable{
                         System.out.println("Invalid choice!");
                         continue;
                     }
+
                     break;
                 case 3:
-                    System.out.println("Which game do you want to send a massage ? ");
+                    if (!showGames())
+                        continue;
+
+                    System.out.println("Which game do you want to send a massage?");
+                    System.out.print(">>> ");
+
                     try {
-                        System.out.print(">>> ");
                         choice = input.nextInt();
                     } catch (InputMismatchException e) {
                         System.out.println("Please enter a number");
                         continue;
                     }
 
-                    if (choice >= server.getGames().size() ){
-                        System.out.println("Your enter out of range!");
+                    // check the range
+                    if (choice >= server.getGames().size()){
+                        System.out.println("Your choice is out of range!");
                         continue;
                     }
-                    System.out.print("Enter your massage : ");
+
+                    // get message and send
+                    System.out.print("Enter your massage: ");
                     server.massageToGame(input.nextLine(), choice);
                     break;
                 case 4:
-                    System.out.print("Enter your massage : ");
+                    // determine whether there is a game
+                    if (!showGames())
+                        continue;
+
+                    // get message and send
+                    System.out.print("Enter your massage: ");
                     String massage = input.nextLine();
-                        server.massageToGame(massage);
+                    server.massageToGame(massage);
                     break;
                 default:
                     System.out.println("Invalid choice!");
@@ -79,7 +92,7 @@ public class ServerManager implements Runnable{
         System.out.println("2. Show details of the selected game");
         System.out.println("3. Send a message to the specified game");
         System.out.println("4. Send a massage to all games");
-        System.out.println("Please enter your Choice :");
+        System.out.println("Please enter your choice :");
         System.out.print(">>> ");
     }
 

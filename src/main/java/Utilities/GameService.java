@@ -1,8 +1,6 @@
 package Utilities;
 
 import Server.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -54,7 +52,7 @@ public class GameService {
         return dividedList;
     }
 
-    public static @Nullable Card suggestedCard(@NotNull ArrayList<Card> playedCards,
+    public static Card suggestedCard(ArrayList<Card> playedCards,
                                                ArrayList<Card> cardsInHand, Card.Suit rule) {
         Card.Suit base = playedCards.getFirst().getSuit();
         if ((playedCards.size() == 1) && (containCard(cardsInHand, base)) && (haveBetterCard(cardsInHand, playedCards.get(0)))) {
@@ -83,7 +81,7 @@ public class GameService {
         return null;
     }
 
-    private static @Nullable Card worstCard(@NotNull ArrayList<Card> cards, Card.Suit cardType1,
+    private static Card worstCard(ArrayList<Card> cards, Card.Suit cardType1,
                                             Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
@@ -97,7 +95,7 @@ public class GameService {
     }
 
     // do not contain type of parameters
-    private static @Nullable Card worstCardNot(@NotNull ArrayList<Card> cards, Card.Suit cardType1,
+    private static Card worstCardNot(ArrayList<Card> cards, Card.Suit cardType1,
                                                Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
@@ -110,7 +108,7 @@ public class GameService {
             return Collections.min(validCards);
     }
 
-    public static Card topCard(@NotNull ArrayList<Card> cards, Card.Suit rule) {
+    public static Card topCard(ArrayList<Card> cards, Card.Suit rule) {
         Card.Suit base = cards.getFirst().getSuit();
         if (containCard(cards, rule))
             return Collections.max(findCard(cards, rule));
@@ -118,7 +116,7 @@ public class GameService {
             return Collections.max(findCard(cards, base));
     }
 
-    private static boolean haveBetterCard(ArrayList<Card> cards, @NotNull Card checkCard) {
+    private static boolean haveBetterCard(ArrayList<Card> cards, Card checkCard) {
         return bestCard(cards, checkCard.getSuit()).compareTo(checkCard) > 0;
     }
 
@@ -126,7 +124,7 @@ public class GameService {
         return Collections.max(findCard(cards, cardType));
     }
 
-    private static boolean containCard(@NotNull ArrayList<Card> cards, Card.Suit cardType) {
+    private static boolean containCard(ArrayList<Card> cards, Card.Suit cardType) {
         for (Card card : cards) {
             if (card.getSuit() == cardType)
                 return true;
@@ -134,7 +132,7 @@ public class GameService {
         return false;
     }
 
-    private static @NotNull ArrayList<Card> findCard(@NotNull ArrayList<Card> cards,
+    private static ArrayList<Card> findCard(ArrayList<Card> cards,
                                                      Card.Suit cardType) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
@@ -144,7 +142,7 @@ public class GameService {
         return validCards;
     }
 
-    public static void checkPlayerNames(@NotNull List<Player> players) {
+    public static void checkPlayerNames(List<Player> players) {
         if (players.size() == 2) {
             Player player1 = players.get(0);
             Player player2 = players.get(1);
@@ -182,8 +180,8 @@ public class GameService {
         }
     }
 
-    public static boolean validCard(@NotNull ArrayList<Card> playedCards, ArrayList<Card> cardsInHand,
-                                    @NotNull Card checkCard, Card.Suit rule) {
+    public static boolean validCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand,
+                                    Card checkCard, Card.Suit rule) {
         Card.Suit base = playedCards.getFirst().getSuit();
         return (checkCard.getSuit() == base) ||
                 (!containCard(cardsInHand, base) &&

@@ -25,7 +25,7 @@ public class Player extends Client implements Runnable {
     public void run() {
         try {
             // check player number and prompt
-            int countPlayers = (Integer) getInput().readObject();
+            int countPlayers = getInput().readInt();
             if (countPlayers == 404) {
                 System.out.println("Not found any game!");
                 return;
@@ -47,9 +47,12 @@ public class Player extends Client implements Runnable {
                 // get server messages
                 String serverMessage = (String) getInput().readObject();
 
-                if (serverMessage.equals("players")) {
+                if (serverMessage.equals("players:")) {
                     showPlayers();
-                } else if (serverMessage.equals("cards")) {
+                } else if (serverMessage.startsWith("new player")) {
+                    String newPlayerName = serverMessage.substring(11);
+                    System.out.println(newPlayerName + " joined the game!");
+                } else if (serverMessage.equals("cards:")) {
                     getCards();
                 } else if (serverMessage.startsWith("ruler")) {
                     String rulerId = serverMessage.substring(6);
@@ -65,12 +68,12 @@ public class Player extends Client implements Runnable {
                     System.out.println("Set " + numberOfSet + " has started.");
                 } else if (serverMessage.startsWith("team")) {
                     String[] team = serverMessage.substring(6).split(",");
-                    if (team[1].equals(getId()) || team[2].equals(getId())) {
-                        System.out.println("Your team: " + playerInGame.get(team[1]) +
-                                ", " + playerInGame.get(team[2]));
+                    if (team[0].equals(getId()) || team[1].equals(getId())) {
+                        System.out.println("Your team: " + playerInGame.get(team[0]) +
+                                ", " + playerInGame.get(team[1]));
                     } else {
-                        System.out.println("Other team: " + playerInGame.get(team[1]) +
-                                ", " + playerInGame.get(team[2]));
+                        System.out.println("Other team: " + playerInGame.get(team[0]) +
+                                ", " + playerInGame.get(team[1]));
                     }
                 } else if (serverMessage.startsWith("rule")) {
                     if (!isRuler) {
@@ -79,7 +82,7 @@ public class Player extends Client implements Runnable {
                     }
                 } else if (serverMessage.startsWith("round")) {
                     int round = Integer.parseInt(serverMessage.substring(6));
-                    System.out.println("Round " + round + " is started.");
+                    System.out.println("Round " + round + " has started.");
                     onTableCards.clear();
                 } else if (serverMessage.startsWith("on table card")) {
                     // get player's id
@@ -91,8 +94,8 @@ public class Player extends Client implements Runnable {
                                 onTableCards.getLast());
                     }
                 } else if (serverMessage.startsWith("turn")) {
-                    Scanner scanner = new Scanner(System.in);
-                    int entry ;
+                    Scanner input = new Scanner(System.in);
+                    int choice;
                     while (true) {
                         showCards();
                         System.out.println("Your turn!");
@@ -100,21 +103,19 @@ public class Player extends Client implements Runnable {
                                 GameService.suggestedCard(onTableCards, cards, rule) + "):");
                         System.out.println(">>> ");
                         try {
-                            entry = scanner.nextInt();
-                            if (entry >= cards.size()) {
+                            choice = input.nextInt();
+
+                            if (choice >= cards.size()) {
                                 System.out.println("Your choice is out of range!");
-                                continue;
+                            } else{
+                                putCard(cards.get(choice));
                             }
-                            else{
-                                putCard(cards.get(entry));
-                            }
-                        }catch (InputMismatchException e){
-                            System.out.println("Please insert number!");
-                            continue;
+                        } catch (InputMismatchException e){
+                            System.out.println("Please enter a number!");
+                            input.nextLine();
                         }
                     }
-                }
-                else if (serverMessage.startsWith("Server massage: ")){
+                } else if (serverMessage.startsWith("Server massage: ")){
                     System.out.println(serverMessage);
                 }
             }
@@ -136,6 +137,7 @@ public class Player extends Client implements Runnable {
             getRule();
 
             // get complete cards from server
+            getInput().readObject(); // for shake hands
             cards = (ArrayList<Card>) getInput().readObject();
         }
 
@@ -149,9 +151,9 @@ public class Player extends Client implements Runnable {
         // prompt to user to select rule
         Scanner input = new Scanner(System.in);
         System.out.println("Please choose rule : ");
-        System.out.println("1-->> Hearts");
+        System.out.println("1-->> Clubs");
         System.out.println("2-->> Diamonds");
-        System.out.println("3-->> Clubs");
+        System.out.println("3-->> Hearts");
         System.out.println("4-->> Spades");
         System.out.println();
         System.out.print(">>> ");
@@ -188,7 +190,7 @@ public class Player extends Client implements Runnable {
     }
 
     private void showPlayers() throws IOException, ClassNotFoundException {
-        System.out.println("Player in games: ");
+        System.out.println("Players in game: ");
         // save id and name of players in the game
         for (int i = 0; i < getNumberOfPlayers(); i++) {
             String message = (String) getInput().readObject();
