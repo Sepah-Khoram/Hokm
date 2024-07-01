@@ -216,4 +216,8 @@ public class Game implements Runnable {
     int getCurrentRound() {
         return currentSet.getRound();
     }
+
+    public int getOnlinePlayer (){
+        return connectedPlayers;
+    }
 }
