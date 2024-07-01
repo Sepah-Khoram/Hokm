@@ -1,6 +1,7 @@
 package Client;
 
 import Utilities.Card;
+import Utilities.GameService;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -9,8 +10,10 @@ import java.util.*;
 public class Player extends Client implements Runnable {
     private final String name;
     private final Map<String, String> playerInGame; // <Id, Name>
-    boolean isRuler;
-    private List<Card> cards;
+    private final ArrayList<Card> onTableCards = new ArrayList<>();
+    private boolean isRuler;
+    private Card.Suit rule;
+    private ArrayList<Card> cards;
 
     public Player(String name, Client client) {
         super(client);
@@ -44,11 +47,11 @@ public class Player extends Client implements Runnable {
                 // get server messages
                 String serverMessage = (String) getInput().readObject();
 
-                if (serverMessage.equals("players:")) {
+                if (serverMessage.equals("players")) {
                     showPlayers();
-                } else if (serverMessage.equals("cards:")) {
+                } else if (serverMessage.equals("cards")) {
                     getCards();
-                } else if (serverMessage.startsWith("ruler:")) {
+                } else if (serverMessage.startsWith("ruler")) {
                     String rulerId = serverMessage.substring(6);
                     if (getId().equals(rulerId)) {
                         System.out.println("You are ruler!");
@@ -57,7 +60,7 @@ public class Player extends Client implements Runnable {
                         System.out.println(playerInGame.get(rulerId).trim() + " is ruler.");
                         isRuler = false;
                     }
-                } else if (serverMessage.startsWith("set:")) {
+                } else if (serverMessage.startsWith("set")) {
                     int numberOfSet = Integer.parseInt(serverMessage.substring(4));
                     System.out.println("Set " + numberOfSet + " has started.");
                 } else if (serverMessage.startsWith("team")) {
@@ -69,11 +72,30 @@ public class Player extends Client implements Runnable {
                         System.out.println("Other team: " + playerInGame.get(team[1]) +
                                 ", " + playerInGame.get(team[2]));
                     }
-                } else if (serverMessage.startsWith("rule:")) {
+                } else if (serverMessage.startsWith("rule")) {
                     if (!isRuler) {
-                        String rule = serverMessage.substring(5);
-                        System.out.println("Rule: " + rule);
+                        rule = Card.Suit.valueOf(serverMessage.substring(5));
+                        System.out.println("Rule is : " + rule);
                     }
+                } else if (serverMessage.startsWith("round")) {
+                    int round = Integer.parseInt(serverMessage.substring(6));
+                    System.out.println("Round " + round + " is started.");
+                    onTableCards.clear();
+                } else if (serverMessage.startsWith("on table card")) {
+                    // get player's id
+                    String playerId = serverMessage.substring(14);
+                    // get card
+                    onTableCards.add((Card) getInput().readObject());
+                    if (!playerId.equals(getId())) {
+                        System.out.println(playerInGame.get(playerId) + " played " +
+                                onTableCards.getLast());
+                    }
+                } else if (serverMessage.startsWith("turn")) {
+                    showCards();
+                    System.out.println("Your turn!");
+                    System.out.println("Choose one of them(suggested card is " +
+                            GameService.suggestedCard(onTableCards, cards, rule) + "):");
+                    System.out.println(">>> ");
                 }
                 else if (serverMessage.startsWith("Server massage:")){
                     System.out.println(serverMessage);
@@ -88,7 +110,7 @@ public class Player extends Client implements Runnable {
 
     private void getCards() throws IOException, ClassNotFoundException {
         // get cards from server
-        cards = (List<Card>) getInput().readObject();
+        cards = (ArrayList<Card>) getInput().readObject();
 
         if (isRuler) {
             // show 5 first cards of the player
@@ -97,7 +119,7 @@ public class Player extends Client implements Runnable {
             getRule();
 
             // get complete cards from server
-            cards = (List<Card>) getInput().readObject();
+            cards = (ArrayList<Card>) getInput().readObject();
         }
 
         // print cards
@@ -118,7 +140,6 @@ public class Player extends Client implements Runnable {
         System.out.print(">>> ");
 
         // get rule from user
-        Card.Suit rule = null;
         for (int i = 0; i < 3; i++) {
             try {
                 int choice = input.nextInt();

@@ -23,9 +23,9 @@ public class Set implements Runnable {
 
     // teams
     private final ArrayList<Team> teams;
-    private int team1Wins;
-    private int team2Wins;
+    private final int[] scores;
     private int round;
+    private final ArrayList<Card> onTableCards = new ArrayList<>();
 
     // concurrency
     private final Lock setLock = new ReentrantLock();
@@ -45,6 +45,9 @@ public class Set implements Runnable {
         this.players = players;
         this.numberOfPlayers = players.length;
         this.teams = teams;
+        this.scores = new int[teams.size()];
+        scores[0] = 0;
+        scores[1] = 0;
 
         // determine ruler
         this.indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
@@ -64,8 +67,10 @@ public class Set implements Runnable {
 
         divideCards();
 
-        while (team1Wins < 7 && team2Wins < 7) {
-            currentPlayerIndex = 0;
+        while (scores[0] < 7 && scores[1] < 7) {
+            // start the round
+            sendData("round:" + ++round);
+
             for (int i = 0; i < numberOfPlayers; i++) {
                 setLock.lock();
                 try {
@@ -74,8 +79,15 @@ public class Set implements Runnable {
                     }
                     // get cards from the current player
                     sendData("turn", players[currentPlayerIndex]);
-                    // Card playedCard = players[i].playCard();
-                    // System.out.println("Player " + players[i].getId() + " played: " + playedCard);
+                    Card playedCard = players[i].playCard();
+                    System.out.println("Player " + players[i].getId() + " played: " + playedCard);
+                    onTableCards.add(playedCard);
+
+                    // send played card
+                    sendData("on table card:" + players[currentPlayerIndex].getId());
+                    sendData(playedCard);
+
+                    // change the turn
                     currentPlayerIndex++;
                     otherPlayerTurn[currentPlayerIndex].signal();
                 } catch (InterruptedException e) {
@@ -85,6 +97,20 @@ public class Set implements Runnable {
                     setLock.unlock();
                 }
             }
+
+            // find the winner
+            Card winCard = GameService.topCard(onTableCards, rule);
+            Player winner = players[onTableCards.indexOf(winCard)];
+            if (teams.getFirst().getPlayers().contains(winner))
+                scores[0]++;
+            else
+                scores[1]++;
+            sendData("winner:");
+            sendData(winner.getId());
+
+            // initial again
+            onTableCards.clear();
+            currentPlayerIndex = 0;
         }
     }
 
