@@ -162,7 +162,10 @@ public class ClientRunner {
             System.out.println("No current game in server. You can create a new game!");
             return;
         }
-
+        System.out.println("number    number of player    number of connected player");
+        for (int i = 0; i < currentGames.size(); i++) {
+            System.out.printf("  %-2d             %d                       %d",i,currentGames.get(i).getNumberOfPlayers(),currentGames.get(i).getOnlinePlayer());
+        }
         // for count games
         int count = 0;
 

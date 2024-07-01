@@ -203,5 +203,8 @@ public class Game implements Runnable {
         return currentSet.getRound();
     }
 
+    public int getOnlinePlayer (){
+        return connectedPlayers.size();
+    }
 
 }
