@@ -166,7 +166,7 @@ public class Game implements Runnable {
         return players.length + " players: " + connectedPlayers.toString();
     }
 
-    int getNumberOfPlayers() {
+    public int getNumberOfPlayers() {
         return players.length;
     }
 
@@ -174,7 +174,7 @@ public class Game implements Runnable {
         return isGameStarted;
     }
 
-    UUID getToken() {
+    public UUID getToken() {
         return token;
     }
 
