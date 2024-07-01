@@ -155,7 +155,7 @@ public class Game implements Runnable {
         return (winTeam1 == 7 || winTeam2 == 7);
     }
 
-    private synchronized void sendData(Object data) {
+     synchronized void sendData(Object data) {
         for (Player player : players) {
             player.sendData(data);
         }
@@ -203,7 +203,5 @@ public class Game implements Runnable {
         return currentSet.getRound();
     }
 
-    public void massageToAll (String massage, int gameNumber, List<Game> games){
-        games.get(gameNumber).sendData("Server massage: "+massage);
-    }
+
 }
