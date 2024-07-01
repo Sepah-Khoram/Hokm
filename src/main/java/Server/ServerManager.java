@@ -1,6 +1,7 @@
 package Server;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class ServerManager implements Runnable{
@@ -39,8 +40,18 @@ public class ServerManager implements Runnable{
                     System.out.println("wrong entry!");
                     continue;
                 }
+            case 3:
+                System.out.println("wich game do you want to send a massage ? ");
+                entry =scanner.nextInt();
+                if (entry >= server.getGames().size() ){
+                    System.out.println("you insert out of range!");
+                    continue;
+                }
+                System.out.println("insert your massage :");
+                server.getGames().get(entry).massageToAll(scanner.nextLine(),entry,server.getGames());
             default:
         }
         }
     }
+
 }
