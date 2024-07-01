@@ -31,7 +31,11 @@ public class ServerManager implements Runnable{
                     showGames();
                     break;
                 case 2:
-                    showGames();
+                    // determine whether there is a game
+                    boolean found = showGames();
+                    if (!found)
+                        continue;
+
                     System.out.println("Which game do you want to see the detail of?");
                     System.out.println(">>> ");
 
@@ -46,10 +50,10 @@ public class ServerManager implements Runnable{
                 case 3:
                     System.out.println("Which game do you want to send a massage ? ");
                     try {
-                        System.out.print(">>>");
+                        System.out.print(">>> ");
                         choice = input.nextInt();
                     } catch (InputMismatchException e) {
-                        System.out.println("Please enter number");
+                        System.out.println("Please enter a number");
                         continue;
                     }
                     if (choice >= server.getGames().size() ){
@@ -81,16 +85,17 @@ public class ServerManager implements Runnable{
         System.out.print(">>> ");
     }
 
-    private void showGames() {
+    private boolean showGames() {
         // check if the game is not null
-        if (server.getGames() == null) {
+        if (server.getGames().isEmpty()) {
             System.out.println("No game found!");
-            return;
+            return false;
         }
 
         // show list of the game
         System.out.println("Games:");
         for (int i = 1; i <= server.getGames().size(); i++)
             System.out.println(i + ". " + server.getGames().get(i));
+        return true;
     }
 }

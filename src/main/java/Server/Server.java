@@ -94,6 +94,8 @@ public class Server implements Runnable {
                     client.sendInt(404);
                     closeConnection(client);
                 }
+            } else if (command.equals("getGames")) {
+                // get Games
             } else
                 closeConnection(client);
         } catch (NumberFormatException e) {
