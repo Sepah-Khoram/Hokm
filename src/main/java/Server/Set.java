@@ -23,7 +23,8 @@ public class Set implements Runnable {
 
     // teams
     private final ArrayList<Team> teams;
-    private final int[] scores;
+    private final int[] scoresOfTeams;
+    private final int[] scoresOfPlayers;
     private int round;
     private final ArrayList<Card> onTableCards = new ArrayList<>();
 
@@ -41,13 +42,20 @@ public class Set implements Runnable {
         return winner;
     }
 
-    Set(Player @NotNull [] players, ArrayList<Team> teams) {
+    Set(Player @NotNull [] players, @NotNull ArrayList<Team> teams) {
         this.players = players;
         this.numberOfPlayers = players.length;
         this.teams = teams;
-        this.scores = new int[teams.size()];
-        scores[0] = 0;
-        scores[1] = 0;
+
+        this.scoresOfTeams = new int[teams.size()];
+        for (int i = 0; i < teams.size(); i++) {
+            scoresOfTeams[i] = 0;
+        }
+
+        this.scoresOfPlayers = new int[numberOfPlayers];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            scoresOfPlayers[i] = 0;
+        }
 
         // determine ruler
         this.indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
@@ -67,7 +75,7 @@ public class Set implements Runnable {
 
         divideCards();
 
-        while (scores[0] < 7 && scores[1] < 7) {
+        while (scoresOfTeams[0] < 7 && scoresOfTeams[1] < 7) {
             // start the round
             sendData("round:" + ++round);
 
@@ -98,19 +106,34 @@ public class Set implements Runnable {
                 }
             }
 
-            // find the winner
+            // determine the winner of the round
             Card winCard = GameService.topCard(onTableCards, rule);
-            Player winner = players[onTableCards.indexOf(winCard)];
+            int indexOfWinner = onTableCards.indexOf(winCard);
+            Player winner = players[indexOfWinner];
+
+            // increase score of the winner and winner team
+            scoresOfPlayers[indexOfWinner]++;
             if (teams.getFirst().getPlayers().contains(winner))
-                scores[0]++;
+                scoresOfTeams[0]++;
             else
-                scores[1]++;
+                scoresOfTeams[1]++;
+
+            // send the winner to client
             sendData("winner:");
             sendData(winner.getId());
 
             // initial again
             onTableCards.clear();
             currentPlayerIndex = 0;
+        }
+
+        // determine the winner of the set and send it
+        if (scoresOfTeams[0] == 7) {
+            winner = teams.getFirst();
+            sendData("winner set:team1");
+        } else {
+            winner = teams.getLast();
+            sendData("winner set:team2");
         }
     }
 
