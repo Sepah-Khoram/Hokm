@@ -119,7 +119,7 @@ public class Set implements Runnable {
                 scoresOfTeams[1]++;
 
             // send the winner to client
-            sendData("winner:");
+            sendData("winner round:");
             sendData(winner.getId());
 
             // initial again
