@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Team {
     private final ArrayList<Player> players;
-    private ArrayList<Set> sets = new ArrayList<>();
+    private final ArrayList<Set> sets = new ArrayList<>();
 
     public Team(ArrayList<Player> players) {
         this.players = players;
