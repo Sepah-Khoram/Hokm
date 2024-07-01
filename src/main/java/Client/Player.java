@@ -102,19 +102,19 @@ public class Player extends Client implements Runnable {
                         try {
                             entry = scanner.nextInt();
                             if (entry >= cards.size()) {
-                                System.out.println("you insert out of range!");
+                                System.out.println("Your choice is out of range!");
                                 continue;
                             }
                             else{
                                 putCard(cards.get(entry));
                             }
                         }catch (InputMismatchException e){
-                            System.out.println("please insert number!");
+                            System.out.println("Please insert number!");
                             continue;
                         }
                     }
                 }
-                else if (serverMessage.startsWith("Server massage:")){
+                else if (serverMessage.startsWith("Server massage: ")){
                     System.out.println(serverMessage);
                 }
             }
