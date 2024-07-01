@@ -16,6 +16,7 @@ public class Player extends Client implements Runnable {
     private boolean connected;
     private int playerNumber;
     private Game game;
+    private Card onTableCard;
 
     public Player(Client client) throws IOException {
         super(client);
@@ -59,6 +60,8 @@ public class Player extends Client implements Runnable {
             name = data.toString().substring(5).trim();
         } else if (data.toString().startsWith("rule:")) {
             game.setRule(Card.Suit.valueOf(data.toString().substring(5)));
+        } else if (data instanceof Card) {
+            onTableCard = (Card) data;
         }
 
         System.out.println("Received data: " + data);
@@ -74,7 +77,22 @@ public class Player extends Client implements Runnable {
         }
     }
 
-    public void setCards(List<Card> cards) {
+    synchronized Card playCard() {
+        while (onTableCard == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        // remove onTableCard from cards and send it
+        cards.remove(onTableCard);
+        Card copy = onTableCard;
+        onTableCard = null;
+        return copy;
+    }
+
+    void setCards(List<Card> cards) {
         this.cards = cards;
         sendData("cards:");
         sendData(cards);
@@ -88,11 +106,11 @@ public class Player extends Client implements Runnable {
         this.name = name;
     }
 
-    public void setGame(Game game) {
+    void setGame(Game game) {
         this.game = game;
     }
 
-    public UUID getId() {
+    UUID getId() {
         return Id;
     }
 
