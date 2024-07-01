@@ -15,7 +15,11 @@ public class Team {
         return (players.getFirst().getId() + "," + players.getLast().getId());
     }
 
-    public void addSet(Set newSet) {
+    void addSet(Set newSet) {
         this.sets.add(newSet);
+    }
+
+    ArrayList<Player> getPlayers() {
+        return players;
     }
 }
