@@ -27,17 +27,22 @@ public class ClientRunner {
         client = new Client(); // new player
 
         // show and handle menu
-        while (true) {
+        /*while (true) {
             showMenu();
             handleMenu();
-        }
+        }*/
         JFrame frame = new JFrame("Hokm");
-        JMenu menu = new JMenu("Game");
+        JLabel label = new JLabel("Wecome to Hokm game ");
+        JTextField name = new JTextField("");
+        JMenu menu = new JMenu("4 Player Game");
+        JMenu menu1 = new JMenu("2 Player Game");
         JMenuBar m = new JMenuBar();
         JMenuItem first = new JMenuItem("Creat New Game");
         JMenuItem second = new JMenuItem("Join Game");
         menu.add (first);
         menu.add(second);
+        menu1.add(first);
+        menu1.add(second);
         first.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,13 +56,14 @@ public class ClientRunner {
             }
         });
         m.add(menu);
+        m.add(menu1);
         frame.setJMenuBar(m);
-        frame.setLayout(new FlowLayout());
-        frame.setSize(300,300);
+        frame.setLayout(new GridBagLayout());
+        frame.pack();
         frame.setVisible(true);
     }
 
-    private static void showMenu() {
+    /*private static void showMenu() {
         System.out.println("Enter your choice:");
         System.out.println("1. Create a new game");
         System.out.println("2. Join to a random game");
@@ -107,7 +113,7 @@ public class ClientRunner {
 
             break;
         } // end of while
-    }
+    }*/
 
     private static void createGame() {
         for (int i = 0; i < 3; i++) {
