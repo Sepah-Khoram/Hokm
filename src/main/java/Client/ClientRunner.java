@@ -27,50 +27,49 @@ public class ClientRunner {
         client = new Client(); // new player
 
         // show and handle menu
-        /*while (true) {
+        while (true) {
             showMenu();
             handleMenu();
-        }*/
-        JFrame frame = new JFrame("Hokm");
-        JLabel label = new JLabel("Wecome to Hokm game ");
-        JTextField name = new JTextField("");
-        JMenu menu = new JMenu("4 Player Game");
-        JMenu menu1 = new JMenu("2 Player Game");
-        JMenuBar m = new JMenuBar();
-        JMenuItem first = new JMenuItem("Creat New Game");
-        JMenuItem second = new JMenuItem("Join Game");
-        menu.add (first);
-        menu.add(second);
-        menu1.add(first);
-        menu1.add(second);
-        first.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createGame();
-            }
-        });
-        second.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                joinGame();
-            }
-        });
-        m.add(menu);
-        m.add(menu1);
-        frame.setJMenuBar(m);
-        frame.setLayout(new GridBagLayout());
-        frame.pack();
-        frame.setVisible(true);
+        }
+//        JFrame frame = new JFrame("Hokm");
+//        JLabel label = new JLabel("Wecome to Hokm game ");
+//        JTextField name = new JTextField("");
+//        JMenu menu = new JMenu("4 Player Game");
+//        JMenu menu1 = new JMenu("2 Player Game");
+//        JMenuBar m = new JMenuBar();
+//        JMenuItem first = new JMenuItem("Creat New Game");
+//        JMenuItem second = new JMenuItem("Join Game");
+//        menu.add (first);
+//        menu.add(second);
+//        menu1.add(first);
+//        menu1.add(second);
+//        first.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                createGame();
+//            }
+//        });
+//        second.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                joinGame();
+//            }
+//        });
+//        m.add(menu);
+//        m.add(menu1);
+//        frame.setJMenuBar(m);
+//        frame.setLayout(new GridBagLayout());
+//        frame.pack();
+//        frame.setVisible(true);
     }
 
-    /*private static void showMenu() {
+    private static void showMenu() {
         System.out.println("Enter your choice:");
         System.out.println("1. Create a new game");
         System.out.println("2. Join to a random game");
         System.out.println("3. Show current games");
         System.out.println("4. rename");
         System.out.println("5. Exit");
-        System.out.println();
         System.out.print(">>> ");
     }
 
@@ -113,7 +112,7 @@ public class ClientRunner {
 
             break;
         } // end of while
-    }*/
+    }
 
     private static void createGame() {
         for (int i = 0; i < 3; i++) {
