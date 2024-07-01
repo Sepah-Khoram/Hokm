@@ -166,7 +166,7 @@ public class Game implements Runnable {
         return players.length + " players: " + connectedPlayers.toString();
     }
 
-    public int getNumberOfPlayers() {
+    int getNumberOfPlayers() {
         return players.length;
     }
 
@@ -174,7 +174,7 @@ public class Game implements Runnable {
         return isGameStarted;
     }
 
-    public UUID getToken() {
+    UUID getToken() {
         return token;
     }
 
@@ -187,14 +187,23 @@ public class Game implements Runnable {
         return gameStartBarrier;
     }
 
-    public int getWinTeam1() {
+    int getWinTeam1() {
         return winTeam1;
     }
 
-    public int getWinTeam2() {
+    int getWinTeam2() {
         return winTeam2;
     }
-    public  void massageToAll (String massage, int gameNumber, List<Game> games){
+
+    int getCurrentSet() {
+        return sets.size();
+    }
+
+    int getCurrentRound() {
+        return currentSet.getRound();
+    }
+
+    public void massageToAll (String massage, int gameNumber, List<Game> games){
         games.get(gameNumber).sendData("Server massage:"+massage);
     }
 }

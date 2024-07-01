@@ -65,10 +65,10 @@ public class Client {
             // get player id
             id = input.readObject().toString();
         } catch (IOException e) {
-            System.err.println("Connection to server failed!");
+            System.out.println("Connection to server failed!");
             return false;
         } catch (ClassNotFoundException e) {
-            System.err.println("Error in get data from server!");
+            System.out.println("Error in get data from server!");
         }
         return true;
     }
@@ -83,10 +83,10 @@ public class Client {
             // get player id
             id = input.readObject().toString();
         } catch (IOException e) {
-            System.err.println("Connection to server failed!");
+            System.out.println("Connection to server failed!");
             return false;
         } catch (ClassNotFoundException e) {
-            System.err.println("Error in get data from server!");
+            System.out.println("Error in get data from server!");
         }
         return true;
     }
@@ -103,10 +103,10 @@ public class Client {
             // get player id
             id = input.readObject().toString();
         } catch (IOException e) {
-            System.err.println("Connection to server failed!");
+            System.out.println("Connection to server failed!");
             return false;
         } catch (ClassNotFoundException e) {
-            System.err.println("Error in get data from server!");
+            System.out.println("Error in get data from server!");
         }
         return true;
     }

@@ -192,4 +192,8 @@ public class Set implements Runnable {
             setLock.unlock();
         }
     }
+
+    public int getRound() {
+        return round;
+    }
 }
