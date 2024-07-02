@@ -222,7 +222,7 @@ public class Player extends Client implements Runnable {
             System.out.println("Choose one of them:");
         else
             System.out.println("Choose one of them(suggested card is " +
-                    GameService.suggestedCard(onTableCards, cards, rule) + "):");
+                    GameService.suggestedCard(onTableCards, cards, teammateCard, rule) + "):");
 
         Scanner input = new Scanner(System.in);
         int choice = -1;

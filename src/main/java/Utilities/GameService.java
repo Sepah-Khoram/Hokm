@@ -133,13 +133,14 @@ public class GameService {
                 (!containCard(cardsInHand, base) &&
                         (checkCard.getSuit() == rule) || !containCard(cardsInHand, rule));
     }
-    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card friendCard, Card.Suit rule) {
+
+    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card teammateCard, Card.Suit rule) {
         Card.Suit base = playedCards.getFirst().getSuit();
 
-        if(friendCard!=null){
+        if(teammateCard!=null){
             if(containCard(playedCards,rule)){
-                if(friendCard.getSuit()==rule){
-                    if(bestCard(playedCards,rule)== friendCard){
+                if(teammateCard.getSuit()==rule){
+                    if(bestCard(playedCards,rule)== teammateCard){
                         if(containCard(cardsInHand,base)){
                            return worstCard(cardsInHand,base,base);
                         }
