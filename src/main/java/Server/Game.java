@@ -1,6 +1,7 @@
 package Server;
 
 import Utilities.Card;
+import Utilities.GameService;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -78,9 +79,23 @@ public class Game implements Runnable {
 
     private void startGame() {
         logger.info("All players have joined. Game is starting.");
-        /*
-         implement check name
-        */
+
+        // if name of someone is identical change it
+        {
+            // save names of players in an array
+            String[] names = new String[getNumberOfPlayers()];
+            for (int i = 0; i < getNumberOfPlayers(); i++) {
+                names[i] = players[i].getName();
+            }
+
+            String[] newNames = GameService.processNames(names);
+
+            // set new names
+            for (int i = 0; i < getNumberOfPlayers(); i++) {
+                players[i].setName(newNames[i]);
+            }
+        }
+
         // send id and name of players in the game
         sendData("players:");
         for (Player player : players) {

@@ -1,11 +1,7 @@
 package Utilities;
 
-import Server.Player;
-
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class GameService {
     public static Card[][] divideCards(int numberOfPlayers) throws IllegalArgumentException {
@@ -143,42 +139,18 @@ public class GameService {
         return validCards;
     }
 
-    public static void checkPlayerNames(List<Player> players) {
-        if (players.size() == 2) {
-            Player player1 = players.get(0);
-            Player player2 = players.get(1);
+    public static String[] processNames(String[] names) {
+        Map<String, Integer> nameCount = new HashMap<>();
+        String[] result = new String[names.length];
 
-            String name1 = player1.getName();
-            String name2 = player2.getName();
-
-            if (name1.equals(name2)) {
-                player1.setName(name1 + "1");
-                player2.setName(name2 + "2");
-            }
-        } else if (players.size() == 4) {
-            Player player1 = players.get(0);
-            Player player2 = players.get(1);
-            Player player3 = players.get(2);
-            Player player4 = players.get(3);
-
-            String name1 = player1.getName();
-            String name2 = player2.getName();
-            String name3 = player3.getName();
-            String name4 = player4.getName();
-
-            if (name1.equals(name2)) {
-                player1.setName(name1 + "1");
-                player2.setName(name2 + "2");
-            }
-            if (name1.equals(name3) || name2.equals(name3)) {
-                player3.setName(name3 + "3");
-            }
-            if (name1.equals(name4) || name2.equals(name4) || name3.equals(name4)) {
-                player4.setName(name4 + "4");
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid number of players! We support just 2 or 4 players.");
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            int count = nameCount.getOrDefault(name, 0) + 1;
+            nameCount.put(name, count);
+            result[i] = name + count;
         }
+
+        return result;
     }
 
     public static boolean validCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand,
