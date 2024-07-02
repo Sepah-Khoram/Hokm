@@ -61,7 +61,7 @@ public class ClientRunner {
                     createGame();
                     break;
                 case 2:
-                    createGame1();
+
                     break;
                 case 3:
                     joinGame();
