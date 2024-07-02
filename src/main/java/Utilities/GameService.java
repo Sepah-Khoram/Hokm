@@ -62,25 +62,24 @@ public class GameService {
         } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (containCard(playedCards, rule)) && (containCard(cardsInHand, rule)) && (bestCard(cardsInHand, rule).compareTo(playedCards.get(1)) < 0) && (base != rule) && (playedCards.get(1).getSuit() == rule)) {
             return worstCardNot(cardsInHand, base, playedCards.get(1).getSuit());
         } else if ((playedCards.size() == 2) && (containCard(cardsInHand, base)) && (!haveBetterCard(cardsInHand, topCard(playedCards, rule))) && (!containCard(playedCards, rule))) {
-            worstCard(cardsInHand, base, base);
+            return worstCard(cardsInHand, base, base);
         } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) == playedCards.get(1))) {
-            worstCard(cardsInHand, base, base);
+            return worstCard(cardsInHand, base, base);
         } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (containCard(playedCards, rule)) && (!containCard(cardsInHand, rule)) && (base != rule) && (playedCards.get(1).getSuit() == rule)) {
             return worstCardNot(cardsInHand, base, playedCards.get(1).getSuit());
         } else if ((playedCards.size() == 2) && (containCard(cardsInHand, base)) && (haveBetterCard(cardsInHand, topCard(playedCards, rule)))) {
-            bestCard(cardsInHand, base);
-        } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(1)) && (haveBetterCard(cardsInHand, topCard(playedCards, rule)))) {
-            bestCard(cardsInHand, base);
+           return bestCard(cardsInHand, base);
+        } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(1)) && (haveBetterCard(cardsInHand, topCard(playedCards, rule)))) {                                          //کارت را دارم کارت بهتر دارم و بازی حکم نیست
+            return bestCard(cardsInHand, base);
         } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(1))) {
-            worstCard(cardsInHand, base, base);
+            return worstCard(cardsInHand, base, base);
         } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(0)) && (!containCard(playedCards, rule)) && (containCard(cardsInHand, rule))) {          //maybe bad suggest
-            worstCard(cardsInHand, rule, rule);
+            return worstCard(cardsInHand, rule, rule);
         } else if ((playedCards.size() == 1) && (!containCard(cardsInHand, base)) && (containCard(cardsInHand, rule))) {
-            worstCard(cardsInHand, rule, rule);
+            return worstCard(cardsInHand, rule, rule);
         } else {
             return null;
         }
-        return null;
     }
 
     private static Card worstCard(ArrayList<Card> cards, Card.Suit cardType1,
