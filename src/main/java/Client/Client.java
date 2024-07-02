@@ -74,7 +74,6 @@ public class Client {
 
     public boolean joinGame(String host, UUID token) {
         System.out.println("joining game..."); // prompt
-
         try {
             connectTo(host);
             sendData("join token:" + token);
