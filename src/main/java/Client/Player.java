@@ -103,6 +103,14 @@ public class Player extends Client implements Runnable {
                         System.out.println("Now it's " + playerInGame.get(id) + "'s turn.");
                 } else if (serverMessage.startsWith("server massage: ")) {
                     System.out.println(serverMessage);
+                } else if (serverMessage.startsWith("winner round:")) {
+                    String winnerID = serverMessage.substring(14);
+
+                    if (winnerID != getId()) {
+                        System.out.println(playerInGame.get(winnerID) + " is this rounds winner ");
+                    } else {
+                        System.out.println("You win this round");
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
