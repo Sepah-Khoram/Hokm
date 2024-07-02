@@ -32,10 +32,11 @@ public class ClientRunner {
     private static void showMenu() {
         System.out.println("Enter your choice:");
         System.out.println("1. Create a new game");
-        System.out.println("2. Join to a random game");
-        System.out.println("3. Show current games");
-        System.out.println("4. rename");
-        System.out.println("5. Exit");
+        System.out.println("2. Join to the random game");
+        System.out.println("3. Join to the game via token");
+        System.out.println("4. Show current games");
+        System.out.println("5. rename");
+        System.out.println("6. Exit");
         System.out.print(">>> ");
     }
 
@@ -62,12 +63,18 @@ public class ClientRunner {
                     joinGame();
                     break;
                 case 3:
-                    showCurrentGames();
+                    Scanner scanner = new Scanner(System.in);
+                    System.out.println("Enter the game token: ");
+                    String gameToken = scanner.nextLine();
+                    joinGame(gameToken);
                     break;
                 case 4:
-                    rename();
+                    showCurrentGames();
                     break;
                 case 5:
+                    rename();
+                    break;
+                case 6:
                     System.out.println("Bye!");
                     System.exit(0);
                     break;
@@ -122,6 +129,18 @@ public class ClientRunner {
             // cancel proccess
             if (i == 2)
                 System.out.println("3 incorrect attempts. Canceling...");
+        }
+    }
+
+    private static void joinGame(String token) {
+        try {
+            UUID gameUUID = UUID.fromString(token);
+            if (client.joinGame(HOST, gameUUID)) {
+                Player player = new Player(nameOfPlayer, client);
+                player.run();
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 

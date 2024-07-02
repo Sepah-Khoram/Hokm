@@ -48,36 +48,6 @@ public class GameService {
         return dividedList;
     }
 
-    public static Card suggestedCard(ArrayList<Card> playedCards,
-                                               ArrayList<Card> cardsInHand, Card.Suit rule) {
-        Card.Suit base = playedCards.getFirst().getSuit();
-        if ((playedCards.size() == 1) && (containCard(cardsInHand, base)) && (haveBetterCard(cardsInHand, playedCards.get(0)))) {
-            return bestCard(cardsInHand, base);
-        } else if (playedCards.isEmpty()) {
-            return Collections.max(cardsInHand);
-        } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (containCard(playedCards, rule)) && (containCard(cardsInHand, rule)) && (bestCard(cardsInHand, rule).compareTo(playedCards.get(1)) < 0) && (base != rule) && (playedCards.get(1).getSuit() == rule)) {
-            return worstCardNot(cardsInHand, base, playedCards.get(1).getSuit());
-        } else if ((playedCards.size() == 2) && (containCard(cardsInHand, base)) && (!haveBetterCard(cardsInHand, topCard(playedCards, rule))) && (!containCard(playedCards, rule))) {
-            return worstCard(cardsInHand, base, base);
-        } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) == playedCards.get(1))) {
-            return worstCard(cardsInHand, base, base);
-        } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (containCard(playedCards, rule)) && (!containCard(cardsInHand, rule)) && (base != rule) && (playedCards.get(1).getSuit() == rule)) {
-            return worstCardNot(cardsInHand, base, playedCards.get(1).getSuit());
-        } else if ((playedCards.size() == 2) && (containCard(cardsInHand, base)) && (haveBetterCard(cardsInHand, topCard(playedCards, rule)))) {
-           return bestCard(cardsInHand, base);
-        } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(1)) && (haveBetterCard(cardsInHand, topCard(playedCards, rule)))) {                                          //کارت را دارم کارت بهتر دارم و بازی حکم نیست
-            return bestCard(cardsInHand, base);
-        } else if ((playedCards.size() == 3) && (containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(1))) {
-            return worstCard(cardsInHand, base, base);
-        } else if ((playedCards.size() == 2) && (!containCard(cardsInHand, base)) && (topCard(playedCards, rule) != playedCards.get(0)) && (!containCard(playedCards, rule)) && (containCard(cardsInHand, rule))) {          //maybe bad suggest
-            return worstCard(cardsInHand, rule, rule);
-        } else if ((playedCards.size() == 1) && (!containCard(cardsInHand, base)) && (containCard(cardsInHand, rule))) {
-            return worstCard(cardsInHand, rule, rule);
-        } else {
-            return null;
-        }
-    }
-
     private static Card worstCard(ArrayList<Card> cards, Card.Suit cardType1,
                                             Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
@@ -162,6 +132,82 @@ public class GameService {
         return (checkCard.getSuit() == base) ||
                 (!containCard(cardsInHand, base) &&
                         (checkCard.getSuit() == rule) || !containCard(cardsInHand, rule));
+    }
+    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card friendCard, Card.Suit rule) {
+        Card.Suit base = playedCards.getFirst().getSuit();
+
+        if(friendCard!=null){
+            if(containCard(playedCards,rule)){
+                if(friendCard.getSuit()==rule){
+                    if(bestCard(playedCards,rule)== friendCard){
+                        if(containCard(cardsInHand,base)){
+                           return worstCard(cardsInHand,base,base);
+                        }
+                        else {
+                            return worstCard(cardsInHand,base,rule);
+                        }
+                    }
+                    else {
+                        if(containCard(cardsInHand,base)){
+                            return worstCard(cardsInHand,base,base);
+                        }
+                        else{
+                            if(haveBetterCard(cardsInHand,bestCard(playedCards,rule))){
+                                return bestCard(cardsInHand,rule);
+                            }
+                            else{
+                                return worstCard(cardsInHand,base,rule);
+                            }
+                        }
+                    }
+                }
+                else {
+                    if(containCard(cardsInHand,base)){
+                         return worstCard(cardsInHand,base,base);
+                    }
+                    else {
+                        if(haveBetterCard(cardsInHand,bestCard(playedCards,rule))){
+                            return bestCard(cardsInHand,rule);
+                        }
+                        else {
+                            return worstCardNot(cardsInHand,base,rule);
+                        }
+                    }
+                }
+            }
+            else {
+                if (haveBetterCard(cardsInHand,bestCard(playedCards,base))){
+                    return bestCard(cardsInHand,base);
+                }
+                else {
+                    return worstCard(cardsInHand,base,base);
+                }
+            }
+        }
+        else{
+            if(playedCards.isEmpty()){
+                return Collections.max(cardsInHand);
+            }
+            else {
+                if(containCard(cardsInHand,base)){
+                    if(haveBetterCard(cardsInHand,playedCards.get(0))){
+                        return bestCard(cardsInHand,base);
+                    }
+                    else {
+                       return worstCard(cardsInHand,base,base);
+                    }
+                }
+                else {
+                    if(containCard(cardsInHand,rule)){
+                        return worstCard(cardsInHand,rule,rule);
+                    }
+                    else {
+                        return worstCardNot(cardsInHand,base,rule);
+                    }
+                }
+            }
+        }
+
     }
 }
 
