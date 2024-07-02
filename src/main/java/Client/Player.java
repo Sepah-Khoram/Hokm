@@ -15,6 +15,9 @@ public class Player extends Client implements Runnable {
     private Card.Suit rule;
     private ArrayList<Card> cards;
     private int playerNumber;
+    private final int[] scoresOfPlayers = new int[4];
+    private String teammateId;
+    private Card teammateCard;
 
     public Player(String name, Client client) {
         super(client);
@@ -70,6 +73,12 @@ public class Player extends Client implements Runnable {
                 } else if (serverMessage.startsWith("team")) {
                     String[] team = serverMessage.substring(6).split(",");
                     if (team[0].equals(getId()) || team[1].equals(getId())) {
+                        // get id of teammate
+                        if (team[0].equals(getId()))
+                            teammateId = team[1];
+                        else
+                            teammateId = team[0];
+
                         System.out.println("Your team: " + playerInGame.get(team[0]) +
                                 ", " + playerInGame.get(team[1]));
                     } else {
@@ -94,6 +103,10 @@ public class Player extends Client implements Runnable {
                         System.out.println(playerInGame.get(playerId) + " played " +
                                 onTableCards.getLast());
                     }
+
+                    // set teammate card
+                    if (playerId.equals(teammateId))
+                        teammateCard = onTableCards.getLast();
                 } else if (serverMessage.startsWith("turn")) {
                     playerNumber = Integer.parseInt(serverMessage.substring(4, 5));
                     String id = serverMessage.substring(6);
@@ -104,13 +117,14 @@ public class Player extends Client implements Runnable {
                 } else if (serverMessage.startsWith("server massage: ")) {
                     System.out.println(serverMessage);
                 } else if (serverMessage.startsWith("winner round:")) {
-                    String winnerID = serverMessage.substring(14);
+                    String winnerID = serverMessage.substring(13);
 
-                    if (winnerID != getId()) {
-                        System.out.println(playerInGame.get(winnerID) + " is this rounds winner ");
-                    } else {
+                    if (winnerID.equals(getId()))
                         System.out.println("You win this round");
-                    }
+                    else
+                        System.out.println(playerInGame.get(winnerID) + " winned this round.");
+
+                    teammateCard = null; // delete card of teammate
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
