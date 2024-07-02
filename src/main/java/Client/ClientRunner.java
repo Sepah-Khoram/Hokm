@@ -13,7 +13,7 @@ import java.util.*;
 public class ClientRunner {
     public static final String HOST = "localhost";
     private static final String FILE_NAME = ".Hokm.txt";
-    private static final Scanner input = new Scanner(System.in); // input String
+    private static final Scanner inputString = new Scanner(System.in); // input String
     private static final Scanner inputInt = new Scanner(System.in); // input int
     private static Client client;
     private static String nameOfPlayer;
@@ -50,7 +50,7 @@ public class ClientRunner {
             } catch (InputMismatchException e) {
                 System.out.println("Please enter a number. Try agaain.");
                 System.out.print(">>> ");
-                input.nextLine();
+                inputInt.nextLine();
                 continue;
             }
 
@@ -92,7 +92,7 @@ public class ClientRunner {
         for (int i = 0; i < 3; i++) {
             try {
                 System.out.print("Enter number of players: ");
-                if (client.createGame(HOST, input.nextInt())) {
+                if (client.createGame(HOST, inputInt.nextInt())) {
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
                 }
@@ -101,7 +101,7 @@ public class ClientRunner {
                 System.out.println(e.getMessage());
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number(2 or 4).");
-                input.nextLine();
+                inputInt.nextLine();
             }
             // cancel proccess
             if (i == 2)
@@ -113,16 +113,18 @@ public class ClientRunner {
         for (int i = 0; i < 3; i++) {
             try {
                 System.out.print("Enter number of players: ");
-                if (client.joinGame(HOST, input.nextInt())) {
+                if (client.joinGame(HOST, inputInt.nextInt())) {
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
                     return;
                 }
+                return;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
+                return;
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number(2 or 4).");
-                input.nextLine();
+                inputInt.nextLine();
             }
             // cancel proccess
             if (i == 2)
@@ -186,7 +188,7 @@ public class ClientRunner {
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Please write a number.");
-                input.nextLine();
+                inputString.nextLine();
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Please write a correct number in the range.");
             }
@@ -202,10 +204,12 @@ public class ClientRunner {
         String oldName = nameOfPlayer; // save old name for cancel
         for (int i = 0; i < 3; i++) {
             System.out.print("Enter your new name(x for cancel): ");
-            nameOfPlayer = input.nextLine();
+            nameOfPlayer = inputString.nextLine();
             // cancel operation
-            if (nameOfPlayer.equals("x"))
+            if (nameOfPlayer.equals("x")) {
+                System.out.println("Canceling...");
                 return;
+            }
             // verify to name is not empty
             if (!nameOfPlayer.isEmpty())
                 break;
@@ -235,7 +239,7 @@ public class ClientRunner {
             // get the name
             do {
                 System.out.print("Please enter your name: ");
-                nameOfPlayer = input.nextLine();
+                nameOfPlayer = inputString.nextLine();
             } while (nameOfPlayer.isEmpty());
 
             // write name in the file
