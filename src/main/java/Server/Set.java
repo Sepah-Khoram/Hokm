@@ -6,6 +6,7 @@ import Utilities.GameService;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,7 +18,6 @@ public class Set implements Runnable {
 
     // property of ruler
     private final Player ruler;
-    private final int indexOfRuler;
     private Card.Suit rule;
 
     // teams
@@ -56,8 +56,12 @@ public class Set implements Runnable {
         }
 
         // determine ruler
-        this.indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
+        int indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
         this.ruler = players[indexOfRuler];
+
+        // to put ruler in first turn
+        Collections.rotate(Arrays.asList(players), 4 - indexOfRuler);
+        System.out.println(Arrays.toString(players));
     }
 
     @Override
@@ -89,13 +93,12 @@ public class Set implements Runnable {
         Card[][] cards = GameService.divideCards(numberOfPlayers);
 
         if (numberOfPlayers == 4) {
-            for (int i = 0; i < numberOfPlayers; i++) {
-                if (i != indexOfRuler)
-                    players[i].setCards(Arrays.asList(cards[i]));
+            for (int i = 1; i < numberOfPlayers; i++) {
+                players[i].setCards(Arrays.asList(cards[i]));
             }
 
             // set 5 first 5 cards of ruler
-            ruler.setCards(Arrays.asList(cards[indexOfRuler]).subList(0, 5));
+            ruler.setCards(Arrays.asList(cards[0]).subList(0, 5));
 
             // Wait for ruler to select the rule
             setLock.lock();
@@ -104,7 +107,7 @@ public class Set implements Runnable {
                     ruleSelected.await();
                 }
                 // After the rule is selected, send all the cards to the ruler
-                ruler.setCards(Arrays.asList(cards[indexOfRuler]));
+                ruler.setCards(Arrays.asList(cards[0]));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.err.println("Thread interrupted while waiting for rule selection: " +
@@ -129,7 +132,7 @@ public class Set implements Runnable {
                 turnCondition.signalAll();
 
                 // get cards from the current player
-                sendData("turn", players[currentPlayerIndex]);
+                sendData("turn" + (i + 1) + ":" + players[currentPlayerIndex].getId());
                 Card playedCard = players[i].playCard();
                 System.out.println("Player " + players[i].getId() + " played: " + playedCard);
                 onTableCards.add(playedCard);
@@ -164,8 +167,7 @@ public class Set implements Runnable {
             scoresOfTeams[1]++;
 
         // send the winner to client
-        sendData("winner round:");
-        sendData(winner.getId());
+        sendData("winner round:" + winner.getId().toString());
 
         // initial again
         onTableCards.clear();

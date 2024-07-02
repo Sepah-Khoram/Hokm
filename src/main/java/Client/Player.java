@@ -95,7 +95,12 @@ public class Player extends Client implements Runnable {
                                 onTableCards.getLast());
                     }
                 } else if (serverMessage.startsWith("turn")) {
-                    putCard();
+                    playerNumber = Integer.parseInt(serverMessage.substring(4, 5));
+                    String id = serverMessage.substring(6);
+                    if (id.equals(getId()))
+                        putCard();
+                    else
+                        System.out.println("Now it's " + playerInGame.get(id) + "'s turn.");
                 } else if (serverMessage.startsWith("server massage: ")) {
                     System.out.println(serverMessage);
                 }
