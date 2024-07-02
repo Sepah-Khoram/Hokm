@@ -184,6 +184,9 @@ public class GameService {
 
     public static boolean validCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand,
                                     Card checkCard, Card.Suit rule) {
+        if (playedCards.isEmpty())
+            return true;
+
         Card.Suit base = playedCards.getFirst().getSuit();
         return (checkCard.getSuit() == base) ||
                 (!containCard(cardsInHand, base) &&

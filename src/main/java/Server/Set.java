@@ -30,7 +30,7 @@ public class Set implements Runnable {
     // concurrency
     private final Lock setLock = new ReentrantLock();
     private final Condition ruleSelected = setLock.newCondition();
-    private final Condition[] otherPlayerTurn;
+    private final Condition turnCondition = setLock.newCondition();
     private int currentPlayerIndex;
 
     // result of the game
@@ -58,12 +58,6 @@ public class Set implements Runnable {
         // determine ruler
         this.indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
         this.ruler = players[indexOfRuler];
-
-        // determine conditions
-        this.otherPlayerTurn = new Condition[numberOfPlayers];
-        for (int i = 0; i < numberOfPlayers; i++) {
-            otherPlayerTurn[i] = setLock.newCondition();
-        }
     }
 
     @Override
@@ -71,58 +65,13 @@ public class Set implements Runnable {
         // specify ruler
         sendData("ruler:" + ruler.getId());
 
+        // divide cards
         divideCards();
 
         while (scoresOfTeams[0] < 7 && scoresOfTeams[1] < 7) {
             // start the round
             sendData("round:" + ++round);
-
-            for (int i = 0; i < numberOfPlayers; i++) {
-                setLock.lock();
-                try {
-                    while (currentPlayerIndex != i) {
-                        otherPlayerTurn[i].await();
-                    }
-                    // get cards from the current player
-                    sendData("turn", players[currentPlayerIndex]);
-                    Card playedCard = players[i].playCard();
-                    System.out.println("Player " + players[i].getId() + " played: " + playedCard);
-                    onTableCards.add(playedCard);
-
-                    // send played card
-                    sendData("on table card:" + players[currentPlayerIndex].getId());
-                    sendData(playedCard);
-
-                    // change the turn
-                    currentPlayerIndex++;
-                    otherPlayerTurn[currentPlayerIndex].signal();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    System.err.println("Thread interrupted while waiting for player's turn: " + e.getMessage());
-                } finally {
-                    setLock.unlock();
-                }
-            }
-
-            // determine the winner of the round
-            Card winCard = GameService.topCard(onTableCards, rule);
-            int indexOfWinner = onTableCards.indexOf(winCard);
-            Player winner = players[indexOfWinner];
-
-            // increase score of the winner and winner team
-            scoresOfPlayers[indexOfWinner]++;
-            if (teams.getFirst().getPlayers().contains(winner))
-                scoresOfTeams[0]++;
-            else
-                scoresOfTeams[1]++;
-
-            // send the winner to client
-            sendData("winner round:");
-            sendData(winner.getId());
-
-            // initial again
-            onTableCards.clear();
-            currentPlayerIndex = 0;
+            playRound();
         }
 
         // determine the winner of the set and send it
@@ -169,6 +118,58 @@ public class Set implements Runnable {
         } else {
 
         }
+    }
+
+    private void playRound() {
+        // they should play cards
+        for (int i = 0; i < numberOfPlayers; i++) {
+            setLock.lock();
+            try {
+                currentPlayerIndex = i;
+                turnCondition.signalAll();
+
+                // get cards from the current player
+                sendData("turn", players[currentPlayerIndex]);
+                Card playedCard = players[i].playCard();
+                System.out.println("Player " + players[i].getId() + " played: " + playedCard);
+                onTableCards.add(playedCard);
+
+                // send played card
+                sendData("on table card:" + players[currentPlayerIndex].getId());
+                sendData(playedCard);
+
+                // change the turn
+                currentPlayerIndex++;
+                while (currentPlayerIndex == i) {
+                    turnCondition.await();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Thread interrupted during playRound: " + e.getMessage());
+            } finally {
+                setLock.unlock();
+            }
+        }
+
+        // determine the winner of the round
+        Card winCard = GameService.topCard(onTableCards, rule);
+        int indexOfWinner = onTableCards.indexOf(winCard);
+        Player winner = players[indexOfWinner];
+
+        // increase score of the winner and winner team
+        scoresOfPlayers[indexOfWinner]++;
+        if (teams.getFirst().getPlayers().contains(winner))
+            scoresOfTeams[0]++;
+        else
+            scoresOfTeams[1]++;
+
+        // send the winner to client
+        sendData("winner round:");
+        sendData(winner.getId());
+
+        // initial again
+        onTableCards.clear();
+        currentPlayerIndex = 0;
     }
 
     private synchronized void sendData(Object data, Player... players) {

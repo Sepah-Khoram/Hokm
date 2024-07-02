@@ -35,6 +35,7 @@ public class Player extends Client implements Runnable {
 
             while (connected) {
                 data = getInput().readObject();
+                System.out.println(Thread.currentThread().getName() + " has ricived data");
                 process(data); // proccessing datas
             }
         } catch (IOException | ClassNotFoundException e) {

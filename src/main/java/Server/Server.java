@@ -150,7 +150,7 @@ public class Server implements Runnable {
 
             // find a game
             for (Game game : games) {
-                if (numberOfPlayers == game.getNumberOfPlayers() && !game.isStarted()) {
+                if (numberOfPlayers == game.getNumberOfPlayers() && game.hasNotStarted()) {
                     game.addPlayer(player);
                     return true;
                 }
@@ -177,6 +177,11 @@ public class Server implements Runnable {
         if(choosenGame < games.size()) {
             Game game = games.get(choosenGame);
 
+            if (game.hasNotStarted()) {
+                System.out.println("Game has not started yet.");
+                return;
+            }
+
             System.out.println("This game have this information :");
             System.out.println("First team win " + game.getWinTeam1() + " sets");
             System.out.println("Second team win " + game.getWinTeam2() + " sets");
@@ -187,12 +192,12 @@ public class Server implements Runnable {
         }
     }
 
-    public void massageToGame(String massage, int gameNumber) {
-        games.get(gameNumber).sendData("server massage: " + massage);
+    public void massageToGame(String message, int gameNumber) {
+        games.get(gameNumber).sendMessage("server massage: " + message);
     }
 
-    public void massageToGame(String massage) {
+    public void massageToGame(String message) {
         for (Game game : games)
-            game.sendData("server massage: " + massage);
+            game.sendMessage("server massage: " + message);
     }
 }

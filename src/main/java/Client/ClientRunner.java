@@ -159,7 +159,7 @@ public class ClientRunner {
                 Game selectGame = currentGames.get(gameNumber);
 
                 // add number of player and join to the game
-                client.setNumberOfPlayer(selectGame.getNumberOfPlayers());
+                client.setNumberOfPlayers(selectGame.getNumberOfPlayers());
                 if (client.joinGame(HOST, currentGames.get(gameNumber).getToken())) {
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
@@ -182,8 +182,12 @@ public class ClientRunner {
         // give a number from user
         String oldName = nameOfPlayer; // save old name for cancel
         for (int i = 0; i < 3; i++) {
-            System.out.print("Enter your new name: ");
+            System.out.print("Enter your new name(x for cancel): ");
             nameOfPlayer = input.nextLine();
+            // cancel operation
+            if (nameOfPlayer.equals("x"))
+                return;
+            // verify to name is not empty
             if (!nameOfPlayer.isEmpty())
                 break;
         }

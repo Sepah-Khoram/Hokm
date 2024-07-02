@@ -53,7 +53,7 @@ public class Client {
     }
 
     public boolean joinGame(String host, int numberOfPlayers) throws IllegalArgumentException {
-        setNumberOfPlayer(numberOfPlayers); // set number of players
+        setNumberOfPlayers(numberOfPlayers); // set number of players
 
         System.out.println("joining game..."); // prompt
 
@@ -91,7 +91,7 @@ public class Client {
     }
 
     public boolean createGame(String host, int numberOfPlayers) throws IllegalArgumentException {
-        setNumberOfPlayer(numberOfPlayers); // set number of players
+        setNumberOfPlayers(numberOfPlayers); // set number of players
 
         System.out.println("Creating game..."); // prompt
 
@@ -140,7 +140,7 @@ public class Client {
         return numberOfPlayers;
     }
 
-    public void setNumberOfPlayer(int numberOfPlayer) throws IllegalArgumentException {
+    public void setNumberOfPlayers(int numberOfPlayer) throws IllegalArgumentException {
         if (numberOfPlayer != 2 && numberOfPlayer != 4)
             throw new IllegalArgumentException("Sorry. We support just game with 2 or 4 players. " +
                     "Try again.");

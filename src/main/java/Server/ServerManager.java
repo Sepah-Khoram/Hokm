@@ -13,17 +13,18 @@ public class ServerManager implements Runnable{
     @Override
     public void run() {
         // scanner for input
-        Scanner input = new Scanner(System.in);
+        Scanner inputString = new Scanner(System.in);
+        Scanner inputInt = new Scanner(System.in);
 
         while (true) {
             int choice;
             showMenu();
 
             try {
-                choice = input.nextInt();
+                choice = inputInt.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid entery. Please write a number.");
-                input.nextLine(); // to ignore shit words
+                inputInt.nextLine(); // to ignore shit words
                 continue;
             }
 
@@ -37,12 +38,13 @@ public class ServerManager implements Runnable{
                         continue;
 
                     System.out.println("Which game do you want to see the detail of?");
-                    System.out.println(">>> ");
+                    System.out.print(">>> ");
 
                     try {
-                        server.showGamedetail(input.nextInt() - 1);
+                        server.showGamedetail(inputInt.nextInt() - 1);
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid choice!");
+                        inputInt.nextLine();
                         continue;
                     }
 
@@ -55,30 +57,31 @@ public class ServerManager implements Runnable{
                     System.out.print(">>> ");
 
                     try {
-                        choice = input.nextInt();
+                        choice = inputInt.nextInt();
                     } catch (InputMismatchException e) {
                         System.out.println("Please enter a number");
+                        inputInt.nextLine();
                         continue;
                     }
 
                     // check the range
-                    if (choice >= server.getGames().size()){
+                    if (choice > server.getGames().size() || choice <= 0) {
                         System.out.println("Your choice is out of range!");
                         continue;
                     }
 
                     // get message and send
                     System.out.print("Enter your massage: ");
-                    server.massageToGame(input.nextLine(), choice);
+                    server.massageToGame(inputString.nextLine(), choice - 1);
                     break;
                 case 4:
                     // determine whether there is a game
-                    if (!showGames())
+                    if (server.getGames().isEmpty())
                         continue;
 
                     // get message and send
                     System.out.print("Enter your massage: ");
-                    String massage = input.nextLine();
+                    String massage = inputString.nextLine();
                     server.massageToGame(massage);
                     break;
                 default:
@@ -105,8 +108,8 @@ public class ServerManager implements Runnable{
 
         // show list of the game
         System.out.println("Games:");
-        for (int i = 1; i <= server.getGames().size(); i++)
-            System.out.println(i + ". " + server.getGames().get(i));
+        for (int i = 0; i < server.getGames().size(); i++)
+            System.out.println((i + 1) + ". " + server.getGames().get(i));
         return true;
     }
 }

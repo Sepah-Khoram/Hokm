@@ -171,8 +171,14 @@ public class Game implements Runnable {
             player.sendData(data);
     }
 
-    synchronized void sendData(Object data) {
+    private synchronized void sendData(Object data) {
         sendData(data, players);
+    }
+
+    synchronized void sendMessage(String message) {
+        for (int i = 0; i < connectedPlayers; i++) {
+            sendData(message, players[i]);
+        }
     }
 
     @Override
@@ -184,8 +190,8 @@ public class Game implements Runnable {
         return players.length;
     }
 
-    boolean isStarted() {
-        return isGameStarted;
+    boolean hasNotStarted() {
+        return !isGameStarted;
     }
 
     public UUID getToken() {

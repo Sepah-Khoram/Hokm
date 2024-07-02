@@ -14,6 +14,7 @@ public class Player extends Client implements Runnable {
     private boolean isRuler;
     private Card.Suit rule;
     private ArrayList<Card> cards;
+    private int playerNumber;
 
     public Player(String name, Client client) {
         super(client);
@@ -25,19 +26,19 @@ public class Player extends Client implements Runnable {
     public void run() {
         try {
             // check player number and prompt
-            int countPlayers = getInput().readInt();
-            if (countPlayers == 404) {
+            playerNumber = getInput().readInt();
+            if (playerNumber == 404) {
                 System.out.println("Not found any game!");
                 return;
             }
-            System.out.println("You are player number " + countPlayers);
+            System.out.println("You are player number " + playerNumber);
 
             // send name of the player to server
             sendData("name:" + name);
 
             // prompt to wait for others
-            if (getNumberOfPlayers() != countPlayers) {
-                if (getNumberOfPlayers() == 2 || countPlayers == 3)
+            if (getNumberOfPlayers() != playerNumber) {
+                if (getNumberOfPlayers() == 2 || playerNumber == 3)
                     System.out.println("Please wait for other player...");
                 else
                     System.out.println("Please wait for other players...");
@@ -94,28 +95,8 @@ public class Player extends Client implements Runnable {
                                 onTableCards.getLast());
                     }
                 } else if (serverMessage.startsWith("turn")) {
-                    Scanner input = new Scanner(System.in);
-                    int choice;
-                    while (true) {
-                        showCards();
-                        System.out.println("Your turn!");
-                        System.out.println("Choose one of them(suggested card is " +
-                                GameService.suggestedCard(onTableCards, cards, rule) + "):");
-                        System.out.println(">>> ");
-                        try {
-                            choice = input.nextInt();
-
-                            if (choice >= cards.size()) {
-                                System.out.println("Your choice is out of range!");
-                            } else{
-                                putCard(cards.get(choice));
-                            }
-                        } catch (InputMismatchException e){
-                            System.out.println("Please enter a number!");
-                            input.nextLine();
-                        }
-                    }
-                } else if (serverMessage.startsWith("Server massage: ")){
+                    putCard();
+                } else if (serverMessage.startsWith("server massage: ")) {
                     System.out.println(serverMessage);
                 }
             }
@@ -139,12 +120,12 @@ public class Player extends Client implements Runnable {
             // get complete cards from server
             getInput().readObject(); // for shake hands
             cards = (ArrayList<Card>) getInput().readObject();
+            return;
         }
 
         // print cards
         showCards();
-        if (!isRuler)
-            System.out.println("Wait for ruler to select the rule.");
+        System.out.println("Wait for ruler to select the rule.");
     }
 
     private void getRule() {
@@ -205,25 +186,43 @@ public class Player extends Client implements Runnable {
         }
     }
 
-    public Card putCard(Card card) {
-        if (cards.contains(card)) {
+    private void putCard() {
+        showCards();
+        System.out.println("Your turn!");
+
+        // check if we can show suggested card
+        if (playerNumber == 1)
+            System.out.println("Choose one of them:");
+        else
+            System.out.println("Choose one of them(suggested card is " +
+                    GameService.suggestedCard(onTableCards, cards, rule) + "):");
+
+        Scanner input = new Scanner(System.in);
+        int choice = -1;
+
+        for (int i = 0; i < 3; i++) {
+            System.out.print(">>> ");
+
             try {
-                getOutput().writeObject("put" + card);
-                getOutput().flush();
-                String response = (String) getInput().readObject();
-                System.out.println("Server responded: " + response);
-
-                cards.remove(card);
-                System.out.println("Put Successful");
-
-                return card;
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                return null;
+                choice = input.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a number!");
+                input.nextLine();
             }
-        } else {
-            System.out.println("You have not put a card");
-            return null;
+
+            if (choice > cards.size() || choice <= 0) {
+                System.out.println("Your choice is out of range!");
+            } else if (GameService.validCard(onTableCards, cards, cards.get(--choice), rule)) {
+                break;
+            } else {
+                System.out.println("Your choice is invalid. please try again.");
+                i--;
+            }
         }
+
+        // send card and remove it
+        sendData(cards.get(choice));
+        cards.remove(cards.get(choice));
+        System.out.println("Successful");
     }
 }
