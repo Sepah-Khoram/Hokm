@@ -1,6 +1,7 @@
 package Client;
 
 import Server.Game;
+import Utilities.GameType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,7 +62,7 @@ public class ClientRunner {
                     createGame();
                     break;
                 case 2:
-
+                    createGame1();
                     break;
                 case 3:
                     joinGame();
@@ -97,6 +98,26 @@ public class ClientRunner {
             try {
                 System.out.print("Enter number of players: ");
                 if (client.createGame(HOST, inputInt.nextInt())) {
+                    Player player = new Player(nameOfPlayer, client);
+                    player.run();
+                }
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            } catch (InputMismatchException e) {
+                System.out.println("Please write a number(2 or 4).");
+                inputInt.nextLine();
+            }
+            // cancel proccess
+            if (i == 2)
+                System.out.println("3 incorrect attempts. Canceling...");
+        }
+    }
+    private static void createGame1() {
+        for (int i = 0; i < 3; i++) {
+            try {
+                System.out.print("Enter number of players: ");
+                if (client.createGame1(HOST, inputInt.nextInt(),GameType.Private)){
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
                 }

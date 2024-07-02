@@ -1,6 +1,7 @@
 package Client;
 
 import Server.Game;
+import Utilities.GameType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -100,6 +101,27 @@ public class Client {
 
             // get player id
             id = input.readObject().toString();
+        } catch (IOException e) {
+            System.out.println("Connection to server failed!");
+            return false;
+        } catch (ClassNotFoundException e) {
+            System.out.println("Error in get data from server!");
+        }
+        return true;
+    }
+
+    public boolean createGame1(String host, int numberOfPlayers, GameType gameType ) throws IllegalArgumentException {
+        setNumberOfPlayers(numberOfPlayers); // set number of players
+
+        System.out.println("Creating game..."); // prompt
+
+        try {
+            connectTo(host);
+            sendData("create:" + numberOfPlayers+"Private");
+
+            // get player id
+            id = input.readObject().toString();
+            System.out.println("your token :"+input.readObject().toString());
         } catch (IOException e) {
             System.out.println("Connection to server failed!");
             return false;

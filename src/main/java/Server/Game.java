@@ -2,6 +2,7 @@ package Server;
 
 import Utilities.Card;
 import Utilities.GameService;
+import Utilities.GameType;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -30,10 +31,13 @@ public class Game implements Runnable {
     private int connectedPlayers; // no one added
     private int winTeam1 = 0;
     private int winTeam2 = 0;
+    private GameType gameType;
 
-    Game(Player player, int numberOfPlayers) {
+    Game(Player player, int numberOfPlayers, GameType gameType) {
+        this.gameType=gameType;
         players = new Player[numberOfPlayers];
         token = UUID.randomUUID();
+        sendData(token);
         sets = new ArrayList<>();
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
         gameStartBarrier = new CyclicBarrier(numberOfPlayers, this::startGame);
@@ -134,7 +138,7 @@ public class Game implements Runnable {
             }
         }
 
-        while (!isGameOver()) {
+        while (  !isGameOver()) {
             // new set
             sets.add(new Set(players, teams));
             currentSet = sets.getLast();

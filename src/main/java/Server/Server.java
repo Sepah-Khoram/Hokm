@@ -1,5 +1,7 @@
 package Server;
 
+import Utilities.GameType;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -75,7 +77,14 @@ public class Server implements Runnable {
         try {
             if (command.startsWith("create:")) {
                 int number = Integer.parseInt(command.substring(7));
-                createNewGame(client, number); // create new game
+                if(command.substring(8).equals("Private")){
+                    GameType gameType = GameType.Private;
+                    createNewGame(client, number, gameType); // create new game
+                }
+                else {
+                    GameType gameType = GameType.Public;
+                    createNewGame(client, number, gameType); // create new game
+                }
             } else if (command.startsWith("join random:")) {
                 int number = Integer.parseInt(command.substring(12));
                 if (!joinGame(client, number)) {
@@ -102,10 +111,10 @@ public class Server implements Runnable {
         }
     }
 
-    public void createNewGame(Client client, int numberOfPlayers) {
+    public void createNewGame(Client client, int numberOfPlayers, GameType gameType) {
         try {
             Player player = new Player(client);
-            Game game = new Game(player, numberOfPlayers); // create new game
+            Game game = new Game(player, numberOfPlayers,gameType); // create new game
             games.add(game); // add a game to arraylist
             gameExecutor.execute(game); // assign new thread to this game and execute it
         } catch (SocketException e) {
