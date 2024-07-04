@@ -32,11 +32,12 @@ public class ClientRunner {
     private static void showMenu() {
         System.out.println("Enter your choice:");
         System.out.println("1. Create a new game");
-        System.out.println("2. Join to the random game");
-        System.out.println("3. Join to the game via token");
-        System.out.println("4. Show current games");
-        System.out.println("5. rename");
-        System.out.println("6. Exit");
+        System.out.println("2. Create a new privet game");
+        System.out.println("3. Join to the random game");
+        System.out.println("4. Join to the game via token");
+        System.out.println("5. Show current games");
+        System.out.println("6. rename");
+        System.out.println("7. Exit");
         System.out.print(">>> ");
     }
 
@@ -60,21 +61,24 @@ public class ClientRunner {
                     createGame();
                     break;
                 case 2:
-                    joinGame();
+
                     break;
                 case 3:
+                    joinGame();
+                    break;
+                case 4:
                     Scanner scanner = new Scanner(System.in);
                     System.out.println("Enter the game token: ");
                     String gameToken = scanner.nextLine();
                     joinGame(gameToken);
                     break;
-                case 4:
+                case 5:
                     showCurrentGames();
                     break;
-                case 5:
+                case 6:
                     rename();
                     break;
-                case 6:
+                case 7:
                     System.out.println("Bye!");
                     System.exit(0);
                     break;
