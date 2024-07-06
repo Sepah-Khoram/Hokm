@@ -190,7 +190,7 @@ public class Game implements Runnable {
             player.sendData(data);
     }
 
-    private synchronized void sendData(Object data) {
+     synchronized void sendData(Object data) {
         sendData(data, players);
     }
 

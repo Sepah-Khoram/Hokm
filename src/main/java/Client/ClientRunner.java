@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-
 public class ClientRunner {
     public static final String HOST = "localhost";
     private static final String FILE_NAME = ".Hokm.txt";
@@ -69,7 +68,7 @@ public class ClientRunner {
                     break;
                 case 4:
                     Scanner scanner = new Scanner(System.in);
-                    System.out.println("Enter the game token: ");
+                    System.out.print("Enter the token of the game: ");
                     String gameToken = scanner.nextLine();
                     joinGame(gameToken);
                     break;

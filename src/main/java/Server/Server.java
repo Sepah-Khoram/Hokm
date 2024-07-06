@@ -103,6 +103,15 @@ public class Server implements Runnable {
                 }
             } else if (command.equals("getGames")) {
                 // get Games
+               // games.forEach();
+                for (Game game : games) {
+                    int i = game.getNumberOfPlayers();
+                    int j = game.getCurrentRound();
+                    int k = game.getCurrentSet();
+                    game.sendData(j);
+                    game.sendData(i);
+                    game.sendData(k);
+                }
             } else
                 closeConnection(client);
         } catch (NumberFormatException e) {
