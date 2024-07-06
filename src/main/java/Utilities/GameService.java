@@ -113,11 +113,22 @@ public class GameService {
         Map<String, Integer> nameCount = new HashMap<>();
         String[] result = new String[names.length];
 
+        // First pass: count the occurrences of each name
+        for (String name : names) {
+            nameCount.put(name, nameCount.getOrDefault(name, 0) + 1);
+        }
+
+        // Second pass: assign numbers to duplicate names
+        Map<String, Integer> nameIndex = new HashMap<>();
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
-            int count = nameCount.getOrDefault(name, 0) + 1;
-            nameCount.put(name, count);
-            result[i] = name + count;
+            if (nameCount.get(name) > 1) {
+                int index = nameIndex.getOrDefault(name, 1);
+                result[i] = name + index;
+                nameIndex.put(name, index + 1);
+            } else {
+                result[i] = name;
+            }
         }
 
         return result;
@@ -137,20 +148,18 @@ public class GameService {
     public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card teammateCard, Card.Suit rule) {
         Card.Suit base = playedCards.getFirst().getSuit();
 
-        if(teammateCard!=null){
-            if(containCard(playedCards,rule)){
-                if(teammateCard.getSuit()==rule){
-                    if(bestCard(playedCards,rule)== teammateCard){
-                        if(containCard(cardsInHand,base)){
-                           return worstCard(cardsInHand,base,base);
+        if (teammateCard != null) {
+            if (containCard(playedCards, rule)) {
+                if (teammateCard.getSuit() == rule) {
+                    if (bestCard(playedCards, rule) == teammateCard) {
+                        if (containCard(cardsInHand,base)) {
+                           return worstCard(cardsInHand, base, base);
+                        } else {
+                            return worstCard(cardsInHand, base, rule);
                         }
-                        else {
-                            return worstCard(cardsInHand,base,rule);
-                        }
-                    }
-                    else {
-                        if(containCard(cardsInHand,base)){
-                            return worstCard(cardsInHand,base,base);
+                    } else {
+                        if (containCard(cardsInHand, base)) {
+                            return worstCard(cardsInHand, base, base);
                         }
                         else{
                             if(haveBetterCard(cardsInHand,bestCard(playedCards,rule))){

@@ -20,7 +20,7 @@ public class Card implements Comparable<Card>, Serializable {
 
     @Override
     public String toString() {
-        return String.format("%-5s of %-8s", this.face, this.suit);
+        return String.format("%s of %s", this.face, this.suit);
     }
 
     public Suit getSuit() {
