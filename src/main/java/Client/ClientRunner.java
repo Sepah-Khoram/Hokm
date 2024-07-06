@@ -62,7 +62,7 @@ public class ClientRunner {
                     createGame();
                     break;
                 case 2:
-                    createGame1();
+                    createGameViaToken();
                     break;
                 case 3:
                     joinGame();
@@ -113,11 +113,11 @@ public class ClientRunner {
                 System.out.println("3 incorrect attempts. Canceling...");
         }
     }
-    private static void createGame1() {
+    private static void createGameViaToken() {
         for (int i = 0; i < 3; i++) {
             try {
                 System.out.print("Enter number of players: ");
-                if (client.createGame1(HOST, inputInt.nextInt(),GameType.Private)){
+                if (client.createGame(HOST, inputInt.nextInt(), GameType.Private)) {
                     Player player = new Player(nameOfPlayer, client);
                     player.run();
                 }

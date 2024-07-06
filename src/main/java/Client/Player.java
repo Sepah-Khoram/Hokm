@@ -125,6 +125,8 @@ public class Player extends Client implements Runnable {
                         System.out.println(playerInGame.get(winnerID) + " winned this round.");
 
                     teammateCard = null; // delete card of teammate
+                } else if (serverMessage.equals("divide cards")) {
+
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -251,5 +253,9 @@ public class Player extends Client implements Runnable {
         sendData(cards.get(choice));
         cards.remove(cards.get(choice));
         System.out.println("Successful");
+    }
+
+    private void divideCards() {
+
     }
 }

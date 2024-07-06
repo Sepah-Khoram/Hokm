@@ -15,7 +15,7 @@ public class Card implements Comparable<Card>, Serializable {
 
     @Override
     public int compareTo(Card card) {
-        return suit.compareTo(card.getSuit());
+        return face.compareTo(card.getFace());
     }
 
     @Override
@@ -25,6 +25,10 @@ public class Card implements Comparable<Card>, Serializable {
 
     public Suit getSuit() {
         return suit;
+    }
+
+    public Face getFace() {
+        return face;
     }
 
     public enum Face {

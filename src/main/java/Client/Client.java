@@ -110,7 +110,7 @@ public class Client {
         return true;
     }
 
-    public boolean createGame1(String host, int numberOfPlayers, GameType gameType ) throws IllegalArgumentException {
+    public boolean createGame(String host, int numberOfPlayers, GameType gameType ) throws IllegalArgumentException {
         setNumberOfPlayers(numberOfPlayers); // set number of players
 
         System.out.println("Creating game..."); // prompt
