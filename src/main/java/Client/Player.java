@@ -151,6 +151,7 @@ public class Player extends Client implements Runnable {
         }
 
         // print cards
+        Collections.sort(cards);
         showCards();
         System.out.println("Wait for ruler to select the rule.");
     }
