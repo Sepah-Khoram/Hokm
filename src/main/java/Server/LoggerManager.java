@@ -8,18 +8,14 @@ public class LoggerManager {
 
     static {
         try {
-            // Setting up file handler for logging
             FileHandler fileHandler = new FileHandler("server.log", true); // true for append mode
             fileHandler.setFormatter(new SimpleFormatter());
             logger.addHandler(fileHandler);
 
-            // Setting up console handler for logging
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setFormatter(new SimpleFormatter());
-            logger.addHandler(consoleHandler);
 
-            // Set logger level
-            logger.setLevel(Level.INFO); // You can adjust the logging level as needed
+            logger.setUseParentHandlers(false);
+
+            logger.setLevel(Level.INFO);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error setting up logger", e);
         }
