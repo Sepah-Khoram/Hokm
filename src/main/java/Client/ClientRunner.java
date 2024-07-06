@@ -178,7 +178,7 @@ public class ClientRunner {
         }
         System.out.println("number    number of player    number of connected player");
         for (int i = 0; i < currentGames.size(); i++) {
-            System.out.printf("  %-2d             %d                       %d", i, currentGames.get(i).getNumberOfPlayers(), currentGames.get(i).getConnectedPlayers());
+            System.out.printf("  %-2d             %d                       %d", i, currentGames.get(i).getNumberOfPlayers(), currentGames.get(i).getOnlinePlayer());
         }
         System.out.println("\nGames with players >>");
 //        for (int i = 0; i < currentGames.size(); i++) {
