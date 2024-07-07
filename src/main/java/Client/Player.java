@@ -13,14 +13,15 @@ public class Player extends Client implements Runnable {
     private final String name;
     private final Map<String, String> playerInGame; // <Id, Name>
     private final ArrayList<Card> onTableCards = new ArrayList<>();
+    private final int[] scoresOfPlayers = new int[4];
+    private final GameType gameType;
     private boolean isRuler;
     private Card.Suit rule;
     private ArrayList<Card> cards;
     private int playerNumber;
-    private final int[] scoresOfPlayers = new int[4];
     private String teammateId;
     private Card teammateCard;
-    private GameType gameType;
+
 
     public Player(String name, Client client, GameType gameType) {
         super(client);
