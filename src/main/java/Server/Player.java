@@ -108,13 +108,17 @@ public class Player extends Client implements Runnable {
         // prompt user to dividing card
         sendData("divide cards");
         // send first five cards
+        ArrayList<Card> card = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            sendData(cards[i]);
+            card.add(cards[i]);
         }
+        sendData(card);
 
         // get rule from ruler
         if (isRuler) {
             try {
+                String rule = (String) this.getInput().readObject();
+                game.setRule(getSuit(rule));
                 this.addCards((Card) this.getInput().readObject());
                 this.addCards((Card) this.getInput().readObject());
             } catch (IOException | ClassNotFoundException e) {
@@ -133,7 +137,8 @@ public class Player extends Client implements Runnable {
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        } else {
+        }
+        else {
             try {
                 this.addCards((Card) this.getInput().readObject());
                 this.addCards((Card) this.getInput().readObject());
@@ -194,5 +199,21 @@ public class Player extends Client implements Runnable {
 
     public void setRuler(boolean ruler) {
         isRuler = ruler;
+    }
+    public Card.Suit getSuit(String str){
+        String rule = str.substring(5);
+        if (rule.equals(Card.Suit.Clubs.name())){
+            return Card.Suit.Clubs;
+        } else if (rule.equals(Card.Suit.Spades.name())) {
+            return Card.Suit.Spades;
+        } else if (rule.equals(Card.Suit.Diamonds.name())) {
+            return Card.Suit.Diamonds;
+        } else if (rule.equals(Card.Suit.Hearts.name())) {
+            return Card.Suit.Hearts;
+        }
+        else {
+            return null;
+        }
+
     }
 }

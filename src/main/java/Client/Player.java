@@ -272,15 +272,15 @@ public class Player extends Client implements Runnable {
     private void divideCards() {
         Scanner scanner = new Scanner(System.in);
         try {
-            getCards();
+            cards = (ArrayList<Card>) this.getInput().readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         if(isRuler){
-            getRule();
             showCards();
+            getRule();
             System.out.print("Choose your first card :");
             try {
                 sendData(cards.get(scanner.nextInt()));
