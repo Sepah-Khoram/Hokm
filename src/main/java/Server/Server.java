@@ -220,18 +220,42 @@ public class Server implements Runnable {
     }
 
     public void sendMessage(String message, int gameNumber) {
-        publicGames.get(gameNumber).sendMessage("server massage: " + message);
-        logger.info("Message sent to game " + gameNumber + ": " + message);
+       try {
+           if (gameNumber < publicGames.size()) {
+               publicGames.get(gameNumber).sendMessage("server message: " + message);
+               logger.info("Message sent to public game " + gameNumber + ": " + message);
+           } else {
+               int privateGameIndex = gameNumber - publicGames.size();
+               if (privateGameIndex < privateGames.size()) {
+                   privateGames.get(privateGameIndex).sendMessage("server message: " + message);
+                   logger.info("Message sent to private game " + privateGameIndex + ": " + message);
+               } else {
+                   logger.warning("Invalid game number: " + gameNumber);
+               }
+           }
+       }catch (IndexOutOfBoundsException e) {
+           logger.warning("Invalid game number: " + gameNumber);
+       }
     }
 
+
     public void sendGlobalMessage(String message) {
+
         for (Game game : publicGames) {
             game.sendMessage("server message: " + message);
         }
-        logger.info("Message sent to all games: " + message);
     }
+        public void sendGlobalMessageToPrivateGames(String message) {
+            for (Game game : privateGames) {
+                game.sendMessage("server message: " + message);
+            }
+            logger.info("Message sent to all private games: " + message);
+        }
 
     public List<Game> getPublicGames() {
         return publicGames;
+    }
+    public List<Game> getPrivateGames() {
+        return privateGames;
     }
 }
