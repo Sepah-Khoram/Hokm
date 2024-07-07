@@ -45,8 +45,9 @@ public class Set implements Runnable {
         return winner;
     }
 
-    Set(Player[] players, ArrayList<Team> teams) {
+    Set(Player[] players, ArrayList<Team> teams, Player ruler) {
         this.players = players;
+        this.ruler = ruler;
         this.numberOfPlayers = players.length;
         this.teams = teams;
 
@@ -55,22 +56,10 @@ public class Set implements Runnable {
 
         this.scoresOfPlayers = new int[numberOfPlayers];
         Arrays.fill(scoresOfPlayers, 0);
-
-        // determine ruler
-        int indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
-        this.ruler = players[indexOfRuler];
-        this.ruler.setRuler(true);
-
-        // to put ruler in first turn
-        Collections.rotate(Arrays.asList(players), 4 - indexOfRuler);
-        logger.info("Set created with ruler: " + ruler.getName());
     }
 
     @Override
     public void run() {
-        // specify ruler
-        sendData("ruler:" + ruler.getId());
-
         // divide cards
         divideCards();
 

@@ -5,10 +5,7 @@ import Utilities.GameService;
 import Utilities.GameType;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +25,7 @@ public class Game implements Runnable {
     private final List<Set> sets;
     private final GameType gameType;
     private Set currentSet;
+    private Player ruler;
     private boolean isGameStarted;
     private int connectedPlayers; // no one added
     private int winTeam1 = 0;
@@ -122,6 +120,15 @@ public class Game implements Runnable {
             teams.add(new Team(team2));
         }
 
+        // determine ruler
+        int indexOfRuler = new SecureRandom().nextInt(0, getNumberOfPlayers());
+        this.ruler = players[indexOfRuler];
+        sendData("ruler:" + ruler.getId());
+        logger.info("ruler of the game: " + ruler.getName());
+
+        // to put ruler in first turn
+        Collections.rotate(Arrays.asList(players), 4 - indexOfRuler);
+
         System.out.println("Game " + token + " started with " + players.length + " players.");
         isGameStarted = true;
     }
@@ -139,7 +146,7 @@ public class Game implements Runnable {
 
         while (!isGameOver()) {
             // new set
-            sets.add(new Set(players, teams));
+            sets.add(new Set(players, teams, ruler));
             currentSet = sets.getLast();
             teams.getFirst().addSet(currentSet);
             teams.getLast().addSet(currentSet);
@@ -163,9 +170,9 @@ public class Game implements Runnable {
         ArrayList<Player> team2 = new ArrayList<>(2);
 
         team1.add(players[0]);
-        team1.add(players[1]);
+        team1.add(players[2]);
 
-        team2.add(players[2]);
+        team2.add(players[1]);
         team2.add(players[3]);
 
         // add team to game

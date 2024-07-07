@@ -19,7 +19,7 @@ public class Team {
             logger.warning("Team does not have enough players to get first and last IDs");
             return "";
         }
-        String result = players.get(0).getId() + "," + players.get(players.size() - 1).getId();
+        String result = players.getFirst().getId() + "," + players.getLast().getId();
         logger.info("Team toString() result: " + result);
         return result;
     }
