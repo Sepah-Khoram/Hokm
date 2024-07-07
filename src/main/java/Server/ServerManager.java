@@ -34,9 +34,13 @@ public class ServerManager implements Runnable {
                     showGames();
                     break;
                 case 2:
+                    // determine whether there is a game
                     if (!showGames())
                         continue;
-                    System.out.println("Which game do you want to see the details of?");
+
+                    System.out.println("Which game do you want to see the detail of?");
+                    System.out.print(">>> ");
+
                     try {
                         int gameIndex = scanner.nextInt() - 1;
                         server.showGameDetail(gameIndex);
@@ -44,14 +48,18 @@ public class ServerManager implements Runnable {
                         logger.warning("Invalid choice for game detail!");
                         scanner.nextLine(); // to clear the buffer
                     }
+
                     break;
                 case 3:
                     if (!showGames())
                         continue;
+
                     System.out.println("Which game do you want to send a message to?");
+                    System.out.print(">>> ");
+
                     try {
-                        int gameIndex = scanner.nextInt() - 1;
-                        scanner.nextLine(); // consume newline
+                        int gameIndex = inputInt.nextInt() - 1;
+                        s.nextLine(); // consume newline
                         if (gameIndex >= 0 && gameIndex < server.getGames().size()) {
                             System.out.print("Enter your message: ");
                             String message = scanner.nextLine();
@@ -63,6 +71,16 @@ public class ServerManager implements Runnable {
                         logger.warning("Invalid choice for sending message!");
                         scanner.nextLine(); // to clear the buffer
                     }
+
+                    // check the range
+                    if (choice > server.getPublicGames().size()) {
+                        System.out.println("Your choice is out of range!");
+                        continue;
+                    }
+
+                    // get message and send
+                    System.out.print("Enter your massage: ");
+                    server.massageToGame(inputString.nextLine(), choice - 1);
                     break;
                 case 4:
                     scanner.nextLine(); // consume newline
@@ -70,6 +88,14 @@ public class ServerManager implements Runnable {
                     String globalMessage = scanner.nextLine();
                     server.messageToAllGames(globalMessage);
                     logger.info("Sent message to all games: " + globalMessage);
+                    // determine whether there is a game
+                    if (server.getPublicGames().isEmpty())
+                        continue;
+
+                    // get message and send
+                    System.out.print("Enter your massage: ");
+                    String massage = inputString.nextLine();
+                    server.massageToAllGames(massage);
                     break;
                 case 5:
                     logger.info("Exiting ServerManager...");
@@ -90,14 +116,17 @@ public class ServerManager implements Runnable {
     }
 
     private boolean showGames() {
-        if (server.getGames().isEmpty()) {
-            System.out.println("No games found!");
+        // check if the game is not null
+        if (server.getPublicGames().isEmpty()) {
+            System.out.println("No game found!");
             logger.info("No games found!");
             return false;
         }
+
+        // show list of the game
         System.out.println("Games:");
-        for (int i = 0; i < server.getGames().size(); i++) {
-            System.out.println((i + 1) + ". " + server.getGames().get(i));
+        for (int i = 0; i < server.getPublicGames().size(); i++) {
+            System.out.println((i + 1) + ". " + server.getPublicGames().get(i));
         }
         logger.info("Displayed list of games.");
         return true;

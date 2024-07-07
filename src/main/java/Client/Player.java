@@ -2,6 +2,7 @@ package Client;
 
 import Utilities.Card;
 import Utilities.GameService;
+import Utilities.GameType;
 
 import java.awt.desktop.ScreenSleepEvent;
 import java.io.IOException;
@@ -19,9 +20,11 @@ public class Player extends Client implements Runnable {
     private final int[] scoresOfPlayers = new int[4];
     private String teammateId;
     private Card teammateCard;
+    private GameType gameType;
 
-    public Player(String name, Client client) {
+    public Player(String name, Client client, GameType gameType) {
         super(client);
+        this.gameType = gameType;
         this.name = name;
         playerInGame = new HashMap<>();
     }
@@ -40,8 +43,16 @@ public class Player extends Client implements Runnable {
             // send name of the player to server
             sendData("name:" + name);
 
-            // prompt to wait for others
-            if (getNumberOfPlayers() != playerNumber) {
+            // get token of private game
+            if (gameType == GameType.Private) {
+                try {
+                    System.out.println("Token of the game: " + getInput().readObject());
+                    setNumberOfPlayers(getInput().readInt());
+                } catch (IOException e) {
+                    System.out.println("Problem in loading token.");
+                    return;
+                }
+            } else if (getNumberOfPlayers() != playerNumber) {
                 if (getNumberOfPlayers() == 2 || playerNumber == 3)
                     System.out.println("Please wait for other player...");
                 else

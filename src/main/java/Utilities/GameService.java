@@ -52,8 +52,7 @@ public class GameService {
         return dividedList;
     }
 
-    private static Card worstCard(ArrayList<Card> cards, Card.Suit cardType1,
-                                            Card.Suit cardType2) {
+    private static Card worstCard(ArrayList<Card> cards, Card.Suit cardType1, Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
             if ((card.getSuit() == cardType1) || (card.getSuit() == cardType2))
@@ -66,8 +65,7 @@ public class GameService {
     }
 
     // do not contain type of parameters
-    private static Card worstCardNot(ArrayList<Card> cards, Card.Suit cardType1,
-                                               Card.Suit cardType2) {
+    private static Card worstCardNot(ArrayList<Card> cards, Card.Suit cardType1, Card.Suit cardType2) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
             if ((card.getSuit() != cardType1) && (card.getSuit() != cardType2))
@@ -103,8 +101,7 @@ public class GameService {
         return false;
     }
 
-    private static ArrayList<Card> findCard(ArrayList<Card> cards,
-                                                     Card.Suit cardType) {
+    private static ArrayList<Card> findCard(ArrayList<Card> cards, Card.Suit cardType) {
         ArrayList<Card> validCards = new ArrayList<>();
         for (Card card : cards) {
             if (card.getSuit() == cardType)
@@ -138,18 +135,17 @@ public class GameService {
         return result;
     }
 
-    public static boolean validCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand,
-                                    Card checkCard, Card.Suit rule) {
+    public static boolean validCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card checkCard,
+                                    Card.Suit rule) {
         if (playedCards.isEmpty())
             return true;
 
         Card.Suit base = playedCards.getFirst().getSuit();
-        return (checkCard.getSuit() == base) ||
-                (!containCard(cardsInHand, base) &&
-                        (checkCard.getSuit() == rule) || !containCard(cardsInHand, rule));
+        return (checkCard.getSuit() == base) || !containCard(cardsInHand, base);
     }
 
-    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card teammateCard, Card.Suit rule) {
+    public static Card suggestedCard(ArrayList<Card> playedCards, ArrayList<Card> cardsInHand, Card teammateCard,
+                                     Card.Suit rule) {
         Card.Suit base = playedCards.getFirst().getSuit();
 
         if (teammateCard != null) {

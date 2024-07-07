@@ -31,12 +31,12 @@ public class ClientRunner {
 
     private static void showMenu() {
         System.out.println("Enter your choice:");
-        System.out.println("1. Create a new game");
-        System.out.println("2. Create a new privet game");
-        System.out.println("3. Join to the random game");
-        System.out.println("4. Join to the game via token");
+        System.out.println("1. Create a new public game");
+        System.out.println("2. Create a new private game");
+        System.out.println("3. Join a random game");
+        System.out.println("4. Join the game via token");
         System.out.println("5. Show current games");
-        System.out.println("6. rename");
+        System.out.println("6. Rename");
         System.out.println("7. Exit");
         System.out.print(">>> ");
     }
@@ -58,10 +58,10 @@ public class ClientRunner {
             // response to the selected choice
             switch (choice) {
                 case 1:
-                    createGame();
+                    createGame(GameType.Public);
                     break;
                 case 2:
-                    createGameViaToken();
+                    createGame(GameType.Private);
                     break;
                 case 3:
                     joinGame();
@@ -69,7 +69,7 @@ public class ClientRunner {
                 case 4:
                     Scanner scanner = new Scanner(System.in);
                     System.out.print("Enter the token of the game: ");
-                    String gameToken = scanner.nextLine();
+                    String gameToken = scanner.nextLine().trim();
                     joinGame(gameToken);
                     break;
                 case 5:
@@ -92,32 +92,12 @@ public class ClientRunner {
         } // end of while
     }
 
-    private static void createGame() {
+    private static void createGame(GameType type) {
         for (int i = 0; i < 3; i++) {
             try {
                 System.out.print("Enter number of players: ");
-                if (client.createGame(HOST, inputInt.nextInt())) {
-                    Player player = new Player(nameOfPlayer, client);
-                    player.run();
-                }
-                break;
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            } catch (InputMismatchException e) {
-                System.out.println("Please write a number(2 or 4).");
-                inputInt.nextLine();
-            }
-            // cancel proccess
-            if (i == 2)
-                System.out.println("3 incorrect attempts. Canceling...");
-        }
-    }
-    private static void createGameViaToken() {
-        for (int i = 0; i < 3; i++) {
-            try {
-                System.out.print("Enter number of players: ");
-                if (client.createGame(HOST, inputInt.nextInt(), GameType.Private)) {
-                    Player player = new Player(nameOfPlayer, client);
+                if (client.createGame(HOST, inputInt.nextInt(), type)) {
+                    Player player = new Player(nameOfPlayer, client, type);
                     player.run();
                 }
                 break;
@@ -138,7 +118,7 @@ public class ClientRunner {
             try {
                 System.out.print("Enter number of players: ");
                 if (client.joinGame(HOST, inputInt.nextInt())) {
-                    Player player = new Player(nameOfPlayer, client);
+                    Player player = new Player(nameOfPlayer, client, GameType.Public);
                     player.run();
                     return;
                 }
@@ -160,7 +140,7 @@ public class ClientRunner {
         try {
             UUID gameUUID = UUID.fromString(token);
             if (client.joinGame(HOST, gameUUID)) {
-                Player player = new Player(nameOfPlayer, client);
+                Player player = new Player(nameOfPlayer, client, GameType.Private);
                 player.run();
             }
         } catch (IllegalArgumentException e) {
@@ -206,7 +186,7 @@ public class ClientRunner {
                 // add number of player and join to the game
                 client.setNumberOfPlayers(selectGame.getNumberOfPlayers());
                 if (client.joinGame(HOST, currentGames.get(gameNumber).getToken())) {
-                    Player player = new Player(nameOfPlayer, client);
+                    Player player = new Player(nameOfPlayer, client, GameType.Public);
                     player.run();
                     return;
                 }

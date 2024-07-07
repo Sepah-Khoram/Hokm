@@ -69,6 +69,7 @@ public class Client {
             return false;
         } catch (ClassNotFoundException e) {
             System.out.println("Error in get data from server!");
+            return false;
         }
         return true;
     }
@@ -86,18 +87,19 @@ public class Client {
             return false;
         } catch (ClassNotFoundException e) {
             System.out.println("Error in get data from server!");
+            return false;
         }
         return true;
     }
 
-    public boolean createGame(String host, int numberOfPlayers) throws IllegalArgumentException {
+    public boolean createGame(String host, int numberOfPlayers, GameType gameType) throws IllegalArgumentException {
         setNumberOfPlayers(numberOfPlayers); // set number of players
 
         System.out.println("Creating game..."); // prompt
 
         try {
             connectTo(host);
-            sendData("create:" + numberOfPlayers);
+            sendData("create:" + numberOfPlayers + gameType.name());
 
             // get player id
             id = input.readObject().toString();
@@ -106,27 +108,7 @@ public class Client {
             return false;
         } catch (ClassNotFoundException e) {
             System.out.println("Error in get data from server!");
-        }
-        return true;
-    }
-
-    public boolean createGame(String host, int numberOfPlayers, GameType gameType ) throws IllegalArgumentException {
-        setNumberOfPlayers(numberOfPlayers); // set number of players
-
-        System.out.println("Creating game..."); // prompt
-
-        try {
-            connectTo(host);
-            sendData("create:" + numberOfPlayers+"Private");
-
-            // get player id
-            id = input.readObject().toString();
-            System.out.println("your token :"+input.readObject().toString());
-        } catch (IOException e) {
-            System.out.println("Connection to server failed!");
             return false;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error in get data from server!");
         }
         return true;
     }

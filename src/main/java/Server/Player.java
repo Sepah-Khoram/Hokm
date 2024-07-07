@@ -1,6 +1,7 @@
 package Server;
 
 import Utilities.Card;
+import Utilities.GameType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,11 @@ public class Player extends Client implements Runnable {
             // give player name
             Object data = getInput().readObject();
             process(data);
+
+            if (game.getGameType() == GameType.Private) {
+                sendData(game.getToken());
+                sendInt(game.getNumberOfPlayers());
+            }
 
             game.getBarrier().await();
             logger.info("Player " + name + " is ready.");
@@ -102,11 +108,6 @@ public class Player extends Client implements Runnable {
         this.cards = cards;
         sendData("cards:");
         sendData(new ArrayList<>(cards));
-        logger.info("Cards sent to player " + name + ": " + cards);
-    }
-
-    void addCards(Card... cards) {
-        this.cards.addAll(Arrays.asList(cards));
     }
 
     public String getName() {
@@ -119,7 +120,6 @@ public class Player extends Client implements Runnable {
 
     void setGame(Game game) {
         this.game = game;
-        logger.info("Player " + name + " assigned to game.");
     }
 
     UUID getId() {
@@ -132,63 +132,5 @@ public class Player extends Client implements Runnable {
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
-    }
-
-    void divideCards(Card[] cards) {
-        // prompt user to dividing card
-        sendData("divide cards");
-        // send first five cards
-        for (int i = 0; i < 5; i++) {
-            sendData(cards[i]);
-        }
-
-        // get rule from ruler
-        if (isRuler) {
-            try {
-                this.addCards((Card) this.getInput().readObject());
-                this.addCards((Card) this.getInput().readObject());
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-
-            // choosing rule
-            sendData(cards[26]);
-            try {
-                boolean choose = (boolean) this.getInput().readObject();
-                if (choose) {
-                    this.addCards(cards[26]);
-                } else {
-                    this.addCards(cards[27]);
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                this.addCards((Card) this.getInput().readObject());
-                this.addCards((Card) this.getInput().readObject());
-                this.addCards((Card) this.getInput().readObject());
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        for (int i = 5; i < 25; i += 2) {
-            try {
-                //  choose between cards
-                sendData(cards[i]);
-                boolean choose = (boolean) this.getInput().readObject();
-                if (choose) {
-                    this.addCards(cards[i]);
-                } else {
-                    this.addCards(cards[i + 1]);
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void setRuler(boolean ruler) {
-        isRuler = ruler;
     }
 }

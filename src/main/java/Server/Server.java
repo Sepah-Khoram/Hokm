@@ -17,13 +17,10 @@ import java.util.logging.Logger;
 public class Server implements Runnable {
     private static final Logger logger = LoggerManager.getLogger();
     private final List<Client> clients; // clients that connected to server
-    private final List<Game> games; // games that play in the server
+    private final List<Game> publicGames; // public games that play in the server
+    private final List<Game> privateGames; // private games that play in the server
     private final ExecutorService gameExecutor; // will run games in threads
     private ServerSocket serverSocket; // server socket to connect with clients
-
-    public List<Game> getGames() {
-        return games;
-    }
 
     // constructor
     public Server() {
@@ -36,7 +33,8 @@ public class Server implements Runnable {
         }
 
         clients = new CopyOnWriteArrayList<>();
-        games = new CopyOnWriteArrayList<>();
+        publicGames = new CopyOnWriteArrayList<>();
+        privateGames = new CopyOnWriteArrayList<>();
         gameExecutor = Executors.newCachedThreadPool(); // create thread pool
     } // end constructor
 
@@ -80,14 +78,11 @@ public class Server implements Runnable {
     private void handleCommand(String command, Client client) {
         try {
             if (command.startsWith("create:")) {
-                int number = Integer.parseInt(command.substring(7));
-                if(command.substring(8).equals("Private")){
-                    GameType gameType = GameType.Private;
-                    createNewGame(client, number, gameType); // create new game
-                }
-                else {
-                    GameType gameType = GameType.Public;
-                    createNewGame(client, number, gameType); // create new game
+                int number = Integer.parseInt(command.substring(7, 8));
+                if (command.substring(8).equals("Private")){
+                    createNewGame(client, number, GameType.Private); // create new game
+                } else {
+                    createNewGame(client, number, GameType.Public); // create new game
                 }
             } else if (command.startsWith("join random:")) {
                 int number = Integer.parseInt(command.substring(12));
@@ -128,8 +123,14 @@ public class Server implements Runnable {
     public void createNewGame(Client client, int numberOfPlayers, GameType gameType) {
         try {
             Player player = new Player(client);
-            Game game = new Game(player, numberOfPlayers,gameType); // create new game
-            games.add(game); // add a game to arraylist
+            Game game = new Game(player, numberOfPlayers, gameType); // create new game
+
+            // add a game to arraylist
+            if (game.getGameType() == GameType.Private)
+                privateGames.add(game);
+            else
+                publicGames.add(game);
+
             gameExecutor.execute(game); // assign new thread to this game and execute it
             logger.info("New game created with " + numberOfPlayers + " players.");
         } catch (SocketException e) {
@@ -149,7 +150,7 @@ public class Server implements Runnable {
     public boolean joinGame(Client client, UUID token) {
         try {
             Player player = new Player(client);
-            for (Game game : games) {
+            for (Game game : privateGames) {
                 if (game.getToken().equals(token)) {
                     game.addPlayer(player);
                     logger.info("Player " + client + " joined game " + token);
@@ -195,15 +196,14 @@ public class Server implements Runnable {
     }
 
     private void closeConnection(Client client) {
-
             clients.remove(client); // remove connection from arraylist
             client.closeConnection();
             logger.info("Connection closed with client: " + client);
     }
 
-    public void showGameDetail(int chosenGame) {
-        if (chosenGame < games.size()) {
-            Game game = games.get(chosenGame);
+    public void showGameDetail(int choosenGame){
+        if(choosenGame < publicGames.size()) {
+            Game game = publicGames.get(choosenGame);
 
             if (game.hasNotStarted()) {
                 logger.info("Game has not started yet.");
@@ -219,15 +219,19 @@ public class Server implements Runnable {
         }
     }
 
-    public void messageToGame(String message, int gameNumber) {
-        games.get(gameNumber).sendMessage("server message: " + message);
+    public void massageToGame(String message, int gameNumber) {
+        publicGames.get(gameNumber).sendMessage("server massage: " + message);
         logger.info("Message sent to game " + gameNumber + ": " + message);
     }
 
     public void messageToAllGames(String message) {
-        for (Game game : games) {
+        for (Game game : publicGames) {
             game.sendMessage("server message: " + message);
         }
         logger.info("Message sent to all games: " + message);
+    }
+
+    public List<Game> getPublicGames() {
+        return publicGames;
     }
 }

@@ -34,10 +34,9 @@ public class Game implements Runnable {
     private GameType gameType;
 
     Game(Player player, int numberOfPlayers, GameType gameType) {
-        this.gameType=gameType;
+        this.gameType = gameType;
         players = new Player[numberOfPlayers];
         token = UUID.randomUUID();
-        sendData(token);
         sets = new ArrayList<>();
         executorService = Executors.newFixedThreadPool(numberOfPlayers);
         gameStartBarrier = new CyclicBarrier(numberOfPlayers, this::startGame);
@@ -244,5 +243,9 @@ public class Game implements Runnable {
 
     public int getOnlinePlayer (){
         return connectedPlayers;
+    }
+
+    public GameType getGameType() {
+        return gameType;
     }
 }
