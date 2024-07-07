@@ -15,7 +15,10 @@ public class Card implements Comparable<Card>, Serializable {
 
     @Override
     public int compareTo(Card card) {
-        return face.compareTo(card.getFace());
+        if (suit.compareTo(card.getSuit()) == 0)
+            return face.compareTo(card.getFace());
+        else
+            return suit.compareTo(card.getSuit());
     }
 
     @Override
