@@ -160,6 +160,7 @@ public class Game implements Runnable {
                 winTeam1++;
             } else {
                 winTeam2++;
+                Collections.rotate(Arrays.asList(players),1);
             }
         }
     }

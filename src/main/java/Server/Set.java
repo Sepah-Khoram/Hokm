@@ -5,6 +5,7 @@ import Utilities.GameService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -152,7 +153,7 @@ public class Set implements Runnable {
         Card winCard = GameService.topCard(onTableCards, rule);
         int indexOfWinner = onTableCards.indexOf(winCard);
         Player winner = players[indexOfWinner];
-
+        Collections.rotate(Arrays.asList(players),4-indexOfWinner);
         // increase score of the winner and winner team
         scoresOfPlayers[indexOfWinner]++;
         if (teams.getFirst().getPlayers().contains(winner)) {
