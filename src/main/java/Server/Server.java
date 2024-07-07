@@ -102,7 +102,7 @@ public class Server implements Runnable {
                 }
             } else if (command.equals("getGames")) {
                 logger.info("Sending game details to client: " + client);
-                for (Game game : games) {
+                for (Game game : publicGames) {
                     int numberOfPlayers = game.getNumberOfPlayers();
                     int currentRound = game.getCurrentRound();
                     int currentSet = game.getCurrentSet();
@@ -175,7 +175,7 @@ public class Server implements Runnable {
             Player player = new Player(client);
 
             // find a game
-            for (Game game : games) {
+            for (Game game : publicGames) {
                 if (numberOfPlayers == game.getNumberOfPlayers() && game.hasNotStarted()) {
                     game.addPlayer(player);
                     logger.info("Player " + client + " joined a random game with " + numberOfPlayers + " players.");
@@ -210,21 +210,21 @@ public class Server implements Runnable {
                 return;
             }
 
-            logger.info("Game details for game " + chosenGame + ":");
+            logger.info("Game details for game " + choosenGame + ":");
             logger.info("First team win " + game.getWinTeam1() + " sets");
             logger.info("Second team win " + game.getWinTeam2() + " sets");
             logger.info("Now game is in set " + game.getCurrentSet() + " and round " + game.getCurrentRound());
         } else {
-            logger.warning("Invalid game choice: " + chosenGame);
+            logger.warning("Invalid game choice: " + choosenGame);
         }
     }
 
-    public void massageToGame(String message, int gameNumber) {
+    public void sendMessage(String message, int gameNumber) {
         publicGames.get(gameNumber).sendMessage("server massage: " + message);
         logger.info("Message sent to game " + gameNumber + ": " + message);
     }
 
-    public void messageToAllGames(String message) {
+    public void sendGlobalMessage(String message) {
         for (Game game : publicGames) {
             game.sendMessage("server message: " + message);
         }

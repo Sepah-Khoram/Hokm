@@ -104,10 +104,68 @@ public class Player extends Client implements Runnable {
         return copy;
     }
 
+    void divideCards(Card[] cards) {
+        // prompt user to dividing card
+        sendData("divide cards");
+        // send first five cards
+        for (int i = 0; i < 5; i++) {
+            sendData(cards[i]);
+        }
+
+        // get rule from ruler
+        if (isRuler) {
+            try {
+                this.addCards((Card) this.getInput().readObject());
+                this.addCards((Card) this.getInput().readObject());
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            // choosing rule
+            sendData(cards[26]);
+            try {
+                boolean choose = (boolean) this.getInput().readObject();
+                if (choose) {
+                    this.addCards(cards[26]);
+                } else {
+                    this.addCards(cards[27]);
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                this.addCards((Card) this.getInput().readObject());
+                this.addCards((Card) this.getInput().readObject());
+                this.addCards((Card) this.getInput().readObject());
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (int i = 5; i < 25; i += 2) {
+            try {
+                //  choose between cards
+                sendData(cards[i]);
+                boolean choose = (boolean) this.getInput().readObject();
+                if (choose) {
+                    this.addCards(cards[i]);
+                } else {
+                    this.addCards(cards[i + 1]);
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     void setCards(List<Card> cards) {
         this.cards = cards;
         sendData("cards:");
         sendData(new ArrayList<>(cards));
+    }
+
+    void addCards(Card... cards) {
+        this.cards.addAll(Arrays.asList(cards));
     }
 
     public String getName() {
@@ -132,5 +190,9 @@ public class Player extends Client implements Runnable {
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
+    }
+
+    public void setRuler(boolean ruler) {
+        isRuler = ruler;
     }
 }

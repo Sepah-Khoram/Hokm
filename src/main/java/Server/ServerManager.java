@@ -2,17 +2,16 @@ package Server;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServerManager implements Runnable {
     private static final Logger logger = LoggerManager.getLogger();
     private final Server server;
-    private final Scanner scanner;
+    private final Scanner input;
 
     ServerManager(Server server) {
         this.server = server;
-        this.scanner = new Scanner(System.in);
+        this.input = new Scanner(System.in);
     }
 
     @Override
@@ -22,10 +21,11 @@ public class ServerManager implements Runnable {
 
             int choice;
             try {
-                choice = scanner.nextInt();
+                choice = input.nextInt();
+                input.nextLine(); // consume the new line character
             } catch (InputMismatchException e) {
                 logger.warning("Invalid entry. Please write a number.");
-                scanner.nextLine(); // to ignore invalid input
+                input.nextLine(); // to ignore invalid input
                 continue;
             }
 
@@ -42,11 +42,11 @@ public class ServerManager implements Runnable {
                     System.out.print(">>> ");
 
                     try {
-                        int gameIndex = scanner.nextInt() - 1;
+                        int gameIndex = input.nextInt() - 1;
                         server.showGameDetail(gameIndex);
                     } catch (InputMismatchException | IndexOutOfBoundsException e) {
                         logger.warning("Invalid choice for game detail!");
-                        scanner.nextLine(); // to clear the buffer
+                        input.nextLine(); // to clear the buffer
                     }
 
                     break;
@@ -58,18 +58,18 @@ public class ServerManager implements Runnable {
                     System.out.print(">>> ");
 
                     try {
-                        int gameIndex = inputInt.nextInt() - 1;
-                        s.nextLine(); // consume newline
-                        if (gameIndex >= 0 && gameIndex < server.getGames().size()) {
+                        int gameIndex = input.nextInt() - 1;
+                        input.nextLine(); // consume newline
+                        if (gameIndex >= 0 && gameIndex < server.getPublicGames().size()) {
                             System.out.print("Enter your message: ");
-                            String message = scanner.nextLine();
-                            server.messageToGame(message, gameIndex);
+                            String message = input.nextLine();
+                            server.sendMessage(message, gameIndex);
                         } else {
                             logger.warning("Invalid game choice for sending message!");
                         }
                     } catch (InputMismatchException e) {
                         logger.warning("Invalid choice for sending message!");
-                        scanner.nextLine(); // to clear the buffer
+                        input.nextLine(); // to clear the buffer
                     }
 
                     // check the range
@@ -80,13 +80,13 @@ public class ServerManager implements Runnable {
 
                     // get message and send
                     System.out.print("Enter your massage: ");
-                    server.massageToGame(inputString.nextLine(), choice - 1);
+                    server.sendMessage(input.nextLine(), choice - 1);
                     break;
                 case 4:
-                    scanner.nextLine(); // consume newline
+                    input.nextLine(); // consume newline
                     System.out.print("Enter your message: ");
-                    String globalMessage = scanner.nextLine();
-                    server.messageToAllGames(globalMessage);
+                    String globalMessage = input.nextLine();
+                    server.sendGlobalMessage(globalMessage);
                     logger.info("Sent message to all games: " + globalMessage);
                     // determine whether there is a game
                     if (server.getPublicGames().isEmpty())
@@ -94,8 +94,8 @@ public class ServerManager implements Runnable {
 
                     // get message and send
                     System.out.print("Enter your massage: ");
-                    String massage = inputString.nextLine();
-                    server.massageToAllGames(massage);
+                    String massage = input.nextLine();
+                    server.sendGlobalMessage(massage);
                     break;
                 case 5:
                     logger.info("Exiting ServerManager...");
