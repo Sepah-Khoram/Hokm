@@ -138,7 +138,7 @@ public class Game implements Runnable {
             }
         }
 
-        while (  !isGameOver()) {
+        while (!isGameOver()) {
             // new set
             sets.add(new Set(players, teams));
             currentSet = sets.getLast();

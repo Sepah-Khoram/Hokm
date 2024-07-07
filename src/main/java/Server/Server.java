@@ -29,6 +29,7 @@ public class Server implements Runnable {
     public Server() {
         try {
             serverSocket = new ServerSocket(5482);
+            logger.info("Server socket created successfully on port 5482.");
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error creating server socket", e);
             System.exit(1);
@@ -46,11 +47,12 @@ public class Server implements Runnable {
             try {
                 // create new Client
                 newClient = new Client(serverSocket.accept());
+                logger.info("New client connected: " + newClient);
 
                 // add socket to array list
                 clients.add(newClient);
 
-                // send user id for shake hands
+                // send user id for handshake
                 newClient.sendData(UUID.randomUUID());
 
                 // get a command of the client
@@ -60,13 +62,15 @@ public class Server implements Runnable {
                 // handle user command
                 handleCommand(command, newClient);
             } catch (ClassNotFoundException e) {
-                logger.warning("Illegal object received from client " + newClient + ": " +
-                        e.getMessage());
+                logger.warning("Illegal object received from client " + newClient + ": " + e.getMessage());
                 logger.log(Level.WARNING, "ClassNotFoundException", e);
                 closeConnection(newClient);
+            } catch (IOException e) {
+                logger.severe("I/O error occurred with client " + newClient + ": " + e.getMessage());
+                logger.log(Level.SEVERE, "IOException", e);
+                closeConnection(newClient);
             } catch (Exception e) {
-                logger.severe("Unexpected error occurred with client " + newClient + ": " +
-                        e.getMessage());
+                logger.severe("Unexpected error occurred with client " + newClient + ": " + e.getMessage());
                 logger.log(Level.SEVERE, "Exception", e);
                 closeConnection(newClient);
             }
@@ -87,33 +91,34 @@ public class Server implements Runnable {
                 }
             } else if (command.startsWith("join random:")) {
                 int number = Integer.parseInt(command.substring(12));
-                if (!joinGame(client, number)) {
-                    System.out.println("Game for player " + client + " Not Found!");
+                if (joinGame(client, number)) {
+                    logger.warning("Game for player " + client + " Not Found!");
                     // send data to the client
                     client.sendInt(404);
                     closeConnection(client);
                 }
             } else if (command.startsWith("join token:")) {
                 UUID token = UUID.fromString(command.substring(11));
-                if (!joinGame(client, token)) {
-                    System.out.println("Game " + token + " Not Found or has started!");
+                if (joinGame(client, token)) {
+                    logger.warning("Game " + token + " Not Found or has started!");
                     // send data to the client
                     client.sendInt(404);
                     closeConnection(client);
                 }
             } else if (command.equals("getGames")) {
-                // get Games
-               // games.forEach();
+                logger.info("Sending game details to client: " + client);
                 for (Game game : games) {
-                    int i = game.getNumberOfPlayers();
-                    int j = game.getCurrentRound();
-                    int k = game.getCurrentSet();
-                    game.sendData(j);
-                    game.sendData(i);
-                    game.sendData(k);
+                    int numberOfPlayers = game.getNumberOfPlayers();
+                    int currentRound = game.getCurrentRound();
+                    int currentSet = game.getCurrentSet();
+                    game.sendData(currentRound);
+                    game.sendData(numberOfPlayers);
+                    game.sendData(currentSet);
                 }
-            } else
+            } else {
+                logger.warning("Invalid command received from client: " + command);
                 closeConnection(client);
+            }
         } catch (NumberFormatException e) {
             logger.warning("Invalid command format: " + command);
             closeConnection(client);
@@ -126,6 +131,7 @@ public class Server implements Runnable {
             Game game = new Game(player, numberOfPlayers,gameType); // create new game
             games.add(game); // add a game to arraylist
             gameExecutor.execute(game); // assign new thread to this game and execute it
+            logger.info("New game created with " + numberOfPlayers + " players.");
         } catch (SocketException e) {
             logger.warning("SocketException in createNewGame: " + e.getMessage());
             closeConnection(client); // close client
@@ -146,20 +152,21 @@ public class Server implements Runnable {
             for (Game game : games) {
                 if (game.getToken().equals(token)) {
                     game.addPlayer(player);
-                    return true;
+                    logger.info("Player " + client + " joined game " + token);
+                    return false;
                 }
             }
         } catch (SocketException e) {
-            logger.warning("SocketException in createNewGame: " + e.getMessage());
+            logger.warning("SocketException in joinGame: " + e.getMessage());
             closeConnection(client); // close connection
         } catch (IOException e) {
-            logger.warning("IOException in createNewGame: " + e.getMessage());
+            logger.warning("IOException in joinGame: " + e.getMessage());
             closeConnection(client); // close connection
         } catch (Exception e) {
-            logger.severe("Unexpected error in createNewGame: " + e.getMessage());
+            logger.severe("Unexpected error in joinGame: " + e.getMessage());
             closeConnection(client);
         }
-        return false;
+        return true;
     }
 
     public boolean joinGame(Client client, int numberOfPlayers) {
@@ -170,52 +177,57 @@ public class Server implements Runnable {
             for (Game game : games) {
                 if (numberOfPlayers == game.getNumberOfPlayers() && game.hasNotStarted()) {
                     game.addPlayer(player);
+                    logger.info("Player " + client + " joined a random game with " + numberOfPlayers + " players.");
                     return true;
                 }
             }
         } catch (SocketException e) {
-            logger.warning("SocketException in createNewGame: " + e.getMessage());
+            logger.warning("SocketException in joinGame: " + e.getMessage());
             closeConnection(client); // close connection
         } catch (IOException e) {
-            logger.warning("IOException in createNewGame: " + e.getMessage());
+            logger.warning("IOException in joinGame: " + e.getMessage());
             closeConnection(client); // close connection
         } catch (Exception e) {
-            logger.severe("Unexpected error in createNewGame: " + e.getMessage());
+            logger.severe("Unexpected error in joinGame: " + e.getMessage());
             closeConnection(client);
         }
         return false;
     }
 
     private void closeConnection(Client client) {
-        clients.remove(client); // remove connection from arraylist
-        client.closeConnection();
+
+            clients.remove(client); // remove connection from arraylist
+            client.closeConnection();
+            logger.info("Connection closed with client: " + client);
     }
 
-    public void showGamedetail(int choosenGame){
-        if(choosenGame < games.size()) {
-            Game game = games.get(choosenGame);
+    public void showGameDetail(int chosenGame) {
+        if (chosenGame < games.size()) {
+            Game game = games.get(chosenGame);
 
             if (game.hasNotStarted()) {
-                System.out.println("Game has not started yet.");
+                logger.info("Game has not started yet.");
                 return;
             }
 
-            System.out.println("This game have this information :");
-            System.out.println("First team win " + game.getWinTeam1() + " sets");
-            System.out.println("Second team win " + game.getWinTeam2() + " sets");
-            System.out.println("Now game is in set " + game.getCurrentSet() + " and round " +
-                    game.getCurrentRound());
+            logger.info("Game details for game " + chosenGame + ":");
+            logger.info("First team win " + game.getWinTeam1() + " sets");
+            logger.info("Second team win " + game.getWinTeam2() + " sets");
+            logger.info("Now game is in set " + game.getCurrentSet() + " and round " + game.getCurrentRound());
         } else {
-            System.out.println("Invalid choice!");
+            logger.warning("Invalid game choice: " + chosenGame);
         }
     }
 
-    public void massageToGame(String message, int gameNumber) {
-        games.get(gameNumber).sendMessage("server massage: " + message);
+    public void messageToGame(String message, int gameNumber) {
+        games.get(gameNumber).sendMessage("server message: " + message);
+        logger.info("Message sent to game " + gameNumber + ": " + message);
     }
 
-    public void massageToGame(String message) {
-        for (Game game : games)
-            game.sendMessage("server massage: " + message);
+    public void messageToAllGames(String message) {
+        for (Game game : games) {
+            game.sendMessage("server message: " + message);
+        }
+        logger.info("Message sent to all games: " + message);
     }
 }

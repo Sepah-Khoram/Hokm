@@ -8,8 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Player extends Client implements Runnable {
+    private static final Logger logger = LoggerManager.getLogger();
     private final UUID Id;
     private List<Card> cards = new ArrayList<>();
     private String name;
@@ -30,24 +33,30 @@ public class Player extends Client implements Runnable {
     public void run() {
         try {
             sendInt(playerNumber); // send player number to player
+            logger.info("Player number " + playerNumber + " sent to player.");
+
             // give player name
             Object data = getInput().readObject();
             process(data);
+
             game.getBarrier().await();
+            logger.info("Player " + name + " is ready.");
 
             while (connected) {
                 data = getInput().readObject();
-                System.out.println(Thread.currentThread().getName() + " has ricived data");
-                process(data); // proccessing datas
+                logger.info("Received data from player " + name + ": " + data);
+                process(data); // processing data
             }
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error handling player: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error handling player " + name + ": " + e.getMessage(), e);
         } catch (BrokenBarrierException e) {
-            System.err.println("Error waiting at barrier: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error waiting at barrier for player " + name + ": " + e.getMessage(), e);
         } catch (InterruptedException e) {
-            System.err.println("Error thread interrupted: " + e.getMessage());
+            logger.log(Level.SEVERE, "Thread interrupted for player " + name + ": " + e.getMessage(), e);
+            Thread.currentThread().interrupt();
         } finally {
             closeConnection();
+            logger.info("Connection closed with player " + name);
         }
     }
 
@@ -57,16 +66,19 @@ public class Player extends Client implements Runnable {
     }
 
     private void process(Object data) {
-        // proccesing datas
+        // processing data
         if (data.toString().startsWith("name:")) {
             name = data.toString().substring(5).trim();
+            logger.info("Player name set to: " + name);
         } else if (data.toString().startsWith("rule:")) {
             game.setRule(Card.Suit.valueOf(data.toString().substring(5)));
+            logger.info("Game rule set by player " + name + ": " + data.toString().substring(5));
         } else if (data instanceof Card) {
             onTableCard = (Card) data;
+            logger.info("Card received from player " + name + ": " + onTableCard);
+        } else {
+            logger.warning("Invalid data received from player " + name + ": " + data);
         }
-
-        System.out.println("Received data: " + data);
     }
 
     synchronized Card playCard() {
@@ -74,6 +86,7 @@ public class Player extends Client implements Runnable {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
+                logger.log(Level.WARNING, "Thread interrupted while waiting for card from player " + name, e);
                 Thread.currentThread().interrupt();
             }
         }
@@ -81,6 +94,7 @@ public class Player extends Client implements Runnable {
         cards.remove(onTableCard);
         Card copy = onTableCard;
         onTableCard = null;
+        logger.info("Player " + name + " played card: " + copy);
         return copy;
     }
 
@@ -88,6 +102,7 @@ public class Player extends Client implements Runnable {
         this.cards = cards;
         sendData("cards:");
         sendData(new ArrayList<>(cards));
+        logger.info("Cards sent to player " + name + ": " + cards);
     }
 
     void addCards(Card... cards) {
@@ -104,6 +119,7 @@ public class Player extends Client implements Runnable {
 
     void setGame(Game game) {
         this.game = game;
+        logger.info("Player " + name + " assigned to game.");
     }
 
     UUID getId() {
