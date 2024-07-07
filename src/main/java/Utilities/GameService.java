@@ -150,37 +150,47 @@ public class GameService {
 
         if (teammateCard != null) {
             if (containCard(playedCards, rule)) {
-                if (teammateCard.getSuit() == rule) {
-                    if (bestCard(playedCards, rule) == teammateCard) {
-                        if (containCard(cardsInHand,base)) {
-                           return worstCard(cardsInHand, base, base);
+                if (base == rule) {
+                    if (containCard(cardsInHand,rule)){
+                        if (haveBetterCard(cardsInHand,bestCard(playedCards,rule))){
+                            return bestCard(cardsInHand,rule);
+                        }
+                        else {
+                            return worstCard(cardsInHand,rule,rule);
+                        }
+                    }
+                    else {
+                        return worstCardNot(cardsInHand,base,rule);
+                    }
+                }
+                else {
+                    if (teammateCard.getSuit() == rule) {
+                        if (bestCard(playedCards, rule) == teammateCard) {
+                            if (containCard(cardsInHand, base)) {
+                                return worstCard(cardsInHand, base, base);
+                            } else {
+                                return worstCard(cardsInHand, base, rule);
+                            }
                         } else {
-                            return worstCard(cardsInHand, base, rule);
+                            if (containCard(cardsInHand, base)) {
+                                return worstCard(cardsInHand, base, base);
+                            } else {
+                                if (haveBetterCard(cardsInHand, bestCard(playedCards, rule))) {
+                                    return bestCard(cardsInHand, rule);
+                                } else {
+                                    return worstCard(cardsInHand, base, rule);
+                                }
+                            }
                         }
                     } else {
                         if (containCard(cardsInHand, base)) {
                             return worstCard(cardsInHand, base, base);
-                        }
-                        else{
-                            if(haveBetterCard(cardsInHand,bestCard(playedCards,rule))){
-                                return bestCard(cardsInHand,rule);
+                        } else {
+                            if (haveBetterCard(cardsInHand, bestCard(playedCards, rule))) {
+                                return bestCard(cardsInHand, rule);
+                            } else {
+                                return worstCardNot(cardsInHand, base, rule);
                             }
-                            else{
-                                return worstCard(cardsInHand,base,rule);
-                            }
-                        }
-                    }
-                }
-                else {
-                    if(containCard(cardsInHand,base)){
-                         return worstCard(cardsInHand,base,base);
-                    }
-                    else {
-                        if(haveBetterCard(cardsInHand,bestCard(playedCards,rule))){
-                            return bestCard(cardsInHand,rule);
-                        }
-                        else {
-                            return worstCardNot(cardsInHand,base,rule);
                         }
                     }
                 }
