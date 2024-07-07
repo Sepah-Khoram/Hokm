@@ -83,21 +83,18 @@ public class ServerManager implements Runnable {
                     server.sendMessage(input.nextLine(), choice - 1);
                     break;
                 case 4:
-                    input.nextLine(); // consume newline
                     System.out.print("Enter your message: ");
                     String globalMessage = input.nextLine();
                     server.sendGlobalMessage(globalMessage);
                     logger.info("Sent message to all games: " + globalMessage);
-                    // determine whether there is a game
-                    if (server.getPublicGames().isEmpty())
-                        continue;
-
-                    // get message and send
-                    System.out.print("Enter your massage: ");
-                    String massage = input.nextLine();
-                    server.sendGlobalMessage(massage);
                     break;
                 case 5:
+                    System.out.print("Enter your message: ");
+                    String privateMessage = input.nextLine();
+                    server.sendGlobalMessageToPrivateGames(privateMessage);
+                    logger.info("Sent message to all private games: " + privateMessage);
+                    break;
+                case 6:
                     logger.info("Exiting ServerManager...");
                     return;
                 default:
@@ -111,9 +108,10 @@ public class ServerManager implements Runnable {
         System.out.println("1. Show all games");
         System.out.println("2. Show details of the selected game");
         System.out.println("3. Send a message to a specific game");
-        System.out.println("4. Send a message to all games");
-        System.out.println("5. Exit");
-        System.out.println("Please enter your choice.");
+        System.out.println("4. Send a message to all public games");
+        System.out.println("5. Send a message to all private games");
+        System.out.println("6. Exit");
+        System.out.print("Please enter your choice: ");
         System.out.print(">>> ");
     }
 
@@ -125,10 +123,15 @@ public class ServerManager implements Runnable {
             return false;
         }
 
-        // show list of the game
-        System.out.println("Games:");
+        // show list of the public game
+        System.out.println("Public Games:");
         for (int i = 0; i < server.getPublicGames().size(); i++) {
             System.out.println((i + 1) + ". " + server.getPublicGames().get(i));
+        }
+        // show list of the private game
+        System.out.println("Private Games:");
+        for (int i = 0; i < server.getPrivateGames().size(); i++) {
+            System.out.println((i + 1 + server.getPublicGames().size()) + ". " + server.getPrivateGames().get(i));
         }
         logger.info("Displayed list of games.");
         return true;
