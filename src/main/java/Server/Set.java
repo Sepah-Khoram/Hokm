@@ -3,6 +3,7 @@ package Server;
 import Utilities.Card;
 import Utilities.GameService;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +59,7 @@ public class Set implements Runnable {
         // determine ruler
         int indexOfRuler = new SecureRandom().nextInt(0, numberOfPlayers);
         this.ruler = players[indexOfRuler];
+        this.ruler.setRuler(true);
 
         // to put ruler in first turn
         Collections.rotate(Arrays.asList(players), 4 - indexOfRuler);
@@ -119,21 +121,14 @@ public class Set implements Runnable {
             // send the rule of the game
             sendData("rule:" + rule);
         } else if (players.length == 2) {
-            // prompt user to dividing card
-            sendData("divide cards");
-            for (int i = 0; i < 2; i++) {
-                // ssave current player
-                Player currentPlayer = players[i];
+            // determine player that is not ruler
+            Player notRuler = (players[0] == ruler) ? players[1] : players[0];
 
-                // send first five cards
-                for (int j  = 0; j < 5; j++) {
-                    sendData(cards[i][j], currentPlayer);
-                }
-                if (currentPlayer == ruler) {
-                    sendData("Choose games rule");
-                    currentPlayer.getInput().readObject();
-                }
-            }
+            Thread player1 = new Thread(() -> ruler.divideCards(cards[0]));
+            Thread player2 = new Thread(() -> notRuler.divideCards(cards[1]));
+
+            player1.start();
+            player2.start();
         }
     }
 

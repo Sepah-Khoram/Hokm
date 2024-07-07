@@ -27,13 +27,17 @@ public class GameService {
 
         if (numberOfPlayers == 2) {
             // divide the cards into two decks of 26
-            dividedList = new Card[2][26];
-            for (int i = 0, j = 0; i < 52; i += 2, j++) {
+            dividedList = new Card[2][];
+            dividedList[0] = new Card[25];
+            dividedList[1] = new Card[27];
+            for (int i = 0, j = 0; i < 50; i += 2, j++) {
                 dividedList[0][j] = cards.get(i);
                 dividedList[0][j] = cards.get(i + 1);
                 dividedList[1][j] = cards.get(i + 2);
                 dividedList[1][j] = cards.get(i + 3);
             }
+            dividedList[1][25] = cards.get(50);
+            dividedList[1][26] = cards.get(51);
         } else {
             // divide the cards into four decks of 13
             dividedList = new Card[4][13];
@@ -186,11 +190,16 @@ public class GameService {
                 }
             }
             else {
-                if (haveBetterCard(cardsInHand,bestCard(playedCards,base))){
-                    return bestCard(cardsInHand,base);
+                if(teammateCard==bestCard(playedCards,base)){
+                    return worstCard(cardsInHand,base,base);
                 }
                 else {
-                    return worstCard(cardsInHand,base,base);
+                    if (haveBetterCard(cardsInHand,bestCard(playedCards,base))){
+                        return bestCard(cardsInHand,base);
+                    }
+                    else {
+                        return worstCard(cardsInHand,base,base);
+                    }
                 }
             }
         }

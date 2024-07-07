@@ -3,6 +3,7 @@ package Client;
 import Utilities.Card;
 import Utilities.GameService;
 
+import java.awt.desktop.ScreenSleepEvent;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -126,7 +127,7 @@ public class Player extends Client implements Runnable {
 
                     teammateCard = null; // delete card of teammate
                 } else if (serverMessage.equals("divide cards")) {
-
+                    divideCards();
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -257,6 +258,86 @@ public class Player extends Client implements Runnable {
     }
 
     private void divideCards() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            getCards();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if(isRuler){
+            getRule();
+            showCards();
+            System.out.print("Choose your first card :");
+            try {
+                sendData(cards.get(scanner.nextInt()));
+                System.out.print("Choose your second card :");
+                sendData(cards.get(scanner.nextInt()));
+            } catch (InputMismatchException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                Card card = (Card) getInput().readObject();
+                while (true){
+                    System.out.println("Do you want this card ? (yes/no)");
+                    System.out.println(card);
+                    String entry = scanner.nextLine();
+                    if (Objects.equals(entry, "yes")){
+                        sendData(true);
+                        break;
+                    } else if (Objects.equals(entry, "no")) {
+                        sendData(false);
+                        break;
+                    }
+                    else {
+                        System.out.println("wrong entry");
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        else {
+            showCards();
+            System.out.print("Choose your first card :");
+            try {
+                sendData(cards.get(scanner.nextInt()));
+                System.out.print("Choose your second card :");
+                sendData(cards.get(scanner.nextInt()));
+                System.out.print("Choose your third card :");
+                sendData(cards.get(scanner.nextInt()));
+            } catch (InputMismatchException e) {
+                throw new RuntimeException(e);
+            }
+        }
+            for (int i = 5; i < 25 ; i+=2) {
+                try {
+                    Card card = (Card) getInput().readObject();
+                    while (true){
+                        System.out.println("Do you want this card ? (yes/no)");
+                        System.out.println(card);
+                        String entry = scanner.nextLine();
+                        if (Objects.equals(entry, "yes")){
+                            sendData(true);
+                            break;
+                        } else if (Objects.equals(entry, "no")) {
+                            sendData(false);
+                            break;
+                        }
+                        else {
+                            System.out.println("wrong entry");
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
     }
 }
