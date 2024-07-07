@@ -4,7 +4,6 @@ import Utilities.Card;
 import Utilities.GameService;
 import Utilities.GameType;
 
-import java.awt.desktop.ScreenSleepEvent;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -273,9 +272,7 @@ public class Player extends Client implements Runnable {
         Scanner scanner = new Scanner(System.in);
         try {
             cards = (ArrayList<Card>) this.getInput().readObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         if(isRuler){
@@ -306,9 +303,7 @@ public class Player extends Client implements Runnable {
                         System.out.println("wrong entry");
                     }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
 
@@ -344,9 +339,7 @@ public class Player extends Client implements Runnable {
                             System.out.println("wrong entry");
                         }
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
             }

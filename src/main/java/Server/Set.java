@@ -3,11 +3,8 @@ package Server;
 import Utilities.Card;
 import Utilities.GameService;
 
-import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -158,7 +155,7 @@ public class Set implements Runnable {
 
         // increase score of the winner and winner team
         scoresOfPlayers[indexOfWinner]++;
-        if (teams.get(0).getPlayers().contains(winner)) {
+        if (teams.getFirst().getPlayers().contains(winner)) {
             scoresOfTeams[0]++;
         } else {
             scoresOfTeams[1]++;

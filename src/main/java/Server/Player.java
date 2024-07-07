@@ -107,11 +107,9 @@ public class Player extends Client implements Runnable {
     void divideCards(Card[] cards) {
         // prompt user to dividing card
         sendData("divide cards");
+
         // send first five cards
-        ArrayList<Card> card = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            card.add(cards[i]);
-        }
+        ArrayList<Card> card = new ArrayList<>(Arrays.asList(cards).subList(0, 5));
         sendData(card);
 
         // get rule from ruler
@@ -200,6 +198,7 @@ public class Player extends Client implements Runnable {
     public void setRuler(boolean ruler) {
         isRuler = ruler;
     }
+
     public Card.Suit getSuit(String str){
         String rule = str.substring(5);
         if (rule.equals(Card.Suit.Clubs.name())){
