@@ -1,6 +1,5 @@
 package Client;
 
-import Server.Game;
 import Utilities.GameType;
 
 import java.io.File;
@@ -156,50 +155,11 @@ public class ClientRunner {
             System.out.println("No current game in server. You can create a new game!");
             return;
         }
-        System.out.println("number    number of player    number of connected player");
-        for (int i = 0; i < currentGames.size(); i++) {
-            System.out.printf("  %-2d             %d                       %d", i, currentGames.get(i).getNumberOfPlayers(), currentGames.get(i).getOnlinePlayer());
-        }
-        System.out.println("\nGames with players >>");
-//        for (int i = 0; i < currentGames.size(); i++) {
-//            System.out.printf("%d . %s",i+1,"Playears: \n");
-//            for (int j = 0; j < currentGames.get(i).getOnlinePlayer(); j++) {
-//                System.out.printf("    %d . %s",j+1,currentGames.get(i).getConnectedPlayers().get(j));
-//            }
-//        }
-        // for count games
-        int count = 0;
 
-        // prompt and show games
-        System.out.println("Choose one of the game to join(enter 0 for cancel proccess):");
+        System.out.printf("row %26s    %22s    %s%n", "token", "players", "connected players");
+        int rowCount = 0;
         for (Game game : currentGames) {
-            System.out.printf("%d. %s", ++count, game);
-        }
-
-        // join to the game that user select
-        for (int i = 0; i < 3; i++) {
-            try {
-                // give the selected game of the user
-                int gameNumber = inputInt.nextInt() - 1;
-                Game selectGame = currentGames.get(gameNumber);
-
-                // add number of player and join to the game
-                client.setNumberOfPlayers(selectGame.getNumberOfPlayers());
-                if (client.joinGame(HOST, currentGames.get(gameNumber).getToken())) {
-                    Player player = new Player(nameOfPlayer, client, GameType.Public);
-                    player.run();
-                    return;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Please write a number.");
-                inputString.nextLine();
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("Please write a correct number in the range.");
-            }
-            // cancel proccess
-            if (i == 2) {
-                System.out.println("3 incorrect attempts. Canceling...");
-            }
+            System.out.printf("%3d %s%n", ++rowCount, game);
         }
     }
 

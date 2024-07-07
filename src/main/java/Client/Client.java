@@ -1,6 +1,5 @@
 package Client;
 
-import Server.Game;
 import Utilities.GameType;
 
 import java.io.IOException;
@@ -37,13 +36,20 @@ public class Client {
     }
 
     public ArrayList<Game> showCurrentGames(String host) {
-        ArrayList<Game> currentGames = null;
+        ArrayList<Game> currentGames = new ArrayList<>();
 
         try {
             connectTo(host);
             sendData("getGames"); // send request to server
+            int numberOfGames = getInput().readInt();
+            for (int i = 0; i < numberOfGames; i++) {
+                String token = getInput().readObject().toString();
+                int numberOfPlayers = getInput().readInt();
+                int onlinePlayers = getInput().readInt();
 
-            currentGames = (ArrayList<Game>) input.readObject(); // get games from server
+                Game game = new Game(token, numberOfPlayers, onlinePlayers);
+                currentGames.add(game);
+            }
         } catch (IOException e) {
             System.err.println("Connection to server failed!");
         } catch (ClassNotFoundException e) {

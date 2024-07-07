@@ -26,12 +26,12 @@ public class Game implements Runnable {
     private final ArrayList<Team> teams = new ArrayList<>();
     private final UUID token;
     private final List<Set> sets;
+    private final GameType gameType;
     private Set currentSet;
     private boolean isGameStarted;
     private int connectedPlayers; // no one added
     private int winTeam1 = 0;
     private int winTeam2 = 0;
-    private GameType gameType;
 
     Game(Player player, int numberOfPlayers, GameType gameType) {
         this.gameType = gameType;
@@ -160,19 +160,13 @@ public class Game implements Runnable {
     private void makeTwoTeams() {
         // create team1 and team2
         ArrayList<Player> team1 = new ArrayList<>(2);
-        team1.add(players[3]);
-
         ArrayList<Player> team2 = new ArrayList<>(2);
 
-        // find the teammate for the last player
-        int teammateIndex = new SecureRandom().nextInt(0, 3);
-        team1.add(players[teammateIndex]);
+        team1.add(players[0]);
+        team1.add(players[1]);
 
-        // make team2
-        for (int i = 0; i < 3; i++) {
-            if (i != teammateIndex)
-                team2.add(players[i]);
-        }
+        team2.add(players[2]);
+        team2.add(players[3]);
 
         // add team to game
         teams.add(new Team(team1));
@@ -238,10 +232,13 @@ public class Game implements Runnable {
     }
 
     int getCurrentRound() {
-        return currentSet.getRound();
+        if (currentSet != null)
+            return currentSet.getRound();
+        else
+            return 0;
     }
 
-    public int getOnlinePlayer (){
+    public int getconnectedPlayer() {
         return connectedPlayers;
     }
 

@@ -102,6 +102,7 @@ public class ServerManager implements Runnable {
                     return;
                 default:
                     logger.warning("Invalid menu choice!");
+                    System.out.println("Invalid menu choice.");
             }
         }
     }
@@ -112,7 +113,8 @@ public class ServerManager implements Runnable {
         System.out.println("3. Send a message to a specific game");
         System.out.println("4. Send a message to all games");
         System.out.println("5. Exit");
-        System.out.print("Please enter your choice: ");
+        System.out.println("Please enter your choice.");
+        System.out.print(">>> ");
     }
 
     private boolean showGames() {

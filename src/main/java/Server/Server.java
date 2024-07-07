@@ -20,6 +20,7 @@ public class Server implements Runnable {
     private final List<Game> publicGames; // public games that play in the server
     private final List<Game> privateGames; // private games that play in the server
     private final ExecutorService gameExecutor; // will run games in threads
+    private final ExecutorService clientHandler;
     private ServerSocket serverSocket; // server socket to connect with clients
 
     // constructor
@@ -35,88 +36,27 @@ public class Server implements Runnable {
         clients = new CopyOnWriteArrayList<>();
         publicGames = new CopyOnWriteArrayList<>();
         privateGames = new CopyOnWriteArrayList<>();
-        gameExecutor = Executors.newCachedThreadPool(); // create thread pool
+        gameExecutor = Executors.newCachedThreadPool();
+        clientHandler = Executors.newCachedThreadPool();
     } // end constructor
 
     @Override
     public void run() {
         while (true) {
-            Client newClient = null;
             try {
                 // create new Client
-                newClient = new Client(serverSocket.accept());
+                Client newClient = new Client(serverSocket.accept(), this);
                 logger.info("New client connected: " + newClient);
 
                 // add socket to array list
                 clients.add(newClient);
 
-                // send user id for handshake
-                newClient.sendData(UUID.randomUUID());
-
-                // get a command of the client
-                ObjectInputStream input = newClient.getInput();
-                String command = (String) input.readObject();
-
-                // handle user command
-                handleCommand(command, newClient);
-            } catch (ClassNotFoundException e) {
-                logger.warning("Illegal object received from client " + newClient + ": " + e.getMessage());
-                logger.log(Level.WARNING, "ClassNotFoundException", e);
-                closeConnection(newClient);
+                // handle client in a new thread
+                clientHandler.execute(newClient);
             } catch (IOException e) {
-                logger.severe("I/O error occurred with client " + newClient + ": " + e.getMessage());
+                logger.severe("I/O error occurred while accepting client: " + e.getMessage());
                 logger.log(Level.SEVERE, "IOException", e);
-                closeConnection(newClient);
-            } catch (Exception e) {
-                logger.severe("Unexpected error occurred with client " + newClient + ": " + e.getMessage());
-                logger.log(Level.SEVERE, "Exception", e);
-                closeConnection(newClient);
             }
-        }
-    } // end method execute
-
-    private void handleCommand(String command, Client client) {
-        try {
-            if (command.startsWith("create:")) {
-                int number = Integer.parseInt(command.substring(7, 8));
-                if (command.substring(8).equals("Private")){
-                    createNewGame(client, number, GameType.Private); // create new game
-                } else {
-                    createNewGame(client, number, GameType.Public); // create new game
-                }
-            } else if (command.startsWith("join random:")) {
-                int number = Integer.parseInt(command.substring(12));
-                if (joinGame(client, number)) {
-                    logger.warning("Game for player " + client + " Not Found!");
-                    // send data to the client
-                    client.sendInt(404);
-                    closeConnection(client);
-                }
-            } else if (command.startsWith("join token:")) {
-                UUID token = UUID.fromString(command.substring(11));
-                if (joinGame(client, token)) {
-                    logger.warning("Game " + token + " Not Found or has started!");
-                    // send data to the client
-                    client.sendInt(404);
-                    closeConnection(client);
-                }
-            } else if (command.equals("getGames")) {
-                logger.info("Sending game details to client: " + client);
-                for (Game game : publicGames) {
-                    int numberOfPlayers = game.getNumberOfPlayers();
-                    int currentRound = game.getCurrentRound();
-                    int currentSet = game.getCurrentSet();
-                    game.sendData(currentRound);
-                    game.sendData(numberOfPlayers);
-                    game.sendData(currentSet);
-                }
-            } else {
-                logger.warning("Invalid command received from client: " + command);
-                closeConnection(client);
-            }
-        } catch (NumberFormatException e) {
-            logger.warning("Invalid command format: " + command);
-            closeConnection(client);
         }
     }
 
