@@ -175,11 +175,17 @@ public class GameService {
                             if (containCard(cardsInHand, base)) {
                                 return worstCard(cardsInHand, base, base);
                             } else {
-                                if (haveBetterCard(cardsInHand, bestCard(playedCards, rule))) {
-                                    return bestCard(cardsInHand, rule);
-                                } else {
-                                    return worstCard(cardsInHand, base, rule);
+                                if (containCard(cardsInHand,rule)){
+                                    if (haveBetterCard(cardsInHand, bestCard(playedCards, rule))) {
+                                        return bestCard(cardsInHand, rule);
+                                    } else {
+                                        return worstCard(cardsInHand, base, rule);
+                                    }
                                 }
+                                else {
+                                    return worstCardNot(cardsInHand,base,rule);
+                                }
+
                             }
                         }
                     } else {
