@@ -105,13 +105,13 @@ public class ServerManager implements Runnable {
     }
 
     private void showMenu() {
+        System.out.println("Please enter your choice: ");
         System.out.println("1. Show all games");
         System.out.println("2. Show details of the selected game");
         System.out.println("3. Send a message to a specific game");
         System.out.println("4. Send a message to all public games");
         System.out.println("5. Send a message to all private games");
         System.out.println("6. Exit");
-        System.out.print("Please enter your choice: ");
         System.out.print(">>> ");
     }
 

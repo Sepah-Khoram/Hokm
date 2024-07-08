@@ -10,9 +10,12 @@ import java.util.*;
 
 public class Player extends Client implements Runnable {
     private final String name;
-    private final Map<String, String> playerInGame; // <Id, Name>
+    private final Map<String, String> playersInGame; // <Id, Name>
+    private final Map<String, Integer> scoresOfPlayers; // <Id, Score>
+    private final String[] opponentId;
+    private final int[] scoresOfTeams;
+    private final ArrayList<String> players;
     private final ArrayList<Card> onTableCards = new ArrayList<>();
-    private final int[] scoresOfPlayers = new int[4];
     private final GameType gameType;
     private boolean isRuler;
     private Card.Suit rule;
@@ -21,12 +24,16 @@ public class Player extends Client implements Runnable {
     private String teammateId;
     private Card teammateCard;
 
-
     public Player(String name, Client client, GameType gameType) {
         super(client);
         this.gameType = gameType;
         this.name = name;
-        playerInGame = new HashMap<>();
+        playersInGame = new HashMap<>();
+        scoresOfPlayers = new HashMap<>();
+        players = new ArrayList<>();
+        opponentId = new String[getNumberOfPlayers() / 2];
+        scoresOfTeams = new int[getNumberOfPlayers() / 2];
+        Arrays.fill(scoresOfTeams, 0);
     }
 
     @Override
@@ -76,7 +83,7 @@ public class Player extends Client implements Runnable {
                         System.out.println("You are ruler!");
                         isRuler = true;
                     } else {
-                        System.out.println(playerInGame.get(rulerId).trim() + " is ruler.");
+                        System.out.println(playersInGame.get(rulerId).trim() + " is ruler.");
                         isRuler = false;
                     }
                 } else if (serverMessage.startsWith("set")) {
@@ -91,11 +98,14 @@ public class Player extends Client implements Runnable {
                         else
                             teammateId = team[0];
 
-                        System.out.println("Your team: " + playerInGame.get(team[0]) +
-                                ", " + playerInGame.get(team[1]));
+                        System.out.println("Your team: " + playersInGame.get(team[0]) +
+                                ", " + playersInGame.get(team[1]));
                     } else {
-                        System.out.println("Other team: " + playerInGame.get(team[0]) +
-                                ", " + playerInGame.get(team[1]));
+                        // save oponent ids
+                        opponentId[0] = team[0];
+                        opponentId[1] = team[1];
+                        System.out.println("Other team: " + playersInGame.get(team[0]) +
+                                ", " + playersInGame.get(team[1]));
                     }
                 } else if (serverMessage.startsWith("rule")) {
                     if (!isRuler) {
@@ -109,10 +119,11 @@ public class Player extends Client implements Runnable {
                 } else if (serverMessage.startsWith("on table card")) {
                     // get player's id
                     String playerId = serverMessage.substring(14);
+
                     // get card
                     onTableCards.add((Card) getInput().readObject());
                     if (!playerId.equals(getId())) {
-                        System.out.println(playerInGame.get(playerId) + " played " +
+                        System.out.println(playersInGame.get(playerId) + " played " +
                                 onTableCards.getLast());
                     }
 
@@ -125,18 +136,31 @@ public class Player extends Client implements Runnable {
                     if (id.equals(getId()))
                         putCard();
                     else
-                        System.out.println("Now it's " + playerInGame.get(id) + "'s turn.");
+                        System.out.println("Now it's " + playersInGame.get(id) + "'s turn.");
                 } else if (serverMessage.startsWith("server massage: ")) {
                     System.out.println(serverMessage);
                 } else if (serverMessage.startsWith("winner round:")) {
                     String winnerID = serverMessage.substring(13);
+                    int previousScore = scoresOfPlayers.get(winnerID);
+                    scoresOfPlayers.replace(winnerID, ++previousScore);
 
-                    if (winnerID.equals(getId()))
-                        System.out.println("You win this round");
-                    else
-                        System.out.println(playerInGame.get(winnerID) + " winned this round.");
+                    showPlayerScores();
+                    showWinner(winnerID);
+                } else if (serverMessage.startsWith("winner set")) {
+                    String winnerID = serverMessage.substring(11);
 
-                    teammateCard = null; // delete card of teammate
+                    if (winnerID.equals(teammateId) || winnerID.equals(getId())) {
+                        System.out.println("Congratulation! You winned this set!");
+                        scoresOfTeams[0]++;
+                    } else {
+                        System.out.println("Unfortunatly you lost this set!");
+                        scoresOfTeams[1]++;
+                    }
+
+                    // print scores of teams
+                    System.out.println("Scores of teams:");
+                    System.out.print("Your team: " + scoresOfTeams[0]);
+                    System.out.println("Other team: " + scoresOfTeams[1]);
                 } else if (serverMessage.equals("divide cards")) {
                     divideCards();
                 }
@@ -146,6 +170,29 @@ public class Player extends Client implements Runnable {
                 return;
             e.printStackTrace();
         }
+    }
+
+    private void showWinner(String winnerID) {
+        if (winnerID.equals(getId()) || winnerID.equals(teammateId)) {
+            System.out.print("You ");
+            if (getNumberOfPlayers() == 4)
+                System.out.printf("and %s ", playersInGame.get(teammateId));
+            System.out.println("winned this round.");
+
+            scoresOfTeams[0]++;
+        } else {
+            System.out.println(playersInGame.get(winnerID));
+            if (getNumberOfPlayers() == 4) {
+                String anotherOpponent = playersInGame.get(opponentId[0]).equals(winnerID) ?
+                        playersInGame.get(opponentId[1]) : playersInGame.get(opponentId[0]);
+                System.out.printf(" and %s", anotherOpponent);
+            }
+            System.out.println(" winned this round.");
+
+            scoresOfTeams[1]++;
+        }
+
+        teammateCard = null; // delete card of teammate
     }
 
     private void getCards() throws IOException, ClassNotFoundException {
@@ -178,7 +225,6 @@ public class Player extends Client implements Runnable {
         System.out.println("2-->> Diamonds");
         System.out.println("3-->> Hearts");
         System.out.println("4-->> Spades");
-        System.out.println();
         System.out.print(">>> ");
 
         // get rule from user
@@ -212,18 +258,32 @@ public class Player extends Client implements Runnable {
             System.out.printf("%2d. %s%n", ++count, card);
     }
 
+    private void showPlayerScores() {
+        System.out.println("Scores of players:");
+        for (int i = 0; i < getNumberOfPlayers(); i++) {
+            String id = players.get(i);
+            System.out.printf("%d.%s %d%n", i + 1, playersInGame.get(id), scoresOfPlayers.get(id));
+        }
+    }
+
     private void showPlayers() throws IOException, ClassNotFoundException {
         System.out.println("Players in game: ");
         // save id and name of players in the game
         for (int i = 0; i < getNumberOfPlayers(); i++) {
             String message = (String) getInput().readObject();
             String[] temp = message.split(":");
-            playerInGame.put(temp[0], temp[1]);
+
+            players.add(temp[0]);
+            playersInGame.put(temp[0], temp[1]);
+            scoresOfPlayers.put(temp[0], 0);
 
             // print in the output
             System.out.print((i + 1) + "." + temp[1] + " ");
             if (temp[0].equals(getId()))
                 System.out.print("(You)");
+            else if (getNumberOfPlayers() == 2) {
+                opponentId[0] = temp[0];
+            }
             System.out.println();
         }
     }

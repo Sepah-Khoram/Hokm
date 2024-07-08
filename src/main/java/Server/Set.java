@@ -34,7 +34,6 @@ public class Set implements Runnable {
     private final Lock setLock = new ReentrantLock();
     private final Condition ruleSelected = setLock.newCondition();
     private final Condition turnCondition = setLock.newCondition();
-    private int currentPlayerIndex;
 
     // result of the game
     private Team winner;
@@ -70,11 +69,12 @@ public class Set implements Runnable {
         // determine the winner of the set and send it
         if (scoresOfTeams[0] == 7) {
             winner = teams.getFirst();
-            sendData("winner set:team1");
         } else {
             winner = teams.get(1);
-            sendData("winner set:team2");
         }
+
+        // send winner of the set to the clients
+        sendData("winner set:" + winner.getPlayers().getFirst().getId());
     }
 
     private void divideCards() {
@@ -120,6 +120,7 @@ public class Set implements Runnable {
 
     private void playRound() {
         // they should play cards
+        int currentPlayerIndex;
         for (int i = 0; i < numberOfPlayers; i++) {
             setLock.lock();
             try {
@@ -153,7 +154,8 @@ public class Set implements Runnable {
         Card winCard = GameService.topCard(onTableCards, rule);
         int indexOfWinner = onTableCards.indexOf(winCard);
         Player winner = players[indexOfWinner];
-        Collections.rotate(Arrays.asList(players),4-indexOfWinner);
+        Collections.rotate(Arrays.asList(players),4 - indexOfWinner);
+
         // increase score of the winner and winner team
         scoresOfPlayers[indexOfWinner]++;
         if (teams.getFirst().getPlayers().contains(winner)) {

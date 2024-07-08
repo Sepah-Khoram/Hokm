@@ -29,7 +29,7 @@ public class ClientRunner {
     }
 
     private static void showMenu() {
-        System.out.println("Enter your choice:");
+        System.out.println("Please enter your choice:");
         System.out.println("1. Create a new public game");
         System.out.println("2. Create a new private game");
         System.out.println("3. Join a random game");

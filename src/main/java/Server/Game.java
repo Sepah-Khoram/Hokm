@@ -156,11 +156,17 @@ public class Game implements Runnable {
 
             // start the set
             currentSet.run();
+
+            // find the winner of the set
             if (teams.getFirst() == currentSet.getWinner()) {
                 winTeam1++;
             } else {
                 winTeam2++;
-                Collections.rotate(Arrays.asList(players),1);
+            }
+
+            // change the ruler if it needs
+            if (!currentSet.getWinner().getPlayers().contains(ruler)) {
+                Collections.rotate(Arrays.asList(players), 1);
             }
         }
     }

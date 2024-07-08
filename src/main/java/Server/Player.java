@@ -109,8 +109,7 @@ public class Player extends Client implements Runnable {
         sendData("divide cards");
 
         // send first five cards
-        ArrayList<Card> card = new ArrayList<>(Arrays.asList(cards).subList(0, 5));
-        sendData(card);
+        sendData(new ArrayList<>(Arrays.asList(cards).subList(0, 5)));
 
         // get rule from ruler
         if (isRuler) {
